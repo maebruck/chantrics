@@ -19,3 +19,21 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(chantrics)
 ```
+
+# prototyping count data adjustments GLM
+
+this is from zeileis-ooc, pg. 9
+
+```{r "first"}
+set.seed(123)
+x <- rnorm(250)
+y <- rnbinom(250, mu = exp(1 + x), size = 1)
+#fit count models
+#glm poisson (which is not correctly specified)
+fm_pois <- glm(y~x +I(x^2), family = poisson)
+lmtest::coeftest(fm_pois)
+#spuriously significant, zeileis-ooc then uses sandwich estimator to decrease overdispersion
+lmtest::coeftest(fm_pois, vcov = sandwich::sandwich)
+
+lmtest::coeftest(fm_pois, vcov =  )
+````

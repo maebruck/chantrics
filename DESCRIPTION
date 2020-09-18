@@ -10,7 +10,9 @@ Imports:
     stats,
     utils,
     methods
-Depends: R (>= 4.0.0)
+Depends: 
+    R (>= 4.0.0),
+    rlang
 Authors@R: person("Theo", "Bruckbauer", email = "chantrics@theobruckbauer.eu", role = c("aut", "cre"))
 URL: https://github.com/tbruckbauer/chantrics
 BugReports: https://github.com/tbruckbauer/chantrics/issues
