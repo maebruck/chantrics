@@ -7,6 +7,6 @@
 #' @param ... Further arguments.
 #' @export
 
-logLikVec <- function(object, ...) {
-  UseMethod("logLikVec")
+logLik_vec <- function(object, ...) {
+  UseMethod("logLik_vec")
 }
