@@ -11,7 +11,7 @@ NULL
 chant_obj <- function(x, cluster = NULL, ...){
   #add tests if object valid
   #does x have a logLik_vec method?
-  if (!any(paste0("logLik_vec.", class(x)) %in% methods("logLik_vec"))){
+  if (!any(paste0("logLik_vec.", class(x)) %in% utils::methods("logLik_vec"))){
     rlang::abort("x does not have a logLik_vec method")
   }
   #create function for log-likelihood of x
@@ -19,7 +19,7 @@ chant_obj <- function(x, cluster = NULL, ...){
     return(c(logLik_vec(fitted_object, pars = pars)))
   }
   #get mle estimate from x
-  mle = coef(x)
+  mle = stats::coef(x)
   #adjust object using chandwich
   adjusted_obj <- chandwich::adjust_loglik(loglik = logLik_f, cluster = cluster, fitted_object = x, p = length(mle), par_names = names(mle), name = paste(class(x), collapse = "_", mle = mle))
   class(adjusted_obj) <- c("chantrics", "chandwich")

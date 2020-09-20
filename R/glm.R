@@ -9,11 +9,11 @@ NULL
 
 logLik_vec.glm <- function(object, pars = NULL, ...) {
   if (!missing(...)) {
-    warning("extra arguments removed")
+    rlang::warn("extra arguments removed")
   }
   #import coefficients
   if (is.null(pars)) {
-    pars <- coef(object)
+    pars <- stats::coef(object)
   }
   #calculate mus
   #try getting the design matrix from glm object
@@ -40,9 +40,7 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   #add other densities here
   #return other attributes from logLik objects
   attr(llv, "df") <- length(pars)
-  attr(llv, "nobs") <- nobs(object)
+  attr(llv, "nobs") <- stats::nobs(object)
   class(llv) <- "logLik_vec"
   return(llv)
 }
-
-
