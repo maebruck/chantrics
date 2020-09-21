@@ -21,10 +21,14 @@ logLik_vec <- function(object, ...) {
 # if required, turn this into a method (see logLik_vec) and the below into the
 # .default() method
 
-adj_loglik <- function(x, cluster = NULL, use_vcov = TRUE, ...){
+adj_loglik <- function(x,
+                       cluster = NULL,
+                       use_vcov = TRUE,
+                       ...) {
   #check if x is a supported model type
   #adjust x
-  adjusted_x <- chant_obj(x, cluster = cluster, use_vcov = use_vcov, ...)
+  adjusted_x <-
+    chant_obj(x, cluster = cluster, use_vcov = use_vcov, ...)
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   return(adjusted_x)
 }

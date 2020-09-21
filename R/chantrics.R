@@ -14,4 +14,3 @@ NULL
 
 #' @import methods
 NULL
-
