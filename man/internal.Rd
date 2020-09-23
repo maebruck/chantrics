@@ -5,6 +5,7 @@
 \alias{chant_obj}
 \alias{is.error}
 \alias{raise_yield_error}
+\alias{get_response_from_formula}
 \title{chandwich internal functions}
 \usage{
 chant_obj(x, cluster = NULL, ...)
@@ -12,6 +13,8 @@ chant_obj(x, cluster = NULL, ...)
 is.error(x)
 
 raise_yield_error(model = "model", what = "property", try_this = NULL)
+
+get_response_from_formula(x)
 }
 \description{
 Internal functions: These are not to be exported.

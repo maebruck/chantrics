@@ -18,6 +18,9 @@ chant_obj <- function(x, cluster = NULL, ...) {
   logLik_f <- function(pars, fitted_object, ...) {
     return(c(logLik_vec(fitted_object, pars = pars)))
   }
+  name_pieces <- c(class(x))
+  #add glm family to name
+  try(name_pieces <- c(x$family$family, name_pieces), silent = TRUE)
   #get mle estimate from x
   mle = stats::coef(x)
   #adjust object using chandwich
@@ -28,7 +31,8 @@ chant_obj <- function(x, cluster = NULL, ...) {
       fitted_object = x,
       p = length(mle),
       par_names = names(mle),
-      name = paste(class(x), collapse = "_", mle = mle)
+      name = paste(name_pieces, collapse = "_"),
+      mle = mle
     )
   class(adjusted_obj) <- c("chantrics", "chandwich")
   return(adjusted_obj)
@@ -56,3 +60,22 @@ raise_yield_error <-
       paste0("Failed to yield the ", what, " from the ", model, ".", try_mess)
     rlang::abort(mess)
   }
+
+#' @rdname internal
+#' @keywords internal
+
+get_response_from_formula <- function(x) {
+  if (!rlang::is_formula(x)) {
+    rlang::abort("x is not a formula.")
+  }
+  x_terms <- stats::terms(x)
+  x_pos_response <- attr(x_terms, "response")
+  if (x_pos_response == 0) {
+    rlang::warn("x does not have a response")
+    return(NULL)
+  } else {
+    return(rlang::as_string(as.list(attr(
+      x_terms, "variables"
+    ))[[x_pos_response + 1]]))
+  }
+}

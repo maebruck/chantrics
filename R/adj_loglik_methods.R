@@ -30,6 +30,8 @@ adj_loglik <- function(x,
   adjusted_x <-
     chant_obj(x, cluster = cluster, use_vcov = use_vcov, ...)
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
+  try(attr(adjusted_x, "formula") <-
+        stats::formula(x), silent = TRUE)
   return(adjusted_x)
 }
 #' ANOVA tables: compare nested models
@@ -61,15 +63,143 @@ anova.chantrics <- function(model1, model2, ...) {
   dotargs <- list(...)
   potential_model_objects <-
     c(model1, model2, subset(dotargs, names(dotargs) == ""), use.names = FALSE)
+  #save dotargs which are named
+  named_dotargs <- subset(dotargs, names(dotargs) != "")
   #check whether the unnamed objects are actually chantrics objects
-  pmo_is_chantrics <- sapply(potential_model_objects, function(x){is(x, "chantrics")})
-  #warn user that we drop supplied unnamed arguments that are not chantrics objects
-  if(any(pmo_is_chantrics)){
-    warn("One or more of the unnamed objects supplied are not 'chantrics' objects,\nwhich have been dropped.")
+  pmo_is_chantrics <-
+    vapply(potential_model_objects, function(x) {
+      is(x, "chantrics")
+    }, logical(1))
+  #warn user that we drop supplied unnamed arguments that are not chantrics
+  #objects
+  if (!all(pmo_is_chantrics)) {
+    rlang::warn(
+      paste0(
+        "One or more of the unnamed objects supplied ",
+        "are not 'chantrics' objects.\nThey have been dropped."
+      ),
+      class = "chantrics_unnamed_params_dropped"
+    )
   }
   #drop non-chantrics objects
-  model_objects <- subset(potential_model_objects, pmo_is_chantrics)
-  model_objects
-  #find out if sorting is necessary
-  #prepare for piping into chandwich::anova.chandwich
+  model_objects <-
+    subset(potential_model_objects, pmo_is_chantrics)
+  #check if there are at least two chantrics objects after dropping
+  if (length(model_objects) < 2) {
+    rlang::abort(
+      paste0(
+        "Less than two 'chantrics' objects have been supplied, ",
+        "but we require at least two.\nPlease supply more models."
+      ),
+      class = "chantrics_not_enough_models"
+    )
+  }
+  #sort models by # of parameters
+  n_params <-
+    vapply(model_objects, function(x) {
+      attr(x, "p_current")
+    }, numeric(1))
+  #abort if # of params is identical for two models
+  if (anyDuplicated(n_params)) {
+    rlang::abort(
+      paste0(
+        "More than one supplied chantrics model ",
+        "has the same number of parameters.\n",
+        "Please ensure that all models are nested with decreasing ",
+        "parameter count."
+      ),
+      class = "chantrics_equal_num_params"
+    )
+  }
+  model_order <- order(n_params, decreasing = TRUE)
+  #order models
+  model_objects <- model_objects[model_order]
+  n_models <- length(model_objects)
+  #compare_models requires single pairs
+  formulae_avail <- TRUE
+  for (i in 1:(n_models - 1)) {
+    larger_m <- model_objects[[i]]
+    smaller_m <- model_objects[[i + 1]]
+    #check that the smaller model is indeed nested
+    #check if they are the same model type
+    if (attr(larger_m, "name") != attr(smaller_m, "name")) {
+      rlang::warn(
+        paste0(
+          "The objects do not seem to stem from the same model.\n",
+          "attr(model, 'name') do not match."
+        ),
+        class = "chantrics_model_does_not_match"
+      )
+    }
+    #check if the response differs. This is only possible if original models
+    #have a formula(x) function, otherwise continue
+    if (all(c(
+      "formula" %in% names(attributes(larger_m)),
+      "formula" %in% names(attributes(smaller_m))
+    ))) {
+      larger_response <-
+        get_response_from_formula(attr(larger_m, "formula"))
+      smaller_response <-
+        get_response_from_formula(attr(smaller_m, "formula"))
+      if (larger_response != smaller_response) {
+        rlang::warn(
+          paste0(
+            "The response parameter in attr(model, 'formula')",
+            "do not seem to match."
+          ),
+          class = "chantrics_response_param_discrepancy"
+        )
+      }
+    } else {
+      formulae_avail <- FALSE
+    }
+    #get the parameter names from the two models
+    larger_free_params <- attr(larger_m, "free_pars")
+    larger_free_params_names <- names(larger_free_params)
+    smaller_free_params <- attr(smaller_m, "free_pars")
+    smaller_free_params_names <- names(smaller_free_params)
+    #check if the params of the smaller model are a subset of the larger.
+    if (!all(smaller_free_params_names %in% larger_free_params_names)) {
+      rlang::abort("The models are not nested: The parameters are not subsets.",
+                   class = "chantrics_params_not_subset")
+    }
+    #find the fixed parameters
+    index_fixed_pars <- which(!(larger_free_params_names %in% smaller_free_params_names))
+    # fixed_pars <- larger_free_params[fixed_pars]
+    # fixed_at <- rep(0, length(fixed_pars))
+    # names(fixed_at) <- names(fixed_pars)
+    # attr(smaller_m, "fixed_pars") <- fixed_pars
+    # attr(smaller_m, "fixed_at") <- fixed_at
+    # # In comparing smaller to larger, treat larger as the full model,
+    # # i.e. having no fixed parameters
+    # attr(larger_m, "fixed_pars") <- NULL
+    # res <- do.call(chandwich::compare_models,
+    #                c(list(larger = larger_m, smaller = smaller_m),
+    #                  named_dotargs))
+    # return(res)
+    fixed_pars <- larger_free_params[index_fixed_pars]
+    fixed_at <- rep(0, length(fixed_pars))
+    names(fixed_at) <- names(fixed_pars)
+    attr(larger_m, "fixed_pars") <- NULL
+    attr(larger_m, "fixed_at") <- NULL
+    attr(smaller_m, "fixed_pars") <- fixed_pars
+    attr(smaller_m, "fixed_at") <- fixed_at
+    # code below doesn't work
+    # fixed_pars <- larger_free_params[fixed_pars]
+    # fixed_at <- 0
+    # print(fixed_pars)
+    # result <- do.call(chandwich::compare_models, c(list(larger = larger_m, smaller = smaller_m, fixed_pars = fixed_pars, fixed_at = fixed_at), named_dotargs))
+    result <- do.call(chandwich::compare_models, c(list(larger = larger_m, smaller = smaller_m), named_dotargs))
+  }
+  #get names from objects
+  #if all functions have formulae available, then get formulae
+
+  print(vapply(model_objects, function(x) deparse(substitute(x)), character(1)))
+  if(formulae_avail){
+    names_of_obj <- vapply(model_objects, function(x) rlang::as_string(attr(x, "formula")), character(1))
+  } else {
+    #names_of_obj <- vapply(model_objects)
+  }
+  heading <- c("Analysis of Adjusted Deviance Table\n")
+  structure(table, heading = )
 }
