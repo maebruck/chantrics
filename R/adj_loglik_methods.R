@@ -203,7 +203,7 @@ anova.chantrics <- function(model1, model2, ...) {
     result_df_nr <- data.frame(
       formula = result_df_nr_formula,
       variable_string = c(get_variable_str_from_chantrics(smaller_m)),
-      resid_df = c(NA),
+      resid_df = attr(smaller_m, "nobs"),
       resid_alrts = c(NA),
       df = c(NA),
       alrts = c(NA),
