@@ -118,17 +118,20 @@ anova.chantrics <- function(model1, model2, ...) {
   n_models <- length(model_objects)
   #compare_models requires single pairs
   largest_m <- model_objects[[1]]
-  result_df <-
-    data.frame(
-      formula = c(NA),
-      variable_string = c(get_variable_str_from_chantrics(largest_m)),
-      resid_df = c(NA),
-      resid_alrts = c(NA),
-      df = c(NA),
-      alrts = c(NA),
-      p_value = c(NA)
-    )
-  try(result_df[["formula"]] <- c(get_formula_str_from_chantrics(largest_m)))
+
+  #create vector for each result_df entry, and join at the end, is more efficient, see https://stackoverflow.com/questions/20689650/how-to-append-rows-to-an-r-data-frame
+  result_df.formula <- character(n_models)
+  result_df.formula[[1]] <- get_variable_str_from_chantrics(largest_m)
+  try(result_df.formula[[1]] <- get_formula_str_from_chantrics(largest_m), silent = TRUE)
+  result_df.resid_df <- integer(n_models)
+  result_df.resid_df[[1]] <- get_resid_df_from_chantrics(largest_m)
+  result_df.df <- integer(n_models)
+  result_df.df[[1]] <- NA
+  result_df.alrts <- numeric(n_models)
+  result_df.alrts[[1]] <- NA
+  result_df.p_value <- numeric(n_models)
+  result_df.p_value[[1]] <- NA
+
   for (i in 1:(n_models - 1)) {
     larger_m <- model_objects[[i]]
     smaller_m <- model_objects[[i + 1]]
@@ -148,7 +151,7 @@ anova.chantrics <- function(model1, model2, ...) {
     if ("formula" %in% names(attributes(smaller_m))) {
       smaller_formula <- attr(smaller_m, "formula")
       #save for result_df
-      result_df_nr_formula <- c(get_formula_str_from_chantrics(smaller_m))
+      result_df_nr_formula <- get_formula_str_from_chantrics(smaller_m)
       if ("formula" %in% names(attributes(larger_m))) {
         larger_response <-
           get_response_from_formula(attr(larger_m, "formula"))
@@ -165,8 +168,8 @@ anova.chantrics <- function(model1, model2, ...) {
         }
       }
     } else {
-      #if formula not available, write NA to result_df
-      result_df_nr_formula <- c(NA)
+      #if formula not available, write variable list to result_df
+      result_df_nr_formula <- get_variable_str_from_chantrics(smaller_m)
     }
 
     #get the parameter names from the two models
@@ -198,22 +201,27 @@ anova.chantrics <- function(model1, model2, ...) {
       do.call(chandwich::compare_models, c(list(
         larger = larger_m, smaller = smaller_m
       ), named_dotargs))
-    print(result)
     #append to results data.frame
-    result_df_nr <- data.frame(
-      formula = result_df_nr_formula,
-      variable_string = c(get_variable_str_from_chantrics(smaller_m)),
-      resid_df = attr(smaller_m, "nobs"),
-      resid_alrts = c(NA),
-      df = c(NA),
-      alrts = c(NA),
-      p_value = c(NA)
-    )
+    result_df.formula[[i + 1]] <- result_df_nr_formula
+    result_df.resid_df[[i + 1]] <- get_resid_df_from_chantrics(smaller_m)
+    result_df.df[[i + 1]] <- result[["df"]]
+    result_df.alrts[[i + 1]] <- result[["alrts"]]
+    result_df.p_value[[i + 1]] <- result[["p_value"]]
   }
-  #get names from objects
-  #if all functions have formulae available, then get formulae
+  #create data.frame from vectors
+  #formula = result_df.formula
+  #varstr = result_df.varstr
+  result_df <- data.frame(
+    resid_df = result_df.resid_df,
+    df = result_df.df,
+    alrts = result_df.df,
+    p_value = result_df.p_value
+  )
+  print(result_df.formula)
+  print(result_df.varstr)
+  print(result_df)
 
-
-  heading <- c("Analysis of Adjusted Deviance Table\n")
+  title <- "Analysis of Adjusted Deviance Table\n"
+  topnote <- paste0("Model ", format(1:nmodels), ": ", )
   structure(table, heading = )
 }

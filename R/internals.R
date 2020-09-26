@@ -104,3 +104,12 @@ get_formula_str_from_chantrics <- function(x) {
   abort_not_chantrics(x)
   return(paste(deparse(attr(x, "formula")), collapse = "\n"))
 }
+
+#' @rdname internal
+#' @keywords internal
+
+get_resid_df_from_chantrics <- function(x) {
+  abort_not_chantrics(x)
+  return(attr(x, "nobs") - attr(x, "p_current"))
+}
+
