@@ -79,3 +79,28 @@ get_response_from_formula <- function(x) {
     ))[[x_pos_response + 1]]))
   }
 }
+
+#' @rdname internal
+#' @keywords internal
+
+abort_not_chantrics <- function(x) {
+  if (!("chantrics" %in% class(x))) {
+    rlang::abort("x is not a chantrics object", class = "chantrics_not_chantrics_object")
+  }
+}
+
+#' @rdname internal
+#' @keywords internal
+
+get_variable_str_from_chantrics <- function(x) {
+  abort_not_chantrics(x)
+  return(paste(names(attr(x, "free_pars")), collapse = ", "))
+}
+
+#' @rdname internal
+#' @keywords internal
+
+get_formula_str_from_chantrics <- function(x) {
+  abort_not_chantrics(x)
+  return(paste(deparse(attr(x, "formula")), collapse = "\n"))
+}

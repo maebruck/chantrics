@@ -6,6 +6,9 @@
 \alias{is.error}
 \alias{raise_yield_error}
 \alias{get_response_from_formula}
+\alias{abort_not_chantrics}
+\alias{get_variable_str_from_chantrics}
+\alias{get_formula_str_from_chantrics}
 \title{chandwich internal functions}
 \usage{
 chant_obj(x, cluster = NULL, ...)
@@ -15,6 +18,12 @@ is.error(x)
 raise_yield_error(model = "model", what = "property", try_this = NULL)
 
 get_response_from_formula(x)
+
+abort_not_chantrics(x)
+
+get_variable_str_from_chantrics(x)
+
+get_formula_str_from_chantrics(x)
 }
 \description{
 Internal functions: These are not to be exported.

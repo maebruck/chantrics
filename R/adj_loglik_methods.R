@@ -84,6 +84,7 @@ anova.chantrics <- function(model1, model2, ...) {
   #drop non-chantrics objects
   model_objects <-
     subset(potential_model_objects, pmo_is_chantrics)
+
   #check if there are at least two chantrics objects after dropping
   if (length(model_objects) < 2) {
     rlang::abort(
@@ -116,7 +117,18 @@ anova.chantrics <- function(model1, model2, ...) {
   model_objects <- model_objects[model_order]
   n_models <- length(model_objects)
   #compare_models requires single pairs
-  formulae_avail <- TRUE
+  largest_m <- model_objects[[1]]
+  result_df <-
+    data.frame(
+      formula = c(NA),
+      variable_string = c(get_variable_str_from_chantrics(largest_m)),
+      resid_df = c(NA),
+      resid_alrts = c(NA),
+      df = c(NA),
+      alrts = c(NA),
+      p_value = c(NA)
+    )
+  try(result_df[["formula"]] <- c(get_formula_str_from_chantrics(largest_m)))
   for (i in 1:(n_models - 1)) {
     larger_m <- model_objects[[i]]
     smaller_m <- model_objects[[i + 1]]
@@ -133,26 +145,30 @@ anova.chantrics <- function(model1, model2, ...) {
     }
     #check if the response differs. This is only possible if original models
     #have a formula(x) function, otherwise continue
-    if (all(c(
-      "formula" %in% names(attributes(larger_m)),
-      "formula" %in% names(attributes(smaller_m))
-    ))) {
-      larger_response <-
-        get_response_from_formula(attr(larger_m, "formula"))
-      smaller_response <-
-        get_response_from_formula(attr(smaller_m, "formula"))
-      if (larger_response != smaller_response) {
-        rlang::warn(
-          paste0(
-            "The response parameter in attr(model, 'formula')",
-            "do not seem to match."
-          ),
-          class = "chantrics_response_param_discrepancy"
-        )
+    if ("formula" %in% names(attributes(smaller_m))) {
+      smaller_formula <- attr(smaller_m, "formula")
+      #save for result_df
+      result_df_nr_formula <- c(get_formula_str_from_chantrics(smaller_m))
+      if ("formula" %in% names(attributes(larger_m))) {
+        larger_response <-
+          get_response_from_formula(attr(larger_m, "formula"))
+        smaller_response <-
+          get_response_from_formula(attr(smaller_m, "formula"))
+        if (larger_response != smaller_response) {
+          rlang::warn(
+            paste0(
+              "The response parameter in attr(model, 'formula')",
+              "do not seem to match."
+            ),
+            class = "chantrics_response_param_discrepancy"
+          )
+        }
       }
     } else {
-      formulae_avail <- FALSE
+      #if formula not available, write NA to result_df
+      result_df_nr_formula <- c(NA)
     }
+
     #get the parameter names from the two models
     larger_free_params <- attr(larger_m, "free_pars")
     larger_free_params_names <- names(larger_free_params)
@@ -164,19 +180,8 @@ anova.chantrics <- function(model1, model2, ...) {
                    class = "chantrics_params_not_subset")
     }
     #find the fixed parameters
-    index_fixed_pars <- which(!(larger_free_params_names %in% smaller_free_params_names))
-    # fixed_pars <- larger_free_params[fixed_pars]
-    # fixed_at <- rep(0, length(fixed_pars))
-    # names(fixed_at) <- names(fixed_pars)
-    # attr(smaller_m, "fixed_pars") <- fixed_pars
-    # attr(smaller_m, "fixed_at") <- fixed_at
-    # # In comparing smaller to larger, treat larger as the full model,
-    # # i.e. having no fixed parameters
-    # attr(larger_m, "fixed_pars") <- NULL
-    # res <- do.call(chandwich::compare_models,
-    #                c(list(larger = larger_m, smaller = smaller_m),
-    #                  named_dotargs))
-    # return(res)
+    index_fixed_pars <-
+      which(!(larger_free_params_names %in% smaller_free_params_names))
     fixed_pars <- larger_free_params[index_fixed_pars]
     fixed_at <- rep(0, length(fixed_pars))
     names(fixed_at) <- names(fixed_pars)
@@ -189,17 +194,26 @@ anova.chantrics <- function(model1, model2, ...) {
     # fixed_at <- 0
     # print(fixed_pars)
     # result <- do.call(chandwich::compare_models, c(list(larger = larger_m, smaller = smaller_m, fixed_pars = fixed_pars, fixed_at = fixed_at), named_dotargs))
-    result <- do.call(chandwich::compare_models, c(list(larger = larger_m, smaller = smaller_m), named_dotargs))
+    result <-
+      do.call(chandwich::compare_models, c(list(
+        larger = larger_m, smaller = smaller_m
+      ), named_dotargs))
+    print(result)
+    #append to results data.frame
+    result_df_nr <- data.frame(
+      formula = result_df_nr_formula,
+      variable_string = c(get_variable_str_from_chantrics(smaller_m)),
+      resid_df = c(NA),
+      resid_alrts = c(NA),
+      df = c(NA),
+      alrts = c(NA),
+      p_value = c(NA)
+    )
   }
   #get names from objects
   #if all functions have formulae available, then get formulae
 
-  print(vapply(model_objects, function(x) deparse(substitute(x)), character(1)))
-  if(formulae_avail){
-    names_of_obj <- vapply(model_objects, function(x) rlang::as_string(attr(x, "formula")), character(1))
-  } else {
-    #names_of_obj <- vapply(model_objects)
-  }
+
   heading <- c("Analysis of Adjusted Deviance Table\n")
   structure(table, heading = )
 }
