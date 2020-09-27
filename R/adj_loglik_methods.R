@@ -39,33 +39,33 @@ adj_loglik <- function(x,
 #'
 #' \code{anova} method for \code{chantrics} objects
 #'
-#' Compare two or more nested models that have been adjusted using the
+#' Create an analysis of adjusted deviance table for one object (sequential),
+#' or two or more nested models that have been adjusted using the
 #' \code{\link{adj_logLik}} method. It uses the adjusted likelihood ratio test
 #' statistic (ALRTS), as described in Section 3.5 of
 #' \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
 #'
-#' Note that the objects specified do not have to be sorted in a specific way,
-#' they will be sorted by the function by the number of parameters, as returned
-#' by \code{attr(model1, "p_current")}.
-#'
 #' @param model1 Object of class \code{chantrics}, as returned by
-#'   \code{\link{adj_logLik}}.
-#' @param model2 Object of class \code{chantrics}, as returned by
 #'   \code{\link{adj_logLik}}.
 #' @param ... Further objects of class \code{chantrics}, as returned by
 #'   \code{\link{adj_logLik}}, and/or parameters that will be passed to
-#'   \code{\link[chandwich]{anova.chandwich}}, and then further to
 #'   \code{\link[chandwich]{compare_models}}. The type of adjustment, out of
 #'   \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
 #'   specified in the parameter \code{type}, can also be specified here.
 #'
-#'  @details When a single model is specified, the
+#'  @details Each line represents the model as given
+#'
+#'   When a single model is specified, the function returns a sequential analysis of deviance table, where one term is being removed from the right of the full formula, and the ALRTS between the model with the term and the reduced model is being computed. This process is continued until the "intercept only" model is left.
+#'
+#'   If more than one model is specified, the function sorts the models by their number of variables as returned by \code{\link{adj_loglik}} in \code{attr(x, "p_current")}. Then, the ALRTS is computed for the previous and current model, and returned on their own line, with the corresponding p-value and the change in the degrees of freedom.
 #'
 #' @export
-anova.chantrics <- function(model1, model2, ...) {
+#'
+## S3 method for class 'chantrics'
+anova.chantrics <- function(model1, ...) {
   dotargs <- list(...)
   potential_model_objects <-
-    c(model1, model2, subset(dotargs, names(dotargs) == ""), use.names = FALSE)
+    c(model1, subset(dotargs, names(dotargs) == ""), use.names = FALSE)
   #save dotargs which are named
   named_dotargs <- subset(dotargs, names(dotargs) != "")
   #check whether the unnamed objects are actually chantrics objects
@@ -91,6 +91,24 @@ anova.chantrics <- function(model1, model2, ...) {
   #check if there is at least one chantrics objects after dropping
   if (length(model_objects) == 1) {
     #create sequential model objects
+    adjusted_object <- model_objects[[1]]
+    unadjusted_object <- attr(adjusted_object, "unadj_object")
+    #get list of variables by which anova should split
+    formula_full <- try(attr(adjusted_object, "formula"), silent = TRUE)
+    if (is.error(formula_full)){
+      rlang::abort(paste0("Formula not available in object",
+                          "via attr(model1, 'formula')\n",
+                          "Handling of this case not supported."))
+    }
+    variable_vec <- rev(attr(terms(formula_full), "term.labels"))
+    #initialise progress bar
+    pb <- progress::progress_bar$new(total = length(variable_vec))
+    for (rm_this_var in variable_vec) {
+      pb$tick()
+      unadjusted_object <- update(unadjusted_object, as.formula(paste0(". ~ . - ", rm_this_var)))
+      adj_reduced_object <- adj_loglik(unadjusted_object)
+      model_objects <- c(model_objects, adj_reduced_object)
+    }
   } else if (length(model_objects) < 1) {
     rlang::abort(
       paste0(
@@ -218,19 +236,18 @@ anova.chantrics <- function(model1, model2, ...) {
     result_df.resid_df[[i + 1]] <-
       get_resid_df_from_chantrics(smaller_m)
     result_df.df[[i + 1]] <- result[["df"]]
-    print((result[["alrts"]]))
     result_df.alrts[[i + 1]] <- result[["alrts"]]
     result_df.p_value[[i + 1]] <- result[["p_value"]]
   }
   #create data.frame from vectors
-  #formula = result_df.formula
-  #varstr = result_df.varstr
   result_df <- data.frame(
     resid_df = result_df.resid_df,
     df = result_df.df,
     alrts = result_df.alrts,
     p_value = result_df.p_value
   )
+  dimnames(result_df)[[2]] <- c("Resid.df", "df", "ALRTS", "Pr(>ALRTS)")
+  try(dimnames(result_df)[[1]] <- c(variable_vec, "Intercept"), silent = FALSE)
   title <- "Analysis of Adjusted Deviance Table\n"
   topnote <-
     paste0("Model ",

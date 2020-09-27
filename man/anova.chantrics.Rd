@@ -4,34 +4,31 @@
 \alias{anova.chantrics}
 \title{ANOVA tables: compare nested models}
 \usage{
-\method{anova}{chantrics}(model1, model2, ...)
+\method{anova}{chantrics}(model1, ...)
 }
 \arguments{
 \item{model1}{Object of class \code{chantrics}, as returned by
 \code{\link{adj_logLik}}.}
 
-\item{model2}{Object of class \code{chantrics}, as returned by
-\code{\link{adj_logLik}}.}
-
 \item{...}{Further objects of class \code{chantrics}, as returned by
   \code{\link{adj_logLik}}, and/or parameters that will be passed to
-  \code{\link[chandwich]{anova.chandwich}}, and then further to
   \code{\link[chandwich]{compare_models}}. The type of adjustment, out of
   \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
   specified in the parameter \code{type}, can also be specified here.
 
- @details When a single model is specified, the}
+ @details Each line represents the model as given
+
+  When a single model is specified, the function returns a sequential analysis of deviance table, where one term is being removed from the right of the full formula, and the ALRTS between the model with the term and the reduced model is being computed. This process is continued until the "intercept only" model is left.
+
+  If more than one model is specified, the function sorts the models by their number of variables as returned by \code{\link{adj_loglik}} in \code{attr(x, "p_current")}. Then, the ALRTS is computed for the previous and current model, and returned on their own line, with the corresponding p-value and the change in the degrees of freedom.}
 }
 \description{
 \code{anova} method for \code{chantrics} objects
 }
 \details{
-Compare two or more nested models that have been adjusted using the
+Create an analysis of adjusted deviance table for one object (sequential),
+or two or more nested models that have been adjusted using the
 \code{\link{adj_logLik}} method. It uses the adjusted likelihood ratio test
 statistic (ALRTS), as described in Section 3.5 of
 \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
-
-Note that the objects specified do not have to be sorted in a specific way,
-they will be sorted by the function by the number of parameters, as returned
-by \code{attr(model1, "p_current")}.
 }

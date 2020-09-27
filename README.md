@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Travis build
-status](https://travis-ci.com/tbruckbauer/chantrics.svg?branch=master)](https://travis-ci.com/tbruckbauer/chantrics)
+status](https://travis-ci.com/tbruckbauer/chantrics.svg?token=w8TadkqrUK2xbsPmJ7ty&branch=master)](https://travis-ci.com/tbruckbauer/chantrics)
 <!-- badges: end -->
 
 The goal of chantrics is to …

@@ -11,7 +11,8 @@ Imports:
     utils,
     methods,
     lmtest,
-    rlang
+    rlang,
+    progress
 Depends: 
     R (>= 4.0.0)
 Authors@R: person("Theo", "Bruckbauer", email = "chantrics@theobruckbauer.eu", role = c("aut", "cre"))
