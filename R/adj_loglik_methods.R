@@ -58,6 +58,8 @@ adj_loglik <- function(x,
 #'   \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
 #'   specified in the parameter \code{type}, can also be specified here.
 #'
+#'  @details When a single model is specified, the
+#'
 #' @export
 anova.chantrics <- function(model1, model2, ...) {
   dotargs <- list(...)
@@ -85,8 +87,10 @@ anova.chantrics <- function(model1, model2, ...) {
   model_objects <-
     subset(potential_model_objects, pmo_is_chantrics)
 
-  #check if there are at least two chantrics objects after dropping
-  if (length(model_objects) < 2) {
+  #check if there is at least one chantrics objects after dropping
+  if (length(model_objects) == 1) {
+    #create sequential model objects
+  } else if (length(model_objects) < 1) {
     rlang::abort(
       paste0(
         "Less than two 'chantrics' objects have been supplied, ",
@@ -205,6 +209,7 @@ anova.chantrics <- function(model1, model2, ...) {
     result_df.formula[[i + 1]] <- result_df_nr_formula
     result_df.resid_df[[i + 1]] <- get_resid_df_from_chantrics(smaller_m)
     result_df.df[[i + 1]] <- result[["df"]]
+    print((result[["alrts"]]))
     result_df.alrts[[i + 1]] <- result[["alrts"]]
     result_df.p_value[[i + 1]] <- result[["p_value"]]
   }
@@ -214,14 +219,10 @@ anova.chantrics <- function(model1, model2, ...) {
   result_df <- data.frame(
     resid_df = result_df.resid_df,
     df = result_df.df,
-    alrts = result_df.df,
+    alrts = result_df.alrts,
     p_value = result_df.p_value
   )
-  print(result_df.formula)
-  print(result_df.varstr)
-  print(result_df)
-
   title <- "Analysis of Adjusted Deviance Table\n"
-  topnote <- paste0("Model ", format(1:nmodels), ": ", )
-  structure(table, heading = )
+  topnote <- paste0("Model ", format(1:n_models), ": ", result_df.formula, collapse = "\n")
+  structure(result_df, heading = c(title, topnote), class = c("anova", "data.frame"))
 }

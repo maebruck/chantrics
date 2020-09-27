@@ -9,6 +9,7 @@
 \alias{abort_not_chantrics}
 \alias{get_variable_str_from_chantrics}
 \alias{get_formula_str_from_chantrics}
+\alias{get_resid_df_from_chantrics}
 \title{chandwich internal functions}
 \usage{
 chant_obj(x, cluster = NULL, ...)
@@ -24,6 +25,8 @@ abort_not_chantrics(x)
 get_variable_str_from_chantrics(x)
 
 get_formula_str_from_chantrics(x)
+
+get_resid_df_from_chantrics(x)
 }
 \description{
 Internal functions: These are not to be exported.
