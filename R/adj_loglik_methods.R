@@ -124,7 +124,9 @@ anova.chantrics <- function(model1, model2, ...) {
   #compare_models requires single pairs
   largest_m <- model_objects[[1]]
 
-  #create vector for each result_df entry, and join at the end, is more efficient, see https://stackoverflow.com/questions/20689650/how-to-append-rows-to-an-r-data-frame
+  #create vector for each result_df entry, and join at the end, is more
+  #efficient, see
+  #https://stackoverflow.com/questions/20689650/how-to-append-rows-to-an-r-data-frame
   result_df.formula <- character(n_models)
   result_df.formula[[1]] <-
     get_variable_str_from_chantrics(largest_m)

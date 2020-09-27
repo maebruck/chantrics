@@ -14,11 +14,13 @@
 \code{\link{adj_logLik}}.}
 
 \item{...}{Further objects of class \code{chantrics}, as returned by
-\code{\link{adj_logLik}}, and/or parameters that will be passed to
-\code{\link[chandwich]{anova.chandwich}}, and then further to
-\code{\link[chandwich]{compare_models}}. The type of adjustment, out of
-\code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
-specified in the parameter \code{type}, can also be specified here.}
+  \code{\link{adj_logLik}}, and/or parameters that will be passed to
+  \code{\link[chandwich]{anova.chandwich}}, and then further to
+  \code{\link[chandwich]{compare_models}}. The type of adjustment, out of
+  \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
+  specified in the parameter \code{type}, can also be specified here.
+
+ @details When a single model is specified, the}
 }
 \description{
 \code{anova} method for \code{chantrics} objects
