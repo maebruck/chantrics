@@ -32,6 +32,7 @@ adj_loglik <- function(x,
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
         stats::formula(x), silent = TRUE)
+  attr(adjusted_x, "unadj_object") <- x
   return(adjusted_x)
 }
 #' ANOVA tables: compare nested models
@@ -125,8 +126,11 @@ anova.chantrics <- function(model1, model2, ...) {
 
   #create vector for each result_df entry, and join at the end, is more efficient, see https://stackoverflow.com/questions/20689650/how-to-append-rows-to-an-r-data-frame
   result_df.formula <- character(n_models)
-  result_df.formula[[1]] <- get_variable_str_from_chantrics(largest_m)
-  try(result_df.formula[[1]] <- get_formula_str_from_chantrics(largest_m), silent = TRUE)
+  result_df.formula[[1]] <-
+    get_variable_str_from_chantrics(largest_m)
+  try(result_df.formula[[1]] <-
+        get_formula_str_from_chantrics(largest_m),
+      silent = TRUE)
   result_df.resid_df <- integer(n_models)
   result_df.resid_df[[1]] <- get_resid_df_from_chantrics(largest_m)
   result_df.df <- integer(n_models)
@@ -155,7 +159,8 @@ anova.chantrics <- function(model1, model2, ...) {
     if ("formula" %in% names(attributes(smaller_m))) {
       smaller_formula <- attr(smaller_m, "formula")
       #save for result_df
-      result_df_nr_formula <- get_formula_str_from_chantrics(smaller_m)
+      result_df_nr_formula <-
+        get_formula_str_from_chantrics(smaller_m)
       if ("formula" %in% names(attributes(larger_m))) {
         larger_response <-
           get_response_from_formula(attr(larger_m, "formula"))
@@ -173,7 +178,8 @@ anova.chantrics <- function(model1, model2, ...) {
       }
     } else {
       #if formula not available, write variable list to result_df
-      result_df_nr_formula <- get_variable_str_from_chantrics(smaller_m)
+      result_df_nr_formula <-
+        get_variable_str_from_chantrics(smaller_m)
     }
 
     #get the parameter names from the two models
@@ -207,7 +213,8 @@ anova.chantrics <- function(model1, model2, ...) {
       ), named_dotargs))
     #append to results data.frame
     result_df.formula[[i + 1]] <- result_df_nr_formula
-    result_df.resid_df[[i + 1]] <- get_resid_df_from_chantrics(smaller_m)
+    result_df.resid_df[[i + 1]] <-
+      get_resid_df_from_chantrics(smaller_m)
     result_df.df[[i + 1]] <- result[["df"]]
     print((result[["alrts"]]))
     result_df.alrts[[i + 1]] <- result[["alrts"]]
@@ -223,6 +230,15 @@ anova.chantrics <- function(model1, model2, ...) {
     p_value = result_df.p_value
   )
   title <- "Analysis of Adjusted Deviance Table\n"
-  topnote <- paste0("Model ", format(1:n_models), ": ", result_df.formula, collapse = "\n")
-  structure(result_df, heading = c(title, topnote), class = c("anova", "data.frame"))
+  topnote <-
+    paste0("Model ",
+           format(1:n_models),
+           ": ",
+           result_df.formula,
+           collapse = "\n")
+  structure(
+    result_df,
+    heading = c(title, topnote),
+    class = c("anova", "data.frame")
+  )
 }
