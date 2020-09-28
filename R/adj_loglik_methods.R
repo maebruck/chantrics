@@ -39,8 +39,8 @@ adj_loglik <- function(x,
 #'
 #' \code{anova} method for \code{chantrics} objects
 #'
-#' Create an analysis of adjusted deviance table for one object (sequential),
-#' or two or more nested models that have been adjusted using the
+#' Create an analysis of adjusted deviance table for one object (sequential), or
+#' two or more nested models that have been adjusted using the
 #' \code{\link{adj_logLik}} method. It uses the adjusted likelihood ratio test
 #' statistic (ALRTS), as described in Section 3.5 of
 #' \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
@@ -53,14 +53,61 @@ adj_loglik <- function(x,
 #'   \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
 #'   specified in the parameter \code{type}, can also be specified here.
 #'
-#'  @details Each line represents the model as given
+#' @details Each line represents the model as given above the table, with each
+#'   line (except for the first line) showing the residual degrees of freedom of
+#'   that model, and the change in degrees of freedom, the ALRTS and the
+#'   associated p-value in comparison to the model in the line above.
 #'
-#'   When a single model is specified, the function returns a sequential analysis of deviance table, where one term is being removed from the right of the full formula, and the ALRTS between the model with the term and the reduced model is being computed. This process is continued until the "intercept only" model is left.
+#'   When a single model is specified, the function returns a sequential
+#'   analysis of deviance table, where, iteratively, one term is being removed
+#'   from the right of the full formula. This process is continued until the
+#'   "intercept only" model is left. The row names are the names of the dropped
+#'   term in comparison to the model in the line above.
 #'
-#'   If more than one model is specified, the function sorts the models by their number of variables as returned by \code{\link{adj_loglik}} in \code{attr(x, "p_current")}. Then, the ALRTS is computed for the previous and current model, and returned on their own line, with the corresponding p-value and the change in the degrees of freedom.
+#'   If more than one model is specified, the function sorts the models by their
+#'   number of variables as returned by \code{\link{adj_loglik}} in
+#'   \code{attr(x, "p_current")}.
+
+#'
+#' Details of the ALRT can be found in
+#' \code{chandwich::\link[chandwich]{compare_models}} and in
+#' \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+#'
+#' @return An object of class \code{"anova"} inheriting from class \code{"data.frame"}. The columns are as follows:
+#'   \item{Resid.df}{The residual number of degrees of freedom in the model.}
+#'   \item{df}{The increase in residual degrees of freedom with respect to the model in the row above.}
+#'   \item{ALRTS}{The adjusted likelihood ratio statistic.}
+#'   \item{Pr(>ALRTS)}{The p-value of the test that the model above is a "significantly better" model as the one in the current row.}
+#'
+#' @references R. Chandler and S. Bate, Inference for clustered data using the independence loglikelihood, Biometrika, 94 (2007), pp. 167–183. \url{http://doi.org/10.1093/biomet/asm015}.
+#'
+#' @seealso \code{\link[chandwich]{compare.models}}: implementation of the comparison mechanism
+#'
+#' @seealso \code{\link[chandwich]{anova.chandwich}}: \code{anova} method of the \code{chandwich} package, which also uses \code{compare.models}
+#'
+#' @examples
+#' #
+#' #from Introducing Chandwich.
+#' set.seed(123)
+#' x <- rnorm(250)
+#' y <- rnbinom(250, mu = exp(1 + x), size = 1)
+#' fm_pois <- glm(y ~ x + I(x ^ 2), family = poisson)
+#' fm_pois_adj <- adj_loglik(fm_pois)
+#' fm_pois_small <- update(fm_pois, formula = . ~ . - I(x ^ 2))
+#' fm_pois_small_adj <- adj_loglik(fm_pois_small)
+#' fm_pois_smallest <- update(fm_pois, formula = . ~ 1)
+#' fm_pois_smallest_adj <- adj_loglik(fm_pois_smallest)
+#'
+#' anova(fm_pois_adj, fm_pois_small_adj, fm_pois_smallest_adj)
+#' #use different types of adjustment with type, default is "vertical"
+#' anova(fm_pois_adj, fm_pois_small_adj, fm_pois_smallest_adj, type = "cholesky")
+#'
+#' #sequential anova
+#' anova(fm_pois_adj)
 #'
 #' @export
 #'
+
 ## S3 method for class 'chantrics'
 anova.chantrics <- function(model1, ...) {
   dotargs <- list(...)
@@ -247,7 +294,7 @@ anova.chantrics <- function(model1, ...) {
     p_value = result_df.p_value
   )
   dimnames(result_df)[[2]] <- c("Resid.df", "df", "ALRTS", "Pr(>ALRTS)")
-  try(dimnames(result_df)[[1]] <- c(variable_vec, "Intercept"), silent = FALSE)
+  try(dimnames(result_df)[[1]] <- c("full model", variable_vec), silent = TRUE)
   title <- "Analysis of Adjusted Deviance Table\n"
   topnote <-
     paste0("Model ",

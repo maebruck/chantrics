@@ -15,7 +15,8 @@ test_that("adj_loglik adds the family name to the name of the returned object",
 # ===== unit tests for anova.chantrics =====
 
 test_that("anova.chantrics warns user if unnamed parameters are dropped", {
-  expect_warning(anova(fm_pois_adj, fm_pois_small_adj, "foo", e = "e"), class = "chantrics_unnamed_params_dropped")
+  expect_warning(anova(fm_pois_adj, fm_pois_small_adj, "foo", type = "vertical"),
+                 class = "chantrics_unnamed_params_dropped")
 })
 
 test_that("anova.chantrics aborts when less than 2 models are supplied", {
