@@ -42,8 +42,8 @@ logLik_vec <- function(object, ...) {
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
 #'   class are `class(x)`.
 #'
-#'   `chantrics` objects have 'anova', 'coef', 'confint', 'logLik', 'nobs',
-#'   'plot', 'print', 'summary' and 'vcov' methods.
+#'   `chantrics` objects have `AIC`, `anova`, `coef`, `confint`, `logLik`,
+#'   `nobs`, `plot`, `print`, `summary` and `vcov` methods.
 #'
 #' @section Examples: See the model-specific pages in the *supported models*
 #'   section.
