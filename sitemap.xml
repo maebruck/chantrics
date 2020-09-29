@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/index.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//index.html</loc>
   </url>
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/reference/adj_loglik.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//reference/adj_loglik.html</loc>
   </url>
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/reference/anova.chantrics.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//reference/anova.chantrics.html</loc>
   </url>
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/reference/chantrics.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//reference/chantrics.html</loc>
   </url>
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/reference/glm.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//reference/glm.html</loc>
   </url>
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/reference/internal.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//reference/internal.html</loc>
   </url>
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/reference/logLik_vec.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//reference/logLik_vec.html</loc>
   </url>
   <url>
-    <loc>https://docs.theobruckbauer.eu/chantrics/articles/chantrics-vignette.html</loc>
+    <loc>https://chantrics.theobruckbauer.eu//articles/chantrics-vignette.html</loc>
   </url>
 </urlset>
