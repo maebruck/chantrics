@@ -15,7 +15,11 @@ Imports:
     progress
 Depends: 
     R (>= 4.0.0)
-Authors@R: person("Theo", "Bruckbauer", email = "chantrics@theobruckbauer.eu", role = c("aut", "cre"))
+Authors@R: person(given = "Theo", 
+           family = "Bruckbauer", 
+           email = "chantrics@theobruckbauer.eu",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4764-9953"))
 URL: https://github.com/tbruckbauer/chantrics
 BugReports: https://github.com/tbruckbauer/chantrics/issues
 Description: More about what it does (maybe more than one line)
@@ -30,3 +34,4 @@ Suggests:
     rmarkdown,
     testthat
 VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)

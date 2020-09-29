@@ -2,6 +2,10 @@
 #'
 #' Describe glm methods here
 #'
+#' @section Supported families (within each family, any link function should work):
+#'
+#' * `poisson`
+#'
 #' @name glm
 NULL
 

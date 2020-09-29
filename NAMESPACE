@@ -3,6 +3,5 @@
 S3method(anova,chantrics)
 S3method(logLik_vec,glm)
 export(adj_loglik)
-export(hello)
 export(logLik_vec)
 import(methods)

@@ -19,18 +19,18 @@ test_that("anova.chantrics warns user if unnamed parameters are dropped", {
                  class = "chantrics_unnamed_params_dropped")
 })
 
-test_that("anova.chantrics aborts when less than 2 models are supplied", {
-  expect_error(anova(fm_pois_adj, "foo", "bar", e = "e"), class = "chantrics_not_enough_models")
+test_that("anova.chantrics aborts when no model is supplied", {
+  expect_error(anova.chantrics("foo", "bar", type = "vertical"), class = "chantrics_not_enough_models")
 })
 
 test_that("anova.chantrics aborts if two models have the same # of params", {
-  expect_error(anova(fm_pois_small_adj, adj_loglik(update(
+  expect_error(anova(fm_pois_small_adj, adj_loglik(stats::update(
     fm_pois, formula = . ~ . - x
   ))), class = "chantrics_equal_num_params")
 })
 
-test_that("anova.chantrics warns if attr(model, 'name') do not match", {
-  expect_warning(anova(fm_pois_adj, fm_negbin_small_adj), class = "chantrics_model_does_not_match")
+test_that("anova.chantrics aborts if attr(model, 'name') do not match", {
+  expect_error(anova(fm_pois_adj, fm_negbin_small_adj), class = "chantrics_model_does_not_match")
 })
 
 test_that("anova.chantrics warns if the response changes", {

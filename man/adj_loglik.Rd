@@ -4,9 +4,56 @@
 \alias{adj_loglik}
 \title{Log-likelihood adjustments for fitted models}
 \usage{
-adj_loglik(x, cluster = NULL, use_vcov = TRUE, ...)
+adj_loglik(x, cluster = NULL, use_vcov = FALSE, ...)
+}
+\arguments{
+\item{x}{A fitted model object that is supported.}
+
+\item{cluster}{A vector or factor indicating from which cluster the
+respective log-likelihood contributions originate. Must have the same
+length as the vector returned by \code{\link[=logLik_vec]{logLik_vec()}}. If \code{cluster} is not
+supplied or \code{NULL} then it is assumed that each observation forms its own
+cluster.}
+
+\item{use_vcov}{Currently not implemented.}
+
+\item{...}{Further arguments to be passed to \code{\link[chandwich:compare_models]{chandwich::compare_models()}}.}
+}
+\value{
+An object of class \code{"chantrics"} inheriting from class \code{"chandwich"}.
+See \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}. The remaining elements of the returned
+class are \code{class(x)}.
+
+\code{chantrics} objects have 'anova', 'coef', 'confint', 'logLik', 'nobs',
+'plot', 'print', 'summary' and 'vcov' methods.
 }
 \description{
 This function adjusts the log-likelihood of fitted model objects based on
-\href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+\href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}. It is a
+generic function for different types of models, which are listed in
+\emph{Supported models}. This section also contains links to function-specific
+help pages.
+}
+\details{
+(\code{use_vcov = TRUE} when implemented). If \code{use_vcov = FALSE} (the
+current default, but will change if implemented.) the variance-covariance
+matrix of the MLE is estimated inside \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}} using
+\code{\link[stats:optim]{stats::optimHess()}}.
+}
+\section{Supported models}{
+ * \link{glm}
+}
+
+\section{Examples}{
+ See the model-specific pages in the \emph{supported models}
+section.
+}
+
+\references{
+R. Chandler and S. Bate, Inference for clustered data using the
+independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
+\url{http://doi.org/10.1093/biomet/asm015}.
+}
+\seealso{
+\code{\link[lax:alogLik]{lax::alogLik()}} supports adjustment for user-supplied objects.
 }

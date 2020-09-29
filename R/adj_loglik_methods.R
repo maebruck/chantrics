@@ -14,17 +14,56 @@ logLik_vec <- function(object, ...) {
 #' Log-likelihood adjustments for fitted models
 #'
 #' This function adjusts the log-likelihood of fitted model objects based on
-#' \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+#' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015). It is a
+#' generic function for different types of models, which are listed in
+#' *Supported models*. This section also contains links to function-specific
+#' help pages.
+#'
+#' @param x A fitted model object that is supported.
+#'
+#' @param cluster A vector or factor indicating from which cluster the
+#'   respective log-likelihood contributions originate. Must have the same
+#'   length as the vector returned by [logLik_vec()]. If `cluster` is not
+#'   supplied or `NULL` then it is assumed that each observation forms its own
+#'   cluster.
+#'
+#' @param use_vcov Currently not implemented.
+#'
+#' @param ... Further arguments to be passed to [chandwich::compare_models()].
+#'
+#' @details (`use_vcov = TRUE` when implemented). If `use_vcov = FALSE` (the
+#'   current default, but will change if implemented.) the variance-covariance
+#'   matrix of the MLE is estimated inside [chandwich::adjust_loglik()] using
+#'   [stats::optimHess()].
+#'
+#' @section Supported models: * [glm]
+#'
+#' @return An object of class `"chantrics"` inheriting from class `"chandwich"`.
+#'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
+#'   class are `class(x)`.
+#'
+#'   `chantrics` objects have 'anova', 'coef', 'confint', 'logLik', 'nobs',
+#'   'plot', 'print', 'summary' and 'vcov' methods.
+#'
+#' @section Examples: See the model-specific pages in the *supported models*
+#'   section.
+#'
+#' @references R. Chandler and S. Bate, Inference for clustered data using the
+#'   independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
+#'   <http://doi.org/10.1093/biomet/asm015>.
+#'
+#' @seealso [lax::alogLik()] supports adjustment for user-supplied objects.
 #'
 #' @export
 
-# if required, turn this into a method (see logLik_vec) and the below into the
-# .default() method
-
 adj_loglik <- function(x,
                        cluster = NULL,
-                       use_vcov = TRUE,
+                       use_vcov = FALSE,
                        ...) {
+  # switch use_vcov to TRUE when this option is implemented. Also rewrite the @details section in the documentation above to show how use_vcov = TRUE works.
+  # if required, turn this into a method (see logLik_vec) and the below into the
+  # .default() method
+
   #check if x is a supported model type
   #adjust x
   adjusted_x <-
@@ -37,21 +76,21 @@ adj_loglik <- function(x,
 }
 #' ANOVA tables: compare nested models
 #'
-#' \code{anova} method for \code{chantrics} objects
+#' `anova` method for `chantrics` objects
 #'
 #' Create an analysis of adjusted deviance table for one object (sequential), or
 #' two or more nested models that have been adjusted using the
-#' \code{\link{adj_logLik}} method. It uses the adjusted likelihood ratio test
+#' [adj_loglik()] method. It uses the adjusted likelihood ratio test
 #' statistic (ALRTS), as described in Section 3.5 of
-#' \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+#' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015).
 #'
-#' @param model1 Object of class \code{chantrics}, as returned by
-#'   \code{\link{adj_logLik}}.
-#' @param ... Further objects of class \code{chantrics}, as returned by
-#'   \code{\link{adj_logLik}}, and/or parameters that will be passed to
-#'   \code{\link[chandwich]{compare_models}}. The type of adjustment, out of
-#'   \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
-#'   specified in the parameter \code{type}, can also be specified here.
+#' @param object Object of class `chantrics`, as returned by
+#'   [adj_loglik()].
+#' @param ... Further objects of class `chantrics`, as returned by
+#'   [adj_loglik()], and/or parameters that will be passed to
+#'   [chandwich::compare_models()]. The type of adjustment, out of
+#'   `"vertical"`, `"cholesky"`, `"spectral"`, `"none"`, as
+#'   specified in the parameter `type`, can also be specified here.
 #'
 #' @details Each line represents the model as given above the table, with each
 #'   line (except for the first line) showing the residual degrees of freedom of
@@ -65,28 +104,33 @@ adj_loglik <- function(x,
 #'   term in comparison to the model in the line above.
 #'
 #'   If more than one model is specified, the function sorts the models by their
-#'   number of variables as returned by \code{\link{adj_loglik}} in
-#'   \code{attr(x, "p_current")}.
+#'   number of variables as returned by [adj_loglik()] in
+#'   `attr(x, "p_current")`.
 
 #'
-#' Details of the ALRT can be found in
-#' \code{chandwich::\link[chandwich]{compare_models}} and in
-#' \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+#' Details of the ALRT can be found in [chandwich::compare_models()] and in
+#' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015).
 #'
-#' @return An object of class \code{"anova"} inheriting from class \code{"data.frame"}. The columns are as follows:
-#'   \item{Resid.df}{The residual number of degrees of freedom in the model.}
-#'   \item{df}{The increase in residual degrees of freedom with respect to the model in the row above.}
-#'   \item{ALRTS}{The adjusted likelihood ratio statistic.}
-#'   \item{Pr(>ALRTS)}{The p-value of the test that the model above is a "significantly better" model as the one in the current row.}
+#' @return An object of class `"anova"` inheriting from class `"data.frame"`.
+#'   The columns are as follows: \item{Resid.df}{The residual number of degrees
+#'   of freedom in the model.} \item{df}{The increase in residual degrees of
+#'   freedom with respect to the model in the row above.} \item{ALRTS}{The
+#'   adjusted likelihood ratio statistic.} \item{Pr(>ALRTS)}{The p-value of the
+#'   test that the model above is a "significantly better" model as the one in
+#'   the current row.}
 #'
-#' @references R. Chandler and S. Bate, Inference for clustered data using the independence loglikelihood, Biometrika, 94 (2007), pp. 167–183. \url{http://doi.org/10.1093/biomet/asm015}.
+#' @references R. Chandler and S. Bate, Inference for clustered data using the
+#'   independence loglikelihood, Biometrika, 94 (2007), pp.
+#'   167–183. <http://doi.org/10.1093/biomet/asm015>.
 #'
-#' @seealso \code{\link[chandwich]{compare.models}}: implementation of the comparison mechanism
+#' @seealso [chandwich::compare_models]: implementation of the comparison
+#'   mechanism
 #'
-#' @seealso \code{\link[chandwich]{anova.chandwich}}: \code{anova} method of the \code{chandwich} package, which also uses \code{compare.models}
+#' @seealso [chandwich::anova.chandwich]: `anova` method of the `chandwich`
+#'   package, which also uses `compare.models()`
 #'
 #' @examples
-#' #
+#'
 #' #from Introducing Chandwich.
 #' set.seed(123)
 #' x <- rnorm(250)
@@ -109,10 +153,10 @@ adj_loglik <- function(x,
 #'
 
 ## S3 method for class 'chantrics'
-anova.chantrics <- function(model1, ...) {
-  dotargs <- list(...)
+anova.chantrics <- function(object, ...) {
+  dotargs <- rlang::dots_list(...)
   potential_model_objects <-
-    c(model1, subset(dotargs, names(dotargs) == ""), use.names = FALSE)
+    c(object, subset(dotargs, names(dotargs) == ""), use.names = FALSE)
   #save dotargs which are named
   named_dotargs <- subset(dotargs, names(dotargs) != "")
   #check whether the unnamed objects are actually chantrics objects
@@ -141,18 +185,25 @@ anova.chantrics <- function(model1, ...) {
     adjusted_object <- model_objects[[1]]
     unadjusted_object <- attr(adjusted_object, "unadj_object")
     #get list of variables by which anova should split
-    formula_full <- try(attr(adjusted_object, "formula"), silent = TRUE)
-    if (is.error(formula_full)){
-      rlang::abort(paste0("Formula not available in object",
-                          "via attr(model1, 'formula')\n",
-                          "Handling of this case not supported."))
+    formula_full <-
+      try(attr(adjusted_object, "formula"), silent = TRUE)
+    if (is.error(formula_full)) {
+      rlang::abort(
+        paste0(
+          "Formula not available in object",
+          "via attr(model1, 'formula')\n",
+          "Handling of this case not supported."
+        )
+      )
     }
-    variable_vec <- rev(attr(terms(formula_full), "term.labels"))
+    variable_vec <-
+      rev(attr(stats::terms(formula_full), "term.labels"))
     #initialise progress bar
     pb <- progress::progress_bar$new(total = length(variable_vec))
     for (rm_this_var in variable_vec) {
       pb$tick()
-      unadjusted_object <- update(unadjusted_object, as.formula(paste0(". ~ . - ", rm_this_var)))
+      unadjusted_object <-
+        stats::update(unadjusted_object, stats::as.formula(paste0(". ~ . - ", rm_this_var)))
       adj_reduced_object <- adj_loglik(unadjusted_object)
       model_objects <- c(model_objects, adj_reduced_object)
     }
@@ -213,7 +264,9 @@ anova.chantrics <- function(model1, ...) {
     #check that the smaller model is indeed nested
     #check if they are the same model type
     if (attr(larger_m, "name") != attr(smaller_m, "name")) {
-      rlang::warn(
+      #chandwich::compare_models does the same check, and aborts, -> abort
+      #here too.
+      rlang::abort(
         paste0(
           "The objects do not seem to stem from the same model.\n",
           "attr(model, 'name') do not match."
@@ -293,8 +346,11 @@ anova.chantrics <- function(model1, ...) {
     alrts = result_df.alrts,
     p_value = result_df.p_value
   )
-  dimnames(result_df)[[2]] <- c("Resid.df", "df", "ALRTS", "Pr(>ALRTS)")
-  try(dimnames(result_df)[[1]] <- c("full model", variable_vec), silent = TRUE)
+  dimnames(result_df)[[2]] <-
+    c("Resid.df", "df", "ALRTS", "Pr(>ALRTS)")
+  try(dimnames(result_df)[[1]] <-
+        c("full model", variable_vec),
+      silent = TRUE)
   title <- "Analysis of Adjusted Deviance Table\n"
   topnote <-
     paste0("Model ",

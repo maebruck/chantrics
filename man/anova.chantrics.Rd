@@ -4,24 +4,26 @@
 \alias{anova.chantrics}
 \title{ANOVA tables: compare nested models}
 \usage{
-\method{anova}{chantrics}(model1, ...)
+\method{anova}{chantrics}(object, ...)
 }
 \arguments{
-\item{model1}{Object of class \code{chantrics}, as returned by
-\code{\link{adj_logLik}}.}
+\item{object}{Object of class \code{chantrics}, as returned by
+\code{\link[=adj_loglik]{adj_loglik()}}.}
 
 \item{...}{Further objects of class \code{chantrics}, as returned by
-\code{\link{adj_logLik}}, and/or parameters that will be passed to
-\code{\link[chandwich]{compare_models}}. The type of adjustment, out of
+\code{\link[=adj_loglik]{adj_loglik()}}, and/or parameters that will be passed to
+\code{\link[chandwich:compare_models]{chandwich::compare_models()}}. The type of adjustment, out of
 \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
 specified in the parameter \code{type}, can also be specified here.}
 }
 \value{
-An object of class \code{"anova"} inheriting from class \code{"data.frame"}. The columns are as follows:
-  \item{Resid.df}{The residual number of degrees of freedom in the model.}
-  \item{df}{The increase in residual degrees of freedom with respect to the model in the row above.}
-  \item{ALRTS}{The adjusted likelihood ratio statistic.}
-  \item{Pr(>ALRTS)}{The p-value of the test that the model above is a "significantly better" model as the one in the current row.}
+An object of class \code{"anova"} inheriting from class \code{"data.frame"}.
+The columns are as follows: \item{Resid.df}{The residual number of degrees
+of freedom in the model.} \item{df}{The increase in residual degrees of
+freedom with respect to the model in the row above.} \item{ALRTS}{The
+adjusted likelihood ratio statistic.} \item{Pr(>ALRTS)}{The p-value of the
+test that the model above is a "significantly better" model as the one in
+the current row.}
 }
 \description{
 \code{anova} method for \code{chantrics} objects
@@ -29,31 +31,30 @@ An object of class \code{"anova"} inheriting from class \code{"data.frame"}. The
 \details{
 Create an analysis of adjusted deviance table for one object (sequential), or
 two or more nested models that have been adjusted using the
-\code{\link{adj_logLik}} method. It uses the adjusted likelihood ratio test
+\code{\link[=adj_loglik]{adj_loglik()}} method. It uses the adjusted likelihood ratio test
 statistic (ALRTS), as described in Section 3.5 of
 \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
 
 Each line represents the model as given above the table, with each
-  line (except for the first line) showing the residual degrees of freedom of
-  that model, and the change in degrees of freedom, the ALRTS and the
-  associated p-value in comparison to the model in the line above.
+line (except for the first line) showing the residual degrees of freedom of
+that model, and the change in degrees of freedom, the ALRTS and the
+associated p-value in comparison to the model in the line above.
 
-  When a single model is specified, the function returns a sequential
-  analysis of deviance table, where, iteratively, one term is being removed
-  from the right of the full formula. This process is continued until the
-  "intercept only" model is left. The row names are the names of the dropped
-  term in comparison to the model in the line above.
+When a single model is specified, the function returns a sequential
+analysis of deviance table, where, iteratively, one term is being removed
+from the right of the full formula. This process is continued until the
+"intercept only" model is left. The row names are the names of the dropped
+term in comparison to the model in the line above.
 
-  If more than one model is specified, the function sorts the models by their
-  number of variables as returned by \code{\link{adj_loglik}} in
-  \code{attr(x, "p_current")}.
+If more than one model is specified, the function sorts the models by their
+number of variables as returned by \code{\link[=adj_loglik]{adj_loglik()}} in
+\code{attr(x, "p_current")}.
 
-Details of the ALRT can be found in
-\code{chandwich::\link[chandwich]{compare_models}} and in
+Details of the ALRT can be found in \code{\link[chandwich:compare_models]{chandwich::compare_models()}} and in
 \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
 }
 \examples{
-#
+
 #from Introducing Chandwich.
 set.seed(123)
 x <- rnorm(250)
@@ -74,10 +75,14 @@ anova(fm_pois_adj)
 
 }
 \references{
-R. Chandler and S. Bate, Inference for clustered data using the independence loglikelihood, Biometrika, 94 (2007), pp. 167–183. \url{http://doi.org/10.1093/biomet/asm015}.
+R. Chandler and S. Bate, Inference for clustered data using the
+independence loglikelihood, Biometrika, 94 (2007), pp.
+167–183. \url{http://doi.org/10.1093/biomet/asm015}.
 }
 \seealso{
-\code{\link[chandwich]{compare.models}}: implementation of the comparison mechanism
+\link[chandwich:compare_models]{chandwich::compare_models}: implementation of the comparison
+mechanism
 
-\code{\link[chandwich]{anova.chandwich}}: \code{anova} method of the \code{chandwich} package, which also uses \code{compare.models}
+\link[chandwich:anova.chandwich]{chandwich::anova.chandwich}: \code{anova} method of the \code{chandwich}
+package, which also uses \code{compare.models()}
 }
