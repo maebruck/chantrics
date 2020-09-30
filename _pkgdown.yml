@@ -1,4 +1,8 @@
 url: https://chantrics.theobruckbauer.eu
+home:
+  links:
+  - text: Privacy Policy
+    href: https://diebruckbauers.com/legal/terms/privacy.html
 template:
   params:
     bootswatch: darkly
