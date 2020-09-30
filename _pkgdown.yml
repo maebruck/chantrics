@@ -1,5 +1,5 @@
 url: https://chantrics.theobruckbauer.eu
 template:
   params:
-    bootswatch: slate
+    bootswatch: darkly
     ganalytics: UA-45196954-5
