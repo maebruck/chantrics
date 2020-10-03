@@ -420,3 +420,10 @@ anova.chantrics <- function(object, ...) {
     class = c("anova", "data.frame")
   )
 }
+
+#' @export
+
+nobs.chantrics <- function(object, ...) {
+  return(attr(object, "nobs"))
+}
+

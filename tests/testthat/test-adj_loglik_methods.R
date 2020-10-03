@@ -48,3 +48,9 @@ test_that("anova.chantrics warns if the response changes", {
 test_that("anova.chantrics aborts if the parameters are not a subset", {
   expect_error(anova(fm_pois_adj, fm_pois_cube_only_adj), class = "chantrics_params_not_subset")
 })
+
+# ==== nobs.chantrics() ====
+
+test_that("nobs returns correct value", {
+  expect_equal(nobs(fm_pois_adj), nobs(fm_pois))
+})
