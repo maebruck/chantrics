@@ -7,39 +7,6 @@ NULL
 
 #' @keywords internal
 #' @rdname internal
-
-chant_obj <- function(x, cluster = NULL, ...) {
-  #add tests if object valid
-  #does x have a logLik_vec method?
-  if (!any(paste0("logLik_vec.", class(x)) %in% utils::methods("logLik_vec"))) {
-    rlang::abort("x does not have a logLik_vec method")
-  }
-  #create function for log-likelihood of x
-  logLik_f <- function(pars, fitted_object, ...) {
-    return(c(logLik_vec(fitted_object, pars = pars)))
-  }
-  name_pieces <- c(class(x))
-  #add glm family to name
-  try(name_pieces <- c(x$family$family, name_pieces), silent = TRUE)
-  #get mle estimate from x
-  mle = stats::coef(x)
-  #adjust object using chandwich
-  adjusted_obj <-
-    chandwich::adjust_loglik(
-      loglik = logLik_f,
-      cluster = cluster,
-      fitted_object = x,
-      p = length(mle),
-      par_names = names(mle),
-      name = paste(name_pieces, collapse = "_"),
-      mle = mle
-    )
-  class(adjusted_obj) <- c("chantrics", "chandwich")
-  return(adjusted_obj)
-}
-
-#' @keywords internal
-#' @rdname internal
 is.error <- function(x)
   inherits(x, "try-error")
 

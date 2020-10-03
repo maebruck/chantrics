@@ -4,10 +4,10 @@
 \alias{adj_loglik}
 \title{Log-likelihood adjustments for fitted models}
 \usage{
-adj_loglik(x, cluster = NULL, use_vcov = FALSE, ...)
+adj_loglik(x, cluster = NULL, use_vcov = TRUE, ...)
 }
 \arguments{
-\item{x}{A fitted model object that is supported.}
+\item{x}{A fitted model object that is supported, see \strong{Supported models}}
 
 \item{cluster}{A vector or factor indicating from which cluster the
 respective log-likelihood contributions originate. Must have the same
@@ -15,30 +15,36 @@ length as the vector returned by \code{\link[=logLik_vec]{logLik_vec()}}. If \co
 supplied or \code{NULL} then it is assumed that each observation forms its own
 cluster.}
 
-\item{use_vcov}{Currently not implemented.}
+\item{use_vcov}{A logical scalar. By default, the \code{\link[=vcov]{vcov()}} method for \code{x} is
+used to estimate the Hessian of the independence loglikelihood, if the
+function exists. Otherwise, or if \code{use_vcov = FALSE}, \code{H} is estimated
+using \code{\link[stats:optim]{stats::optimHess()}} inside \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}.}
 
-\item{...}{Further arguments to be passed to \code{\link[chandwich:compare_models]{chandwich::compare_models()}}.}
+\item{...}{Further arguments to be passed to \code{\link[sandwich:vcovCL]{sandwich::meatCL()}} if
+\code{cluster} is defined, if \code{cluster = NULL}, they are passed into
+\code{\link[sandwich:meat]{sandwich::meat()}}.}
 }
 \value{
 An object of class \code{"chantrics"} inheriting from class \code{"chandwich"}.
 See \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}. The remaining elements of the returned
 class are \code{class(x)}.
 
-\code{chantrics} objects have 'anova', 'coef', 'confint', 'logLik', 'nobs',
-'plot', 'print', 'summary' and 'vcov' methods.
+\code{chantrics} objects have \code{AIC}, \code{anova}, \code{coef}, \code{confint}, \code{logLik},
+\code{nobs}, \code{plot}, \code{print}, \code{summary} and \code{vcov} methods.
 }
 \description{
 This function adjusts the log-likelihood of fitted model objects based on
 \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}. It is a
 generic function for different types of models, which are listed in
-\emph{Supported models}. This section also contains links to function-specific
+\strong{Supported models}. This section also contains links to function-specific
 help pages.
 }
 \details{
-(\code{use_vcov = TRUE} when implemented). If \code{use_vcov = FALSE} (the
-current default, but will change if implemented.) the variance-covariance
-matrix of the MLE is estimated inside \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}} using
-\code{\link[stats:optim]{stats::optimHess()}}.
+If \code{use_vcov = TRUE}, the current default, the function will test
+whether a \code{vcov} S3 method exists for \code{x}, and will take the
+variance-covariance matrix from there. Otherwise, or if \code{use_vcov = FALSE}
+the variance-covariance matrix of the MLE is estimated inside
+\code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}} using \code{\link[stats:optim]{stats::optimHess()}}.
 }
 \section{Supported models}{
  * \link{glm}

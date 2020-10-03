@@ -6,6 +6,10 @@ test_that("adj_loglik adds the family name to the name of the returned object",
             expect_equal(attr(fm_pois_adj, "name"), "poisson_glm_lm")
           })
 
+test_that("adj_loglik aborts if an invalid model type is given", {
+  expect_error(adj_loglik("i'm a string"), class = "chantrics_invalid_model")
+})
+
 
 # !! add unit tests for adj_loglik here !!
 

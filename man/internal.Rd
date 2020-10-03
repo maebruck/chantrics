@@ -2,7 +2,6 @@
 % Please edit documentation in R/internals.R
 \name{internal}
 \alias{internal}
-\alias{chant_obj}
 \alias{is.error}
 \alias{raise_yield_error}
 \alias{get_response_from_formula}
@@ -12,8 +11,6 @@
 \alias{get_resid_df_from_chantrics}
 \title{chandwich internal functions}
 \usage{
-chant_obj(x, cluster = NULL, ...)
-
 is.error(x)
 
 raise_yield_error(model = "model", what = "property", try_this = NULL)

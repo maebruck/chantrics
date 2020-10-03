@@ -16,10 +16,10 @@ logLik_vec <- function(object, ...) {
 #' This function adjusts the log-likelihood of fitted model objects based on
 #' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015). It is a
 #' generic function for different types of models, which are listed in
-#' *Supported models*. This section also contains links to function-specific
+#' **Supported models**. This section also contains links to function-specific
 #' help pages.
 #'
-#' @param x A fitted model object that is supported.
+#' @param x A fitted model object that is supported, see **Supported models**
 #'
 #' @param cluster A vector or factor indicating from which cluster the
 #'   respective log-likelihood contributions originate. Must have the same
@@ -27,14 +27,20 @@ logLik_vec <- function(object, ...) {
 #'   supplied or `NULL` then it is assumed that each observation forms its own
 #'   cluster.
 #'
-#' @param use_vcov Currently not implemented.
+#' @param use_vcov A logical scalar. By default, the [vcov()] method for `x` is
+#'   used to estimate the Hessian of the independence loglikelihood, if the
+#'   function exists. Otherwise, or if `use_vcov = FALSE`, `H` is estimated
+#'   using [stats::optimHess()] inside [chandwich::adjust_loglik()].
 #'
-#' @param ... Further arguments to be passed to [chandwich::compare_models()].
+#' @param ... Further arguments to be passed to [sandwich::meatCL()] if
+#'   `cluster` is defined, if `cluster = NULL`, they are passed into
+#'   [sandwich::meat()].
 #'
-#' @details (`use_vcov = TRUE` when implemented). If `use_vcov = FALSE` (the
-#'   current default, but will change if implemented.) the variance-covariance
-#'   matrix of the MLE is estimated inside [chandwich::adjust_loglik()] using
-#'   [stats::optimHess()].
+#' @details If `use_vcov = TRUE`, the current default, the function will test
+#'   whether a `vcov` S3 method exists for `x`, and will take the
+#'   variance-covariance matrix from there. Otherwise, or if `use_vcov = FALSE`
+#'   the variance-covariance matrix of the MLE is estimated inside
+#'   [chandwich::adjust_loglik()] using [stats::optimHess()].
 #'
 #' @section Supported models: * [glm]
 #'
@@ -58,16 +64,66 @@ logLik_vec <- function(object, ...) {
 
 adj_loglik <- function(x,
                        cluster = NULL,
-                       use_vcov = FALSE,
+                       use_vcov = TRUE,
                        ...) {
-  # switch use_vcov to TRUE when this option is implemented. Also rewrite the @details section in the documentation above to show how use_vcov = TRUE works.
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
 
+  supported_models <- c("glm")
   #check if x is a supported model type
+  if (!(class(x)[1] %in% supported_models)){
+    rlang::abort(paste0(class(x)[1], " is not a supported model type.\n", "Please refer to ?adj_loglik() for a list of valid model types."), class = "chantrics_invalid_model")
+  }
   #adjust x
+  if (!any(paste0("logLik_vec.", class(x)) %in% utils::methods("logLik_vec"))) {
+    rlang::abort("x does not have a logLik_vec method")
+  }
+  #create function for log-likelihood of x
+  logLik_f <- function(pars, fitted_object, ...) {
+    return(c(logLik_vec(fitted_object, pars = pars)))
+  }
+  name_pieces <- c(class(x))
+  #add glm family to name
+  try(name_pieces <- c(x$family$family, name_pieces), silent = TRUE)
+  #get mle estimate from x
+  mle = stats::coef(x)
+  #estimate Hessian if use_vcov is TRUE
+  if (use_vcov) {
+    #only possible if vcov exists
+    if (any(paste0("vcov.", class(x)) %in% utils::methods("vcov"))) {
+      H <- -solve(stats::vcov(x))
+    } else {
+      #otherwise use integrated methods
+      H <- NULL
+    }
+  } else {
+    H <- NULL
+  }
+  if (is.null(cluster)) {
+    V <-
+      sandwich::meat(x, fitted_object = x, loglik_fn = logLik_f, ...) * stats::nobs(x)
+  } else {
+    V <-
+      sandwich::meatCL(
+        x,
+        cluster = cluster,
+        fitted_object = x,
+        loglik_fn = logLik_f,
+        ...
+      ) * stats::nobs(x)
+  }
+  #adjust object using chandwich
   adjusted_x <-
-    chant_obj(x, cluster = cluster, use_vcov = use_vcov, ...)
+    chandwich::adjust_loglik(
+      loglik = logLik_f,
+      fitted_object = x,
+      p = length(mle),
+      par_names = names(mle),
+      name = paste(name_pieces, collapse = "_"),
+      mle = mle,
+      H = H,
+      V = V
+    )
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
         stats::formula(x), silent = TRUE)
