@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Evaluate loglikelihood contributions from specific observations — logLik_vec" />
-<meta property="og:description" content="Generic function for calculating loglikelihood contributions from
+<meta property="og:description" content="Generic function for calculating the log-likelihood contributions from
 individual observations for a fitted model." />
 
 
@@ -132,12 +132,12 @@ individual observations for a fitted model." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Evaluate loglikelihood contributions from specific observations</h1>
-    <small class="dont-index">Source: <a href='https://github.com/tbruckbauer/chantrics/blob/master/R/adj_loglik_methods.R'><code>R/adj_loglik_methods.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/tbruckbauer/chantrics/blob/master/R/logLik_vec_methods.R'><code>R/logLik_vec_methods.R</code></a></small>
     <div class="hidden name"><code>logLik_vec.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Generic function for calculating loglikelihood contributions from
+    <p>Generic function for calculating the log-likelihood contributions from
 individual observations for a fitted model.</p>
     </div>
 
@@ -156,6 +156,13 @@ individual observations for a fitted model.</p>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>An object of class <code>"logLik_vec"</code> which is a numeric vector of length
+<code><a href='https://rdrr.io/r/stats/nobs.html'>nobs(object)</a></code> (i.e. the number of observations in <code>object</code>) of the
+log-likelihood of each observation. Additionally, it contains the
+attributes <code>df</code> (model degrees of freedom) and <code>nobs</code> (number of
+observations).</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
