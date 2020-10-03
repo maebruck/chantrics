@@ -5,5 +5,4 @@ home:
     href: https://diebruckbauers.com/legal/terms/privacy.html
 template:
   params:
-    bootswatch: darkly
     ganalytics: UA-45196954-5
