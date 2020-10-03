@@ -14,6 +14,11 @@ test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct 
           {expect_equal(c(reference_pois_logLik), unname(c(chantrics_pois_logLik)))
           })
 
+test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
+  expect_equal(logLik(fm_pois), logLik(chantrics_pois_logLik))
+  #add calculations for other families here
+})
+
 # !! add unit tests for other glm link functions for logLik_vec() here !!
 
 #adjust fm_pois

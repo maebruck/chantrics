@@ -1,5 +1,6 @@
 context("Tests concerning methods of adj_logLik()")
 
+# ===== unit tests for adj_loglik() =====
 
 test_that("adj_loglik adds the family name to the name of the returned object",
           {
@@ -10,9 +11,9 @@ test_that("adj_loglik aborts if an invalid model type is given", {
   expect_error(adj_loglik("i'm a string"), class = "chantrics_invalid_model")
 })
 
-
-# !! add unit tests for adj_loglik here !!
-
+test_that("adj_loglik returns correct class", {
+  expect_equal(class(fm_pois_adj)[1:2], c("chantrics", "chandwich"))
+})
 
 #definitions of fm_pois_adj objects in testthat.R
 
@@ -52,5 +53,5 @@ test_that("anova.chantrics aborts if the parameters are not a subset", {
 # ==== nobs.chantrics() ====
 
 test_that("nobs returns correct value", {
-  expect_equal(nobs(fm_pois_adj), nobs(fm_pois))
+  expect_equal(stats::nobs(fm_pois_adj), stats::nobs(fm_pois))
 })

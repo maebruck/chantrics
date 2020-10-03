@@ -77,6 +77,6 @@ get_formula_str_from_chantrics <- function(x) {
 
 get_resid_df_from_chantrics <- function(x) {
   abort_not_chantrics(x)
-  return(attr(x, "nobs") - attr(x, "p_current"))
+  return(stats::nobs(x) - attr(x, "p_current"))
 }
 

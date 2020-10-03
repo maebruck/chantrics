@@ -1,4 +1,4 @@
-#' Loglikelihood adjustments for GLM fits
+#' Loglikelihood adjustments for glm fits
 #'
 #' Describe glm methods here
 #'
@@ -13,7 +13,7 @@ NULL
 
 logLik_vec.glm <- function(object, pars = NULL, ...) {
   if (!missing(...)) {
-    rlang::warn("extra arguments removed")
+    rlang::warn("extra arguments discarded")
   }
   #import coefficients
   if (is.null(pars)) {
@@ -52,3 +52,4 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   class(llv) <- "logLik_vec"
   return(llv)
 }
+

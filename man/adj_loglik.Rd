@@ -47,7 +47,10 @@ the variance-covariance matrix of the MLE is estimated inside
 \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}} using \code{\link[stats:optim]{stats::optimHess()}}.
 }
 \section{Supported models}{
- * \link{glm}
+
+\itemize{
+\item \link{glm}
+}
 }
 
 \section{Examples}{

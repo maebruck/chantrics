@@ -2,7 +2,7 @@
 % Please edit documentation in R/glm.R
 \name{glm}
 \alias{glm}
-\title{Loglikelihood adjustments for GLM fits}
+\title{Loglikelihood adjustments for glm fits}
 \description{
 Describe glm methods here
 }

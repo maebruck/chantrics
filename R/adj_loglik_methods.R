@@ -1,16 +1,3 @@
-#' Evaluate loglikelihood contributions from specific observations
-#'
-#' Generic function for calculating loglikelihood contributions from
-#' individual observations for a fitted model.
-#'
-#' @param object A fitted model object.
-#' @param ... Further arguments.
-#' @export
-
-logLik_vec <- function(object, ...) {
-  UseMethod("logLik_vec")
-}
-
 #' Log-likelihood adjustments for fitted models
 #'
 #' This function adjusts the log-likelihood of fitted model objects based on
@@ -42,7 +29,8 @@ logLik_vec <- function(object, ...) {
 #'   the variance-covariance matrix of the MLE is estimated inside
 #'   [chandwich::adjust_loglik()] using [stats::optimHess()].
 #'
-#' @section Supported models: * [glm]
+#' @section Supported models:
+#'   * [glm]
 #'
 #' @return An object of class `"chantrics"` inheriting from class `"chandwich"`.
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
@@ -130,6 +118,7 @@ adj_loglik <- function(x,
   attr(adjusted_x, "unadj_object") <- x
   return(adjusted_x)
 }
+
 #' ANOVA tables: compare nested models
 #'
 #' `anova` method for `chantrics` objects
@@ -421,9 +410,13 @@ anova.chantrics <- function(object, ...) {
   )
 }
 
+#' @importFrom stats nobs
 #' @export
+#'
 
 nobs.chantrics <- function(object, ...) {
+  if (!missing(...)) {
+    rlang::warn("extra arguments discarded")
+  }
   return(attr(object, "nobs"))
 }
-
