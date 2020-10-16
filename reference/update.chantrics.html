@@ -40,7 +40,9 @@
 
 
 <meta property="og:title" content="Update, re-fit and re-adjust a Model Call — update.chantrics" />
-<meta property="og:description" content="update.chantrics() will update a model that has been adjusted by adj_loglik(). It passes all arguments to the standard stats::update() function." />
+<meta property="og:description" content="update.chantrics() will update a model that has been adjusted by
+adj_loglik(). It passes all arguments to the standard stats::update()
+function." />
 
 
 
@@ -136,7 +138,9 @@
     </div>
 
     <div class="ref-description">
-    <p><code>update.chantrics()</code> will update a model that has been adjusted by <code><a href='adj_loglik.html'>adj_loglik()</a></code>. It passes all arguments to the standard <code><a href='https://rdrr.io/r/stats/update.html'>stats::update()</a></code> function.</p>
+    <p><code>update.chantrics()</code> will update a model that has been adjusted by
+<code><a href='adj_loglik.html'>adj_loglik()</a></code>. It passes all arguments to the standard <code><a href='https://rdrr.io/r/stats/update.html'>stats::update()</a></code>
+function.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for chantrics</span>
@@ -151,7 +155,8 @@
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Additional arguments to the call, passed to <code><a href='https://rdrr.io/r/stats/update.html'>stats::update()</a></code> to update the original model specification.</p></td>
+      <td><p>Additional arguments to the call, passed to <code><a href='https://rdrr.io/r/stats/update.html'>stats::update()</a></code> to
+update the original model specification.</p></td>
     </tr>
     </table>
 
@@ -160,8 +165,10 @@
     <p>The fitted, adjusted <code>"chantrics"</code> object.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The function will not update any arguments passed to the <code><a href='adj_loglik.html'>adj_loglik()</a></code> function, re-run <code><a href='adj_loglik.html'>adj_loglik()</a></code> with the changed arguments.</p>
-<p>Passing <code>evaluate = FALSE</code> is not supported, if this is required, run <code><a href='https://rdrr.io/r/stats/update.html'>stats::update()</a></code> on the unadjusted object.</p>
+    <p>The function will not update any arguments passed to the <code><a href='adj_loglik.html'>adj_loglik()</a></code>
+function, re-run <code><a href='adj_loglik.html'>adj_loglik()</a></code> with the changed arguments.</p>
+<p>Passing <code>evaluate = FALSE</code> is not supported, if this is required,
+run <code><a href='https://rdrr.io/r/stats/update.html'>stats::update()</a></code> on the unadjusted object.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='https://rdrr.io/r/stats/update.html'>stats::update()</a></code></p>
