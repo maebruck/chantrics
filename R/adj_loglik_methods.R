@@ -56,8 +56,6 @@ adj_loglik <- function(x,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
-  #get function call for update method.
-  functioncall <- deparse(sys.call())
   supported_models <- c("glm")
   #check if x is a supported model type
   if (!(class(x)[1] %in% supported_models)) {
@@ -124,7 +122,10 @@ adj_loglik <- function(x,
   try(attr(adjusted_x, "formula") <-
         stats::formula(x), silent = TRUE)
   attr(adjusted_x, "unadj_object") <- x
-  attr(adjusted_x, "chantrics_call") <- functioncall
+  args_list <- rlang::dots_list(...)
+  args_list[["cluster"]] <-  cluster
+  args_list[["use_vcov"]] <- use_vcov
+  attr(adjusted_x, "chantrics_args") <- args_list
   return(adjusted_x)
 }
 
@@ -235,16 +236,17 @@ anova.chantrics <- function(object, ...) {
 
   #check if there is at least one chantrics objects after dropping
   if (length(model_objects) == 1) {
+    # ==== Sequential ANOVA ====
     #create sequential model objects
-    adjusted_object <- model_objects[[1]]
-    unadjusted_object <- attr(adjusted_object, "unadj_object")
+    prev_adjusted_object <- model_objects[[1]]
+    #unadjusted_object <- attr(adjusted_object, "unadj_object")
     #get list of variables by which anova should split
     formula_full <-
-      try(attr(adjusted_object, "formula"), silent = TRUE)
+      try(attr(prev_adjusted_object, "formula"), silent = TRUE)
     if (is.error(formula_full)) {
       rlang::abort(
         paste0(
-          "Formula not available in object",
+          "Formula not available in object ",
           "via attr(model1, 'formula')\n",
           "Handling of this case not supported."
         )
@@ -256,10 +258,9 @@ anova.chantrics <- function(object, ...) {
     pb <- progress::progress_bar$new(total = length(variable_vec))
     for (rm_this_var in variable_vec) {
       pb$tick()
-      unadjusted_object <-
-        stats::update(unadjusted_object, stats::as.formula(paste0(". ~ . - ", rm_this_var)))
-      adj_reduced_object <- adj_loglik(unadjusted_object)
-      model_objects <- c(model_objects, adj_reduced_object)
+      prev_adjusted_object <-
+        stats::update(prev_adjusted_object, formula = stats::as.formula(paste0(". ~ . - ", rm_this_var)))
+      model_objects <- c(model_objects, prev_adjusted_object)
     }
   } else if (length(model_objects) < 1) {
     rlang::abort(

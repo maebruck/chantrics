@@ -9,18 +9,23 @@
 \arguments{
 \item{object}{A \code{"chantrics"} returned by \code{\link[=adj_loglik]{adj_loglik()}}.}
 
-\item{...}{Additional arguments to the call, passed to \code{\link[stats:update]{stats::update()}} to update the original model specification.}
+\item{...}{Additional arguments to the call, passed to \code{\link[stats:update]{stats::update()}} to
+update the original model specification.}
 }
 \value{
 The fitted, adjusted \code{"chantrics"} object.
 }
 \description{
-\code{update.chantrics()} will update a model that has been adjusted by \code{\link[=adj_loglik]{adj_loglik()}}. It passes all arguments to the standard \code{\link[stats:update]{stats::update()}} function.
+\code{update.chantrics()} will update a model that has been adjusted by
+\code{\link[=adj_loglik]{adj_loglik()}}. It passes all arguments to the standard \code{\link[stats:update]{stats::update()}}
+function.
 }
 \details{
-The function will not update any arguments passed to the \code{adj_loglik()} function, re-run \code{adj_loglik()} with the changed arguments.
+The function will not update any arguments passed to the \code{adj_loglik()}
+function, re-run \code{adj_loglik()} with the changed arguments.
 
-Passing \code{evaluate = FALSE} is not supported, if this is required, run \code{\link[stats:update]{stats::update()}} on the unadjusted object.
+Passing \code{evaluate = FALSE} is not supported, if this is required,
+run \code{\link[stats:update]{stats::update()}} on the unadjusted object.
 }
 \examples{
 #from Introducing Chandwich.
