@@ -56,11 +56,19 @@ adj_loglik <- function(x,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
-
+  #get function call for update method.
+  functioncall <- deparse(sys.call())
   supported_models <- c("glm")
   #check if x is a supported model type
-  if (!(class(x)[1] %in% supported_models)){
-    rlang::abort(paste0(class(x)[1], " is not a supported model type.\n", "Please refer to ?adj_loglik() for a list of valid model types."), class = "chantrics_invalid_model")
+  if (!(class(x)[1] %in% supported_models)) {
+    rlang::abort(
+      paste0(
+        class(x)[1],
+        " is not a supported model type.\n",
+        "Please refer to ?adj_loglik() for a list of valid model types."
+      ),
+      class = "chantrics_invalid_model"
+    )
   }
   #adjust x
   if (!any(paste0("logLik_vec.", class(x)) %in% utils::methods("logLik_vec"))) {
@@ -116,6 +124,7 @@ adj_loglik <- function(x,
   try(attr(adjusted_x, "formula") <-
         stats::formula(x), silent = TRUE)
   attr(adjusted_x, "unadj_object") <- x
+  attr(adjusted_x, "chantrics_call") <- functioncall
   return(adjusted_x)
 }
 
@@ -410,6 +419,7 @@ anova.chantrics <- function(object, ...) {
   )
 }
 
+
 #' @importFrom stats nobs
 #' @export
 #'
@@ -419,4 +429,55 @@ nobs.chantrics <- function(object, ...) {
     rlang::warn("extra arguments discarded")
   }
   return(attr(object, "nobs"))
+}
+
+#' Update, re-fit and re-adjust a Model Call
+#'
+#' `update.chantrics()` will update a model that has been adjusted by
+#' [adj_loglik()]. It passes all arguments to the standard [stats::update()]
+#' function.
+#'
+#' The function will not update any arguments passed to the `adj_loglik()`
+#' function, re-run `adj_loglik()` with the changed arguments.
+#'
+#' @param object A `"chantrics"` returned by [adj_loglik()].
+#' @param ... Additional arguments to the call, passed to [stats::update()] to
+#'   update the original model specification.
+#'
+#' @details Passing `evaluate = FALSE` is not supported, if this is required,
+#'   run [stats::update()] on the unadjusted object.
+#'
+#' @return The fitted, adjusted `"chantrics"` object.
+#'
+#' @seealso [stats::update()]
+#' @seealso [stats::update.formula()]
+#'
+#' @examples
+#' #from Introducing Chandwich.
+#' set.seed(123)
+#' x <- rnorm(250)
+#' y <- rnbinom(250, mu = exp(1 + x), size = 1)
+#' fm_pois <- glm(y ~ x + I(x ^ 2), family = poisson)
+#' fm_pois_adj <- adj_loglik(fm_pois)
+#' fm_pois_small_adj <- update(fm_pois_adj, formula = . ~ . - I(x ^ 2))
+#' summary(fm_pois_small_adj)
+#' fm_pois_smallest_adj <- update(fm_pois_adj, formula = . ~ 1)
+#' summary(fm_pois_smallest_adj)
+#'
+#' @importFrom stats update
+#' @export
+
+update.chantrics <- function(object, ...) {
+  #break if evaluate is false
+  dotargs <- rlang::dots_list(...)
+  if ("evaluate" %in% names(dotargs)) {
+    if (!dotargs[["evaluate"]]) {
+      rlang::abort("'evaluate = FALSE' is not supported.", class = "chantrics_update_evaluate_false")
+    }
+  }
+  chantrics_args <- get_additional_args_from_chantrics_call(object)
+  orig_obj <- attr(object, "unadj_object")
+  chantrics_args[["x"]] <-
+    stats::update(orig_obj, ..., evaluate = TRUE)
+  return(do.call(adj_loglik, chantrics_args))
 }

@@ -55,3 +55,13 @@ test_that("anova.chantrics aborts if the parameters are not a subset", {
 test_that("nobs returns correct value", {
   expect_equal(stats::nobs(fm_pois_adj), stats::nobs(fm_pois))
 })
+
+# ==== update.chantrics() ====
+
+test_that("update returns correct reduced model", {
+  expect_equal(attr(update(fm_pois_adj, formula = . ~ . - I(x ^ 2)), "adjSE"), attr(fm_pois_small_adj, "adjSE"))
+})
+
+test_that("update aborts when passed evaluate = FALSE", {
+  expect_error(update(fm_pois_adj, evaluate = FALSE), class = "chantrics_update_evaluate_false")
+})

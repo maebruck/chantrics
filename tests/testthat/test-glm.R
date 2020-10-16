@@ -11,7 +11,8 @@ pois_glm_loglik <- function(pars, y, x) {
 reference_pois_logLik <- pois_glm_loglik(fm_pois$coefficients, y, x)
 chantrics_pois_logLik <- logLik_vec(fm_pois, fm_pois$coefficients)
 test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct object",
-          {expect_equal(c(reference_pois_logLik), unname(c(chantrics_pois_logLik)))
+          {
+            expect_equal(c(reference_pois_logLik), unname(c(chantrics_pois_logLik)))
           })
 
 test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
@@ -28,4 +29,3 @@ test_that("Are generics accessible for adjusted glm models?", {
   #test that there is no error
   expect_error(model_generics_caller(fm_pois_adj), regexp = NA)
 })
-

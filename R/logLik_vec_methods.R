@@ -21,8 +21,8 @@ logLik_vec <- function(object, ...) {
 #' @importFrom stats logLik
 #' @export
 
-logLik.logLik_vec <- function(object, ...){
-  if(!missing(...)){
+logLik.logLik_vec <- function(object, ...) {
+  if (!missing(...)) {
     rlang::warn("extra arguments discarded")
   }
   val <- sum(object)
