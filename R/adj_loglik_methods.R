@@ -37,7 +37,7 @@
 #'   class are `class(x)`.
 #'
 #'   `chantrics` objects have `AIC`, `anova`, `coef`, `confint`, `logLik`,
-#'   `nobs`, `plot`, `print`, `summary` and `vcov` methods.
+#'   `logLik_vec`, `nobs`, `plot`, `print`, `summary` and `vcov` methods.
 #'
 #' @section Examples: See the model-specific pages in the *supported models*
 #'   section.
@@ -210,9 +210,9 @@ adj_loglik <- function(x,
 anova.chantrics <- function(object, ...) {
   dotargs <- rlang::dots_list(...)
   potential_model_objects <-
-    c(object, subset(dotargs, names(dotargs) == ""), use.names = FALSE)
+    c(object, get_unnamed(dotargs), use.names = FALSE)
   # save dotargs which are named
-  named_dotargs <- subset(dotargs, names(dotargs) != "")
+  named_dotargs <- get_named(dotargs)
   # check whether the unnamed objects are actually chantrics objects
   pmo_is_chantrics <-
     vapply(potential_model_objects, function(x) {
@@ -378,11 +378,6 @@ anova.chantrics <- function(object, ...) {
     attr(larger_m, "fixed_at") <- NULL
     attr(smaller_m, "fixed_pars") <- fixed_pars
     attr(smaller_m, "fixed_at") <- fixed_at
-    # code below doesn't work
-    # fixed_pars <- larger_free_params[fixed_pars]
-    # fixed_at <- 0
-    # print(fixed_pars)
-    # result <- do.call(chandwich::compare_models, c(list(larger = larger_m, smaller = smaller_m, fixed_pars = fixed_pars, fixed_at = fixed_at), named_dotargs))
     result <-
       do.call(chandwich::compare_models, c(list(
         larger = larger_m, smaller = smaller_m
@@ -483,4 +478,118 @@ update.chantrics <- function(object, ...) {
   chantrics_args[["x"]] <-
     stats::update(orig_obj, ..., evaluate = TRUE)
   return(do.call(adj_loglik, chantrics_args))
+}
+
+#' @importFrom stats terms
+#' @export
+
+terms.chantrics <- function(x, ...){
+  #passes terms object through from unadjusted object
+  return(terms(attr(x, "unadj_object")))
+}
+
+#' Adjusted Likelihood Ratio Test of Nested Models
+#'
+#' `alrtest` is a helper function to simulate the functions
+#' [lmtest::waldtest()]/[lmtest::lrtest()] for adjusted `chantrics` objects. The
+#' method can be employed to compare nested models (see details).
+#'
+#' @param object a `chantrics` object as returned from [adj_loglik()].
+#' @param ... further object specifications and/or parameters that will be
+#'   passed to [chandwich::compare_models()]. The type of adjustment, out of
+#'   `"vertical"`, `"cholesky"`, `"spectral"`, `"none"`, as specified in the
+#'   parameter `type`, can also be specified here.
+#'
+#' @details This function is a helper function that creates an interface to
+#'   [anova.chantrics()] that is similar to [lmtest::waldtest()] and
+#'   [lmtest::lrtest()].
+#'
+#'   The standard method is to compare the fitted model object `object` with the
+#'   models in `...`. Instead of passing the fitted models into `...`, other
+#'   specifications are possible. Note that the types of specifications can't be
+#'   mixed, except between numerics/characters. The type of the second object
+#'   supplied determines the algorithm used.
+#'   * **`"chantrics"` objects**: When
+#'   supplying two or more `"chantrics"` objects, they will be sorted as in
+#'   [anova.chantrics()]. Then, the ALRTS will be computed consecutively between
+#'   the two neighbouring models. Note that all models must be nested. For
+#'   details refer to [anova.chantrics()].
+#'   * **`"numeric"`**: If the second
+#'   object is `"numeric"` or `"character"`, then `"numeric"` objects
+#'   corresponding element in `attr(terms(object1), "term.labels")` will be
+#'   turned into their corresponding `"character"` element and will be handled
+#'   as in `"character"` below.
+#'   * **`"character"`**: If the second object is
+#'   `"numeric"` or `"character"`, then the `"character"` objects are
+#'   consecutively included in an update formula like `update(object1, . ~ . -
+#'   object2)`
+#'   * **`"formula"`**: If the second object is a `"formula"`, then
+#'   the model will be computed as `update(object1, object2)`.
+#'
+#'   Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
+#'   Section 3.5 of [Chandler and Bate
+#'   (2007)](http://doi.org/10.1093/biomet/asm015), is computed by
+#'   [anova.chantrics()].
+#'
+#' @return An object of class `"anova"` inheriting from class `"data.frame"`.
+#'   The columns are as follows: \item{Resid.df}{The residual number of degrees
+#'   of freedom in the model.} \item{df}{The increase in residual degrees of
+#'   freedom with respect to the model in the row above.} \item{ALRTS}{The
+#'   adjusted likelihood ratio statistic.} \item{Pr(>ALRTS)}{The p-value of the
+#'   test that the model above is a "significantly better" model as the one in
+#'   the current row.}
+#'
+#' @seealso [anova.chantrics()] for the implementation of the computations of
+#'   the test statistics.
+#' @seealso [lmtest::waldtest()] and [lmtest::lrtest()] for syntax.
+#'
+#' @export
+
+alrtest <- function(object, ...){
+  #object has to be chantrics.
+  abort_not_chantrics(object)
+  dotargs <- rlang::dots_list(...)
+  #store named arguments to be passed down into the anova() call
+  named_args <- get_named(dotargs)
+  unnamed_args <- unname(get_unnamed(dotargs))
+  #create object_list that is object + unnamed_args
+  if (length(unnamed_args) == 0){
+    #if only one chantrics object is passed in, run sequential anova.
+    return(do.call("anova",c(object, named_args)))
+  }
+
+  #functions that handle the conversion of the unnamed args into chantrics objects.
+  #note that alrtest will not check if what's done to the models actually makes sense
+  #this is left to anova.chantrics.
+  chantrics_handler <- function(object_list){
+    #not a lot of things need to be done - even the check if *all* objects are chantrics can be done by anova.chantrics()
+    #just prepare the vector that can be passed into anova
+  }
+  numchar_handler <- function(object_list){
+    #flatten any structures, e.g. lists or vectors into one big vector
+    #check that all elements in object_list are numericals or characters
+    #try to match the numerical elements with elements in attr(terms(object1), "term.labels")
+    #if too long, break
+    #then, pass the objects one by one into update functions, consecutively decreasing the list of variables
+    #leave error handling and matching errors to update().
+  }
+  formula_handler <- function(object_list){
+    #pass the formula objects consecutively into update. Leave all error handling to formula.
+  }
+  #write bank of if statements that check if the second element in object_list is a chantrics, a numerical/character, or a formula object
+  #then lead the object_list into the handlers
+  #if it is none of the types, abort
+
+  #save the results to ready_objects
+
+  #pass ready_objects together with named_args into anova.chantrics
+
+  #remember to change the header in the anova table that will be returned to the user.
+}
+
+
+#' @export
+
+logLik_vec.chantrics <- function(object, ...){
+  rlang::abort("Not yet implemented.")
 }

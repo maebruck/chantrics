@@ -55,24 +55,23 @@ Details of the ALRT can be found in \code{\link[chandwich:compare_models]{chandw
 }
 \examples{
 
-#from Introducing Chandwich.
+# from Introducing Chandwich.
 set.seed(123)
 x <- rnorm(250)
 y <- rnbinom(250, mu = exp(1 + x), size = 1)
-fm_pois <- glm(y ~ x + I(x ^ 2), family = poisson)
+fm_pois <- glm(y ~ x + I(x^2), family = poisson)
 fm_pois_adj <- adj_loglik(fm_pois)
-fm_pois_small <- update(fm_pois, formula = . ~ . - I(x ^ 2))
+fm_pois_small <- update(fm_pois, formula = . ~ . - I(x^2))
 fm_pois_small_adj <- adj_loglik(fm_pois_small)
 fm_pois_smallest <- update(fm_pois, formula = . ~ 1)
 fm_pois_smallest_adj <- adj_loglik(fm_pois_smallest)
 
 anova(fm_pois_adj, fm_pois_small_adj, fm_pois_smallest_adj)
-#use different types of adjustment with type, default is "vertical"
+# use different types of adjustment with type, default is "vertical"
 anova(fm_pois_adj, fm_pois_small_adj, fm_pois_smallest_adj, type = "cholesky")
 
-#sequential anova
+# sequential anova
 anova(fm_pois_adj)
-
 }
 \references{
 R. Chandler and S. Bate, Inference for clustered data using the

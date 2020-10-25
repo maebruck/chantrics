@@ -12,6 +12,10 @@
 #'   attributes `df` (model degrees of freedom) and `nobs` (number of
 #'   observations).
 #'
+#'   The methods [stats::logLik()], and [stats::nobs()] are available.
+#'
+#' @seealso [stats::logLik()]
+#'
 #' @export
 
 logLik_vec <- function(object, ...) {
@@ -30,4 +34,15 @@ logLik.logLik_vec <- function(object, ...) {
   attributes(val) <- attributes(object)[c("nobs", "df")]
   class(val) <- "logLik"
   return(val)
+}
+
+#' @importFrom stats nobs
+#' @export
+
+
+nobs.logLik_vec <- function(object, ...){
+  if (!missing(...)) {
+    rlang::warn("extra arguments discarded")
+  }
+  return(attr(object, "nobs"))
 }

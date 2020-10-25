@@ -17,8 +17,13 @@ An object of class \code{"logLik_vec"} which is a numeric vector of length
 log-likelihood of each observation. Additionally, it contains the
 attributes \code{df} (model degrees of freedom) and \code{nobs} (number of
 observations).
+
+The methods \code{\link[stats:logLik]{stats::logLik()}}, and \code{\link[stats:nobs]{stats::nobs()}} are available.
 }
 \description{
 Generic function for calculating the log-likelihood contributions from
 individual observations for a fitted model.
+}
+\seealso{
+\code{\link[stats:logLik]{stats::logLik()}}
 }

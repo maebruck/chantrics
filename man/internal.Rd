@@ -10,6 +10,8 @@
 \alias{get_formula_str_from_chantrics}
 \alias{get_resid_df_from_chantrics}
 \alias{get_additional_args_from_chantrics_call}
+\alias{get_named}
+\alias{get_unnamed}
 \title{chandwich internal functions}
 \usage{
 is.error(x)
@@ -27,6 +29,10 @@ get_formula_str_from_chantrics(x)
 get_resid_df_from_chantrics(x)
 
 get_additional_args_from_chantrics_call(x)
+
+get_named(x)
+
+get_unnamed(x)
 }
 \description{
 Internal functions: These are not to be exported.
