@@ -80,6 +80,9 @@ get_resid_df_from_chantrics <- function(x) {
   return(stats::nobs(x) - attr(x, "p_current"))
 }
 
+#' @rdname internal
+#' @keywords internal
+
 get_additional_args_from_chantrics_call <- function(x) {
   abort_not_chantrics(x)
   #parse call and remove function name and model arg.

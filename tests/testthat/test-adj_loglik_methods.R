@@ -50,6 +50,10 @@ test_that("anova.chantrics aborts if the parameters are not a subset", {
   expect_error(anova(fm_pois_adj, fm_pois_cube_only_adj), class = "chantrics_params_not_subset")
 })
 
+test_that("anova.chantrics' sequential anova function returns the correct number of rows", {
+  expect_equal(nrow(anova(fm_pois_adj)), 3)
+})
+
 # ==== nobs.chantrics() ====
 
 test_that("nobs returns correct value", {

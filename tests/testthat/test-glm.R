@@ -24,8 +24,15 @@ test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
 
 #adjust fm_pois
 
-
 test_that("Are generics accessible for adjusted glm models?", {
   #test that there is no error
   expect_error(model_generics_caller(fm_pois_adj), regexp = NA)
 })
+
+## === ANOVA ===
+
+test_that("Has the ANOVA function changed its output?", {
+  expect_equivalent(round(anova(fm_pois_adj)[["I(x^2)", "ALRTS"]],5), 1.82017)
+  expect_equivalent(round(anova(fm_pois_adj, fm_pois_small_adj)[["2", "ALRTS"]],5), 1.82017)
+})
+
