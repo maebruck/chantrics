@@ -8,9 +8,9 @@
 #' @name chantrics
 NULL
 
-#any other extra doc files.
+# any other extra doc files.
 
-#make sure that methods package is loaded in case S4 methods are used:
+# make sure that methods package is loaded in case S4 methods are used:
 
 #' @import methods
 NULL

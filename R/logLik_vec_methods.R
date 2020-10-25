@@ -26,7 +26,7 @@ logLik.logLik_vec <- function(object, ...) {
     rlang::warn("extra arguments discarded")
   }
   val <- sum(object)
-  #logLik_vec has "nobs" and "df" attributes -> just pass through
+  # logLik_vec has "nobs" and "df" attributes -> just pass through
   attributes(val) <- attributes(object)[c("nobs", "df")]
   class(val) <- "logLik"
   return(val)

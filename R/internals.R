@@ -7,8 +7,9 @@ NULL
 
 #' @keywords internal
 #' @rdname internal
-is.error <- function(x)
+is.error <- function(x) {
   inherits(x, "try-error")
+}
 
 #' @keywords internal
 #' @rdname internal
@@ -21,7 +22,7 @@ raise_yield_error <-
     if (!is.null(try_this)) {
       try_mess <- paste0("\nTry ", try_this, ".")
     } else {
-      try_mess = ""
+      try_mess <- ""
     }
     mess <-
       paste0("Failed to yield the ", what, " from the ", model, ".", try_mess)
@@ -85,7 +86,7 @@ get_resid_df_from_chantrics <- function(x) {
 
 get_additional_args_from_chantrics_call <- function(x) {
   abort_not_chantrics(x)
-  #parse call and remove function name and model arg.
-  #return(as.list(str2lang(attr(x, "chantrics_call")))[-c(1, 2)])
+  # parse call and remove function name and model arg.
+  # return(as.list(str2lang(attr(x, "chantrics_call")))[-c(1, 2)])
   return(attr(x, "chantrics_args"))
 }
