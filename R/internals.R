@@ -90,3 +90,17 @@ get_additional_args_from_chantrics_call <- function(x) {
   # return(as.list(str2lang(attr(x, "chantrics_call")))[-c(1, 2)])
   return(attr(x, "chantrics_args"))
 }
+
+#' @rdname internal
+#' @keywords internal
+
+get_named <- function(x) {
+  return(subset(x, names(x) != ""))
+}
+
+#' @rdname internal
+#' @keywords internal
+
+get_unnamed <- function(x) {
+  return(subset(x, names(x) == ""))
+}

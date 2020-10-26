@@ -28,17 +28,16 @@ Passing \code{evaluate = FALSE} is not supported, if this is required,
 run \code{\link[stats:update]{stats::update()}} on the unadjusted object.
 }
 \examples{
-#from Introducing Chandwich.
+# from Introducing Chandwich.
 set.seed(123)
 x <- rnorm(250)
 y <- rnbinom(250, mu = exp(1 + x), size = 1)
-fm_pois <- glm(y ~ x + I(x ^ 2), family = poisson)
+fm_pois <- glm(y ~ x + I(x^2), family = poisson)
 fm_pois_adj <- adj_loglik(fm_pois)
-fm_pois_small_adj <- update(fm_pois_adj, formula = . ~ . - I(x ^ 2))
+fm_pois_small_adj <- update(fm_pois_adj, formula = . ~ . - I(x^2))
 summary(fm_pois_small_adj)
 fm_pois_smallest_adj <- update(fm_pois_adj, formula = . ~ 1)
 summary(fm_pois_smallest_adj)
-
 }
 \seealso{
 \code{\link[stats:update]{stats::update()}}

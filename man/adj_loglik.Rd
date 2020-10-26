@@ -30,7 +30,7 @@ See \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}. The remai
 class are \code{class(x)}.
 
 \code{chantrics} objects have \code{AIC}, \code{anova}, \code{coef}, \code{confint}, \code{logLik},
-\code{nobs}, \code{plot}, \code{print}, \code{summary} and \code{vcov} methods.
+\code{logLik_vec}, \code{nobs}, \code{plot}, \code{print}, \code{summary} and \code{vcov} methods.
 }
 \description{
 This function adjusts the log-likelihood of fitted model objects based on
