@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Log-likelihood adjustments for fitted models — adj_loglik • chantrics</title>
+<title>Adjusted Likelihood Ratio Test of Nested Models — alrtest • chantrics</title>
 
 
 <!-- jquery -->
@@ -39,12 +39,10 @@
 
 
 
-<meta property="og:title" content="Log-likelihood adjustments for fitted models — adj_loglik" />
-<meta property="og:description" content="This function adjusts the log-likelihood of fitted model objects based on
-Chandler and Bate (2007). It is a
-generic function for different types of models, which are listed in
-Supported models. This section also contains links to function-specific
-help pages." />
+<meta property="og:title" content="Adjusted Likelihood Ratio Test of Nested Models — alrtest" />
+<meta property="og:description" content="alrtest is a helper function to simulate the functions
+lmtest::waldtest()/lmtest::lrtest() for adjusted chantrics objects. The
+method can be employed to compare nested models (see details)." />
 
 
 
@@ -134,85 +132,83 @@ help pages." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Log-likelihood adjustments for fitted models</h1>
+    <h1>Adjusted Likelihood Ratio Test of Nested Models</h1>
     <small class="dont-index">Source: <a href='https://github.com/tbruckbauer/chantrics/blob/master/R/adj_loglik_methods.R'><code>R/adj_loglik_methods.R</code></a></small>
-    <div class="hidden name"><code>adj_loglik.Rd</code></div>
+    <div class="hidden name"><code>alrtest.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function adjusts the log-likelihood of fitted model objects based on
-<a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>. It is a
-generic function for different types of models, which are listed in
-<strong>Supported models</strong>. This section also contains links to function-specific
-help pages.</p>
+    <p><code>alrtest</code> is a helper function to simulate the functions
+<code><a href='https://rdrr.io/pkg/lmtest/man/waldtest.html'>lmtest::waldtest()</a></code>/<code><a href='https://rdrr.io/pkg/lmtest/man/lrtest.html'>lmtest::lrtest()</a></code> for adjusted <code>chantrics</code> objects. The
+method can be employed to compare nested models (see details).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>adj_loglik</span><span class='op'>(</span><span class='va'>x</span>, cluster <span class='op'>=</span> <span class='cn'>NULL</span>, use_vcov <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>alrtest</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A fitted model object that is supported, see <strong>Supported models</strong></p></td>
-    </tr>
-    <tr>
-      <th>cluster</th>
-      <td><p>A vector or factor indicating from which cluster the
-respective log-likelihood contributions originate. Must have the same
-length as the vector returned by <code><a href='logLik_vec.html'>logLik_vec()</a></code>. If <code>cluster</code> is not
-supplied or <code>NULL</code> then it is assumed that each observation forms its own
-cluster.</p></td>
-    </tr>
-    <tr>
-      <th>use_vcov</th>
-      <td><p>A logical scalar. By default, the <code><a href='https://rdrr.io/r/stats/vcov.html'>vcov()</a></code> method for <code>x</code> is
-used to estimate the Hessian of the independence loglikelihood, if the
-function exists. Otherwise, or if <code>use_vcov = FALSE</code>, <code>H</code> is estimated
-using <code><a href='https://rdrr.io/r/stats/optim.html'>stats::optimHess()</a></code> inside <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik()</a></code>.</p></td>
+      <th>object</th>
+      <td><p>a <code>chantrics</code> object as returned from <code><a href='adj_loglik.html'>adj_loglik()</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Further arguments to be passed to <code><a href='http://sandwich.R-Forge.R-project.org//reference/vcovCL.html'>sandwich::meatCL()</a></code> if
-<code>cluster</code> is defined, if <code>cluster = NULL</code>, they are passed into
-<code><a href='http://sandwich.R-Forge.R-project.org//reference/meat.html'>sandwich::meat()</a></code>.</p></td>
+      <td><p>further object specifications and/or parameters that will be
+passed to <code><a href='https://rdrr.io/pkg/chandwich/man/compare_models.html'>chandwich::compare_models()</a></code>. The type of adjustment, out of
+<code>"vertical"</code>, <code>"cholesky"</code>, <code>"spectral"</code>, <code>"none"</code>, as specified in the
+parameter <code>type</code>, can also be specified here.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of class <code>"chantrics"</code> inheriting from class <code>"chandwich"</code>.
-See <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik()</a></code>. The remaining elements of the returned
-class are <code><a href='https://rdrr.io/r/base/class.html'>class(x)</a></code>.</p>
-<p><code>chantrics</code> objects have <code>AIC</code>, <code>anova</code>, <code>coef</code>, <code>confint</code>, <code>logLik</code>,
-<code>logLik_vec</code>, <code>nobs</code>, <code>plot</code>, <code>print</code>, <code>summary</code> and <code>vcov</code> methods.</p>
+    <p>An object of class <code>"anova"</code> inheriting from class <code>"data.frame"</code>.
+The columns are as follows:</p>
+<dt>Resid.df</dt><dd><p>The residual number of degrees
+of freedom in the model.</p></dd> <dt>df</dt><dd><p>The increase in residual degrees of
+freedom with respect to the model in the row above.</p></dd> <dt>ALRTS</dt><dd><p>The
+adjusted likelihood ratio statistic.</p></dd> <dt>Pr(&gt;ALRTS)</dt><dd><p>The p-value of the
+test that the model above is a "significantly better" model as the one in
+the current row.</p></dd>
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>If <code>use_vcov = TRUE</code>, the current default, the function will test
-whether a <code>vcov</code> S3 method exists for <code>x</code>, and will take the
-variance-covariance matrix from there. Otherwise, or if <code>use_vcov = FALSE</code>
-the variance-covariance matrix of the MLE is estimated inside
-<code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik()</a></code> using <code><a href='https://rdrr.io/r/stats/optim.html'>stats::optimHess()</a></code>.</p>
-    <h2 class="hasAnchor" id="supported-models"><a class="anchor" href="#supported-models"></a>Supported models</h2>
-
-    
-
-<ul>
-<li><p><a href='glm.html'>glm</a></p></li>
+    <p>This function is a helper function that creates an interface to
+<code><a href='anova.chantrics.html'>anova.chantrics()</a></code> that is similar to <code><a href='https://rdrr.io/pkg/lmtest/man/waldtest.html'>lmtest::waldtest()</a></code> and
+<code><a href='https://rdrr.io/pkg/lmtest/man/lrtest.html'>lmtest::lrtest()</a></code>.</p>
+<p>The standard method is to compare the fitted model object <code>object</code> with the
+models in <code>...</code>. Instead of passing the fitted models into <code>...</code>, other
+specifications are possible. Note that the types of specifications can't be
+mixed, except between numerics/characters. The type of the second object
+supplied determines the algorithm used.</p><ul>
+<li><p><strong><code>"chantrics"</code> objects</strong>: When
+supplying two or more <code>"chantrics"</code> objects, they will be sorted as in
+<code><a href='anova.chantrics.html'>anova.chantrics()</a></code>. Then, the ALRTS will be computed consecutively between
+the two neighbouring models. Note that all models must be nested. For
+details refer to <code><a href='anova.chantrics.html'>anova.chantrics()</a></code>.</p></li>
+<li><p><strong><code>"numeric"</code></strong>: If the second
+object is <code>"numeric"</code> or <code>"character"</code>, then <code>"numeric"</code> objects
+corresponding element in <code><a href='https://rdrr.io/r/base/attr.html'>attr(terms(object1), "term.labels")</a></code> will be
+turned into their corresponding <code>"character"</code> element and will be handled
+as in <code>"character"</code> below.</p></li>
+<li><p><strong><code>"character"</code></strong>: If the second object is
+<code>"numeric"</code> or <code>"character"</code>, then the <code>"character"</code> objects are
+consecutively included in an update formula like <code><a href='https://rdrr.io/r/stats/update.html'>update(object1, . ~ . -   object2)</a></code></p></li>
+<li><p><strong><code>"formula"</code></strong>: If the second object is a <code>"formula"</code>, then
+the model will be computed as <code><a href='https://rdrr.io/r/stats/update.html'>update(object1, object2)</a></code>.</p></li>
 </ul>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-
-    <p>See the model-specific pages in the <em>supported models</em>
-section.</p>
-    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
-
-    <p>R. Chandler and S. Bate, Inference for clustered data using the
-independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
-<a href='http://doi.org/10.1093/biomet/asm015'>http://doi.org/10.1093/biomet/asm015</a>.</p>
+<p>Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
+Section 3.5 of <a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>, is computed by
+<code><a href='anova.chantrics.html'>anova.chantrics()</a></code>.</p>
+<p>If a single unnamed object is passed in <code>...</code>, sequential ANOVA is perfomed
+on <code>object</code>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://paulnorthrop.github.io/lax/reference/alogLik.html'>lax::alogLik()</a></code> supports adjustment for user-supplied objects.</p></div>
+    <div class='dont-index'><p><code><a href='anova.chantrics.html'>anova.chantrics()</a></code> for the implementation of the computations of
+the test statistics.</p>
+<p><code><a href='https://rdrr.io/pkg/lmtest/man/waldtest.html'>lmtest::waldtest()</a></code> and <code><a href='https://rdrr.io/pkg/lmtest/man/lrtest.html'>lmtest::lrtest()</a></code> for syntax.</p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

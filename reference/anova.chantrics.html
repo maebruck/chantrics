@@ -206,13 +206,13 @@ package, which also uses <code>compare.models()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'>#from Introducing Chandwich.</span>
+<span class='co'># from Introducing Chandwich.</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>123</span><span class='op'>)</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>250</span><span class='op'>)</span>
 <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/NegBinomial.html'>rnbinom</a></span><span class='op'>(</span><span class='fl'>250</span>, mu <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='fl'>1</span> <span class='op'>+</span> <span class='va'>x</span><span class='op'>)</span>, size <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
-<span class='va'>fm_pois</span> <span class='op'>&lt;-</span> <span class='fu'><a href='glm.html'>glm</a></span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='va'>x</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/AsIs.html'>I</a></span><span class='op'>(</span><span class='va'>x</span> <span class='op'>^</span> <span class='fl'>2</span><span class='op'>)</span>, family <span class='op'>=</span> <span class='va'>poisson</span><span class='op'>)</span>
+<span class='va'>fm_pois</span> <span class='op'>&lt;-</span> <span class='fu'><a href='glm.html'>glm</a></span><span class='op'>(</span><span class='va'>y</span> <span class='op'>~</span> <span class='va'>x</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/AsIs.html'>I</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span>, family <span class='op'>=</span> <span class='va'>poisson</span><span class='op'>)</span>
 <span class='va'>fm_pois_adj</span> <span class='op'>&lt;-</span> <span class='fu'><a href='adj_loglik.html'>adj_loglik</a></span><span class='op'>(</span><span class='va'>fm_pois</span><span class='op'>)</span>
-<span class='va'>fm_pois_small</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/update.html'>update</a></span><span class='op'>(</span><span class='va'>fm_pois</span>, formula <span class='op'>=</span> <span class='va'>.</span> <span class='op'>~</span> <span class='va'>.</span> <span class='op'>-</span> <span class='fu'><a href='https://rdrr.io/r/base/AsIs.html'>I</a></span><span class='op'>(</span><span class='va'>x</span> <span class='op'>^</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>fm_pois_small</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/update.html'>update</a></span><span class='op'>(</span><span class='va'>fm_pois</span>, formula <span class='op'>=</span> <span class='va'>.</span> <span class='op'>~</span> <span class='va'>.</span> <span class='op'>-</span> <span class='fu'><a href='https://rdrr.io/r/base/AsIs.html'>I</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>fm_pois_small_adj</span> <span class='op'>&lt;-</span> <span class='fu'><a href='adj_loglik.html'>adj_loglik</a></span><span class='op'>(</span><span class='va'>fm_pois_small</span><span class='op'>)</span>
 <span class='va'>fm_pois_smallest</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/update.html'>update</a></span><span class='op'>(</span><span class='va'>fm_pois</span>, formula <span class='op'>=</span> <span class='va'>.</span> <span class='op'>~</span> <span class='fl'>1</span><span class='op'>)</span>
 <span class='va'>fm_pois_smallest_adj</span> <span class='op'>&lt;-</span> <span class='fu'><a href='adj_loglik.html'>adj_loglik</a></span><span class='op'>(</span><span class='va'>fm_pois_smallest</span><span class='op'>)</span>
@@ -228,7 +228,7 @@ package, which also uses <code>compare.models()</code></p></div>
 #&gt; 2      248  1   1.82     0.1773    
 #&gt; 3      249  1 116.73     &lt;2e-16 ***
 #&gt; ---
-#&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class='input'><span class='co'>#use different types of adjustment with type, default is "vertical"</span>
+#&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class='input'><span class='co'># use different types of adjustment with type, default is "vertical"</span>
 <span class='fu'><a href='https://rdrr.io/r/stats/anova.html'>anova</a></span><span class='op'>(</span><span class='va'>fm_pois_adj</span>, <span class='va'>fm_pois_small_adj</span>, <span class='va'>fm_pois_smallest_adj</span>, type <span class='op'>=</span> <span class='st'>"cholesky"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Analysis of Adjusted Deviance Table
 #&gt; 
@@ -241,7 +241,7 @@ package, which also uses <code>compare.models()</code></p></div>
 #&gt; 3      249  1 165.99     &lt;2e-16 ***
 #&gt; ---
 #&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class='input'>
-<span class='co'>#sequential anova</span>
+<span class='co'># sequential anova</span>
 <span class='fu'><a href='https://rdrr.io/r/stats/anova.html'>anova</a></span><span class='op'>(</span><span class='va'>fm_pois_adj</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Analysis of Adjusted Deviance Table
 #&gt; 
@@ -253,8 +253,7 @@ package, which also uses <code>compare.models()</code></p></div>
 #&gt; I(x^2)          248  1   1.82     0.1773    
 #&gt; x               249  1 116.73     &lt;2e-16 ***
 #&gt; ---
-#&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div><div class='input'>
-</div></pre>
+#&gt; Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
