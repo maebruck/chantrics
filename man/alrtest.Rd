@@ -59,6 +59,9 @@ the model will be computed as \code{update(object1, object2)}.
 Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
 Section 3.5 of \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}, is computed by
 \code{\link[=anova.chantrics]{anova.chantrics()}}.
+
+If a single unnamed object is passed in \code{...}, sequential ANOVA is perfomed
+on \code{object}.
 }
 \seealso{
 \code{\link[=anova.chantrics]{anova.chantrics()}} for the implementation of the computations of

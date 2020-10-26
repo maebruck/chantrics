@@ -94,13 +94,13 @@ get_additional_args_from_chantrics_call <- function(x) {
 #' @rdname internal
 #' @keywords internal
 
-get_named <- function(x){
+get_named <- function(x) {
   return(subset(x, names(x) != ""))
 }
 
 #' @rdname internal
 #' @keywords internal
 
-get_unnamed <- function(x){
+get_unnamed <- function(x) {
   return(subset(x, names(x) == ""))
 }

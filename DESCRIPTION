@@ -12,7 +12,8 @@ Imports:
     methods,
     lmtest,
     rlang,
-    progress
+    progress,
+    purrr
 Depends: 
     R (>= 4.0.0)
 Authors@R: person(given = "Theo", 

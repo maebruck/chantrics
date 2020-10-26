@@ -70,3 +70,37 @@ test_that("update returns correct reduced model", {
 test_that("update aborts when passed evaluate = FALSE", {
   expect_error(update(fm_pois_adj, evaluate = FALSE), class = "chantrics_update_evaluate_false")
 })
+
+# ==== alrtest() ====
+
+test_that("alrtest executes properly", {
+  expect_equal(nrow(alrtest(fm_pois_adj, fm_pois_small_adj, fm_pois_smallest_adj)), 3)
+  expect_equal(nrow(alrtest(fm_pois_adj, 2, 1)), 3)
+  expect_equal(nrow(alrtest(fm_pois_adj, "x", "I(x^2)")), 3)
+  expect_equal(nrow(alrtest(fm_pois_adj, "x", 2)), 3)
+  expect_equal(nrow(alrtest(fm_pois_adj, as.formula(". ~ . - I(x^2)"), as.formula(". ~ . - x"))), 3)
+})
+
+test_that("alrtest performs sequential anova if only passed one object", {
+  expect_gt(nrow(alrtest(fm_pois_adj)), 1)
+})
+
+test_that("alrtest aborts if first object is not chantrics", {
+  expect_error(alrtest("i'm character!"), class = "chantrics_not_chantrics_object")
+})
+
+test_that("alrtest aborts if second object is not supported", {
+  expect_error(alrtest(fm_pois_adj, fm_pois), class = "chantrics_alrtest_unexpected_second_obj")
+})
+
+test_that("alrtest aborts if third objects are not of the right type", {
+  expect_error(alrtest(fm_pois_adj, fm_pois_small_adj, "i'm character!"), class = "chantrics_not_chantrics_object")
+  expect_error(alrtest(fm_pois_adj, 2, fm_pois), class = "chantrics_alrtest_numchar_match_failed")
+  # expect_error(alrtest(fm_pois_adj, 2, 3.1415), class = "chantrics_alrtest_failed_int_coercion")
+  expect_error(alrtest(fm_pois_adj, as.formula(". ~ . - x"), "dlr"), class = "chantrics_alrtest_not_formula")
+})
+
+test_that("alrtest aborts if the specified variable can't be found", {
+  expect_error(alrtest(fm_pois_adj, 1456), class = "chantrics_alrtest_num_too_high")
+  expect_error(alrtest(fm_pois_adj, "northernline"), class = "chantrics_alrtest_string_failed_matching")
+})

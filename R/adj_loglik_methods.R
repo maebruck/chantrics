@@ -483,8 +483,8 @@ update.chantrics <- function(object, ...) {
 #' @importFrom stats terms
 #' @export
 
-terms.chantrics <- function(x, ...){
-  #passes terms object through from unadjusted object
+terms.chantrics <- function(x, ...) {
+  # passes terms object through from unadjusted object
   return(terms(attr(x, "unadj_object")))
 }
 
@@ -531,6 +531,9 @@ terms.chantrics <- function(x, ...){
 #'   (2007)](http://doi.org/10.1093/biomet/asm015), is computed by
 #'   [anova.chantrics()].
 #'
+#'   If a single unnamed object is passed in `...`, sequential ANOVA is perfomed
+#'   on `object`.
+#'
 #' @return An object of class `"anova"` inheriting from class `"data.frame"`.
 #'   The columns are as follows: \item{Resid.df}{The residual number of degrees
 #'   of freedom in the model.} \item{df}{The increase in residual degrees of
@@ -545,51 +548,164 @@ terms.chantrics <- function(x, ...){
 #'
 #' @export
 
-alrtest <- function(object, ...){
-  #object has to be chantrics.
+alrtest <- function(object, ...) {
+  # object has to be chantrics.
   abort_not_chantrics(object)
   dotargs <- rlang::dots_list(...)
-  #store named arguments to be passed down into the anova() call
+  # store named arguments to be passed down into the anova() call
   named_args <- get_named(dotargs)
   unnamed_args <- unname(get_unnamed(dotargs))
-  #create object_list that is object + unnamed_args
-  if (length(unnamed_args) == 0){
-    #if only one chantrics object is passed in, run sequential anova.
-    return(do.call("anova",c(object, named_args)))
+  # create object_list that is object + unnamed_args
+  if (length(unnamed_args) == 0) {
+    # if only one chantrics object is passed in, run sequential anova.
+    return(do.call("anova", c(object, named_args)))
   }
+  object_list <- c(object, unnamed_args)
 
-  #functions that handle the conversion of the unnamed args into chantrics objects.
-  #note that alrtest will not check if what's done to the models actually makes sense
-  #this is left to anova.chantrics.
-  chantrics_handler <- function(object_list){
-    #not a lot of things need to be done - even the check if *all* objects are chantrics can be done by anova.chantrics()
-    #just prepare the vector that can be passed into anova
+  # functions that handle the conversion of the unnamed args into chantrics objects.
+  # note that alrtest will not check if what's done to the models actually makes sense
+  # this is left to anova.chantrics.
+  chantrics_handler <- function(object_list) {
+    # check if all objects are of type chantrics, since anova only warns if model objects don't fit
+    checks_logi <- vapply(object_list, function(x) {
+      class(x)[[1]] != "chantrics"
+    }, logical(1))
+    if (any(checks_logi)) {
+      index_false <- as.character(which(checks_logi))
+      rlang::abort(
+        paste0(
+          "Objects in position ",
+          index_false,
+          "are not chantrics objects.\n",
+          "Since the second object is chantrics, all other unnamed objects must be chantrics."
+        ),
+        class = "chantrics_not_chantrics_object"
+      )
+    }
+    return(object_list)
   }
-  numchar_handler <- function(object_list){
-    #flatten any structures, e.g. lists or vectors into one big vector
-    #check that all elements in object_list are numericals or characters
-    #try to match the numerical elements with elements in attr(terms(object1), "term.labels")
-    #if too long, break
-    #then, pass the objects one by one into update functions, consecutively decreasing the list of variables
-    #leave error handling and matching errors to update().
+  numchar_handler <- function(object_list) {
+    chantrics_obj <- object_list[[1]]
+    # flatten any structures, e.g. lists or vectors into one big list
+    flat_object_list <- purrr::flatten(object_list[-1])
+    # get a list of covariate names from the first object
+    var_names <- attr(terms(chantrics_obj), "term.labels")
+    # function to pass into vapply
+    match_var_names <- function(x) {
+      # check that all elements in flat_object_list are numericals or characters
+      if (rlang::is_scalar_double(x)) {
+        # try coercing into integer
+        x_int <- try(as.integer(x), silent = TRUE)
+        if (is.error(x_int)) {
+          rlang::abort("Could not coerce ",
+            as.character(x),
+            "into an integer.",
+            class = "chantrics_alrtest_failed_int_coercion"
+          )
+        }
+        # try to match the numerical elements with elements in var_names
+        if (x_int > length(var_names)) {
+          rlang::abort(
+            paste0(
+              as.character(x_int),
+              " exceeds ",
+              length(var_names),
+              ", the number of variables in\n",
+              "attr(terms(object1), 'term.labels')"
+            ),
+            class = "chantrics_alrtest_num_too_high"
+          )
+        }
+        return(var_names[[x_int]])
+      } else if (rlang::is_string(x)) {
+        # try to match the string against the list of variable names, abort if
+        # not matched
+        if (x %in% var_names) {
+          return(x)
+        } else {
+          rlang::abort(
+            paste0(
+              x,
+              " could not be matched against any element in\n",
+              "attr(terms(object1), 'term.labels')"
+            ),
+            class = "chantrics_alrtest_string_failed_matching"
+          )
+        }
+      } else {
+        rlang::abort(
+          paste0(
+            "The object ",
+            as.character(x),
+            " of class ",
+            class(x),
+            "\n",
+            "is neither coercible into an integer nor a matchable character string."
+          ),
+          class = "chantrics_alrtest_numchar_match_failed"
+        )
+      }
+    }
+    remove_these_vars <-
+      vapply(flat_object_list, match_var_names, character(1))
+    ready_objects <- list(chantrics_obj)
+    # then, pass the objects one by one into update functions, consecutively
+    # decreasing the list of variables leave error handling and matching errors
+    # to update().
+    for (remove_var in remove_these_vars) {
+      ready_objects <-
+        c(
+          ready_objects,
+          stats::update(ready_objects[[length(ready_objects)]], formula = stats::as.formula(paste0(
+            ". ~ . - ", remove_var
+          )))
+        )
+    }
+    return(ready_objects)
   }
-  formula_handler <- function(object_list){
-    #pass the formula objects consecutively into update. Leave all error handling to formula.
+  formula_handler <- function(object_list) {
+    ready_objects <- list(object_list[[1]])
+    # pass the formula objects consecutively into update. Leave all error handling to formula.
+    for (curr_formula in object_list[-1]) {
+      # check if formula
+      if (!rlang::is_formula(curr_formula)) {
+        rlang::abort(paste0(as.character(curr_formula), " is not a formula."), class = "chantrics_alrtest_not_formula")
+      } else {
+        ready_objects <-
+          c(ready_objects,
+            stats::update(ready_objects[[length(ready_objects)]], formula = curr_formula)
+          )
+      }
+    }
+    return(ready_objects)
   }
-  #write bank of if statements that check if the second element in object_list is a chantrics, a numerical/character, or a formula object
-  #then lead the object_list into the handlers
-  #if it is none of the types, abort
-
-  #save the results to ready_objects
-
-  #pass ready_objects together with named_args into anova.chantrics
-
-  #remember to change the header in the anova table that will be returned to the user.
+  # write bank of if statements that check if the second element in object_list
+  # is a chantrics, a numerical/character, or a formula object then lead the
+  # object_list into the handlers
+  checkobj <- object_list[[2]]
+  if (class(checkobj)[[1]] == "chantrics") {
+    ready_objects <- chantrics_handler(object_list)
+  } else if (any(is.character(checkobj), is.numeric(checkobj))) {
+    ready_objects <- numchar_handler(object_list)
+  } else if (rlang::is_formula(checkobj)) {
+    ready_objects <- formula_handler(object_list)
+  } else {
+    # if it is none of the types, abort
+    rlang::abort(paste0("The second object is of unexpected class", class(checkobj)),
+      class = "chantrics_alrtest_unexpected_second_obj"
+    )
+  }
+  # pass ready_objects together with named_args into anova.chantrics
+  anova_result <-
+    do.call("anova", c(unname(ready_objects), named_args))
+  attr(anova_result, "heading")[[1]] <-
+    "Adjusted likelihood ratio test\n"
+  return(anova_result)
 }
 
 
 #' @export
 
-logLik_vec.chantrics <- function(object, ...){
+logLik_vec.chantrics <- function(object, ...) {
   rlang::abort("Not yet implemented.")
 }

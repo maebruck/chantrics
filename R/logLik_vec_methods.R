@@ -40,7 +40,7 @@ logLik.logLik_vec <- function(object, ...) {
 #' @export
 
 
-nobs.logLik_vec <- function(object, ...){
+nobs.logLik_vec <- function(object, ...) {
   if (!missing(...)) {
     rlang::warn("extra arguments discarded")
   }
