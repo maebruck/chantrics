@@ -240,19 +240,8 @@ anova.chantrics <- function(object, ...) {
     prev_adjusted_object <- model_objects[[1]]
     # unadjusted_object <- attr(adjusted_object, "unadj_object")
     # get list of variables by which anova should split
-    formula_full <-
-      try(attr(prev_adjusted_object, "formula"), silent = TRUE)
-    if (is.error(formula_full)) {
-      rlang::abort(
-        paste0(
-          "Formula not available in object ",
-          "via attr(model1, 'formula')\n",
-          "Handling of this case not supported."
-        )
-      )
-    }
     variable_vec <-
-      rev(attr(stats::terms(formula_full), "term.labels"))
+      rev(attr(stats::terms(prev_adjusted_object), "term.labels"))
     # initialise progress bar
     pb <- progress::progress_bar$new(total = length(variable_vec))
     for (rm_this_var in variable_vec) {
