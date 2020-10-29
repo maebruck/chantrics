@@ -7,8 +7,7 @@
 
 [![Travis build
 status](https://travis-ci.com/tbruckbauer/chantrics.svg?token=w8TadkqrUK2xbsPmJ7ty&branch=master)](https://travis-ci.com/tbruckbauer/chantrics)
-[![Codecov test
-coverage](https://codecov.io/gh/tbruckbauer/chantrics/branch/master/graph/badge.svg)](https://codecov.io/gh/tbruckbauer/chantrics?branch=master)
+[![codecov](https://codecov.io/gh/tbruckbauer/chantrics/branch/master/graph/badge.svg?token=EQQ177WODM)](https://codecov.io/gh/tbruckbauer/chantrics)
 <!-- badges: end -->
 
 The goal of chantrics is to …
