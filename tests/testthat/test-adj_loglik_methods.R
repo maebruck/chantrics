@@ -107,12 +107,6 @@ test_that("alrtest aborts if the specified variable can't be found", {
 
 # ==== df.residuals.chantrics() ====
 
-test_that("df.residuals works as expected",{
+test_that("df.residuals works as expected", {
   expect_equal(df.residual(fm_pois_adj), 247)
 })
-
-
-
-
-
-

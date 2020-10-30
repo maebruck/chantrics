@@ -88,7 +88,7 @@ adj_loglik <- function(x,
     if (any(paste0("vcov.", class(x)) %in% utils::methods("vcov"))) {
       H <- -solve(stats::vcov(x))
     } else {
-      # otherwise use integrated methods
+      # otherwise use integrated methods - emergency fallback.
       H <- NULL
     }
   } else {
@@ -343,6 +343,7 @@ anova.chantrics <- function(object, ...) {
       }
     } else {
       # if formula not available, write variable list to result_df
+      # emergency fallback
       result_df_nr_formula <-
         get_variable_str_from_chantrics(smaller_m)
     }
@@ -583,7 +584,7 @@ alrtest <- function(object, ...) {
     match_var_names <- function(x) {
       # check that all elements in flat_object_list are numericals or characters
       if (rlang::is_scalar_double(x)) {
-        # try coercing into integer
+        # try coercing into integer - emergency fallback.
         x_int <- try(as.integer(x), silent = TRUE)
         if (is.error(x_int)) {
           rlang::abort("Could not coerce ",
@@ -661,7 +662,8 @@ alrtest <- function(object, ...) {
         rlang::abort(paste0(as.character(curr_formula), " is not a formula."), class = "chantrics_alrtest_not_formula")
       } else {
         ready_objects <-
-          c(ready_objects,
+          c(
+            ready_objects,
             stats::update(ready_objects[[length(ready_objects)]], formula = curr_formula)
           )
       }

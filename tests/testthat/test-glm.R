@@ -19,6 +19,10 @@ test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
   # add calculations for other families here
 })
 
+test_that("adj_logLik can handle use_vcov = F (set very high error tolerance.)", {
+  expect_equal(summary(fm_pois_adj), summary(adj_logLik(fm_pois, use_vcov = F)), tolerance = 1e-3)
+})
+
 # !! add unit tests for other glm link functions for logLik_vec() here !!
 
 # adjust fm_pois

@@ -28,6 +28,10 @@ model_generics_caller <- function(object) {
   vcov(object)
   logLik(object)
   AIC(object)
+  # sequential anova?
+  anova(object)
+  df.residual(object)
+  nobs(object)
 }
 
 # define test object using glm and poisson
