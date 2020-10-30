@@ -29,8 +29,9 @@ An object of class \code{"chantrics"} inheriting from class \code{"chandwich"}.
 See \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}. The remaining elements of the returned
 class are \code{class(x)}.
 
-\code{chantrics} objects have \code{AIC}, \code{anova}, \code{coef}, \code{confint}, \code{logLik},
-\code{logLik_vec}, \code{nobs}, \code{plot}, \code{print}, \code{summary} and \code{vcov} methods.
+\code{chantrics} objects have \code{AIC}, \code{anova}, \code{coef}, \code{confint}, \code{df.residual},
+\code{logLik}, \code{logLik_vec}, \code{nobs}, \code{plot}, \code{print}, \code{summary} and \code{vcov}
+methods.
 }
 \description{
 This function adjusts the log-likelihood of fitted model objects based on

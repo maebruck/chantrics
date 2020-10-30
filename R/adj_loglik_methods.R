@@ -30,14 +30,15 @@
 #'   [chandwich::adjust_loglik()] using [stats::optimHess()].
 #'
 #' @section Supported models:
-#'   * [glm]
+#' * [glm]
 #'
 #' @return An object of class `"chantrics"` inheriting from class `"chandwich"`.
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
 #'   class are `class(x)`.
 #'
-#'   `chantrics` objects have `AIC`, `anova`, `coef`, `confint`, `logLik`,
-#'   `logLik_vec`, `nobs`, `plot`, `print`, `summary` and `vcov` methods.
+#'   `chantrics` objects have `AIC`, `anova`, `coef`, `confint`, `df.residual`,
+#'   `logLik`, `logLik_vec`, `nobs`, `plot`, `print`, `summary` and `vcov`
+#'   methods.
 #'
 #' @section Examples: See the model-specific pages in the *supported models*
 #'   section.
@@ -294,7 +295,7 @@ anova.chantrics <- function(object, ...) {
   silent = TRUE
   )
   result_df.resid_df <- integer(n_models)
-  result_df.resid_df[[1]] <- get_resid_df_from_chantrics(largest_m)
+  result_df.resid_df[[1]] <- df.residual.chantrics(largest_m)
   result_df.df <- integer(n_models)
   result_df.df[[1]] <- NA
   result_df.alrts <- numeric(n_models)
@@ -373,8 +374,7 @@ anova.chantrics <- function(object, ...) {
       ), named_dotargs))
     # append to results data.frame
     result_df.formula[[i + 1]] <- result_df_nr_formula
-    result_df.resid_df[[i + 1]] <-
-      get_resid_df_from_chantrics(smaller_m)
+    result_df.resid_df[[i + 1]] <- df.residual.chantrics(smaller_m)
     result_df.df[[i + 1]] <- result[["df"]]
     result_df.alrts[[i + 1]] <- result[["alrts"]]
     result_df.p_value[[i + 1]] <- result[["p_value"]]
@@ -692,6 +692,16 @@ alrtest <- function(object, ...) {
   return(anova_result)
 }
 
+#' @importFrom stats df.residual
+#' @export
+
+df.residual.chantrics <- function(object, ...) {
+  abort_not_chantrics(object)
+  if (!missing(...)) {
+    rlang::warn("extra arguments discarded")
+  }
+  return(stats::nobs(object) - attr(object, "p_current"))
+}
 
 #' @export
 

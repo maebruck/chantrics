@@ -8,7 +8,6 @@
 \alias{abort_not_chantrics}
 \alias{get_variable_str_from_chantrics}
 \alias{get_formula_str_from_chantrics}
-\alias{get_resid_df_from_chantrics}
 \alias{get_additional_args_from_chantrics_call}
 \alias{get_named}
 \alias{get_unnamed}
@@ -25,8 +24,6 @@ abort_not_chantrics(x)
 get_variable_str_from_chantrics(x)
 
 get_formula_str_from_chantrics(x)
-
-get_resid_df_from_chantrics(x)
 
 get_additional_args_from_chantrics_call(x)
 
