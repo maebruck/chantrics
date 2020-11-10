@@ -708,5 +708,5 @@ df.residual.chantrics <- function(object, ...) {
 #' @export
 
 logLik_vec.chantrics <- function(object, ...) {
-  rlang::abort("Not yet implemented.")
+  return(attr(object, "loglikVecMLE"))
 }
