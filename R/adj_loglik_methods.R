@@ -81,6 +81,7 @@ adj_loglik <- function(x,
   try(name_pieces <- c(x$family$family, name_pieces), silent = TRUE)
   # get mle estimate from x
   mle <- stats::coef(x)
+
   # estimate Hessian if use_vcov is TRUE
   if (use_vcov) {
     # only possible if vcov exists
@@ -118,6 +119,16 @@ adj_loglik <- function(x,
       H = H,
       V = V
     )
+  #post-estimation
+  if (class(x)[1] == "glm") {
+    if (x$family$family == "gaussian") {
+      #estimate dispersion
+      response_vec <- get_response_from_model(x)
+      eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
+      mu_vec <- x$family$linkinv(eta_vec)
+      attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec, mu_vec, stats::df.residual(x))
+    }
+  }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
     stats::formula(x), silent = TRUE)
@@ -128,6 +139,31 @@ adj_loglik <- function(x,
   attr(adjusted_x, "chantrics_args") <- args_list
   return(adjusted_x)
 }
+
+#' @export
+
+summary.chantrics <- function(object, ...) {
+  #https://stackoverflow.com/a/8316856/
+  ans <- NextMethod()
+  if (!is.null(attr(object, "dispersion"))) {
+    attr(ans, "dispersion") <- attr(object, "dispersion")
+  }
+  class(ans) <- c("summary.chantrics", class(ans))
+  return(ans)
+}
+
+#' @export
+
+print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L),
+            #symbolic.cor = x$symbolic.cor,
+            signif.stars = getOption("show.signif.stars"), ...) {
+  stats::printCoefmat(x, digits = digits)
+  if (!is.null(attr(x, "dispersion"))) {
+    cat("\n(Dispersion parameter taken to be ", format(attr(x, "dispersion"), digits = digits), ")\n", sep = "")
+  }
+  invisible(x)
+}
+
 
 #' ANOVA tables: compare nested models
 #'
@@ -264,8 +300,8 @@ anova.chantrics <- function(object, ...) {
   } else if (length(model_objects) < 1) {
     rlang::abort(
       paste0(
-        "Less than two 'chantrics' objects have been supplied, ",
-        "but we require at least two.\nPlease supply more models."
+        "No 'chantrics' objects have been supplied, ",
+        "but we require at least one.\nPlease supply more models."
       ),
       class = "chantrics_not_enough_models"
     )

@@ -9,6 +9,7 @@ Describe glm methods here
 \section{Supported families (within each family, any link function should work)}{
 
 \itemize{
+\item \code{gaussian}
 \item \code{poisson}
 }
 }

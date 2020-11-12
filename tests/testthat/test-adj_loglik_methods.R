@@ -24,9 +24,9 @@ test_that("anova.chantrics warns user if unnamed parameters are dropped", {
   )
 })
 
-test_that("anova.chantrics aborts when no model is supplied", {
-  expect_error(anova.chantrics("foo", "bar", type = "vertical"), class = "chantrics_not_enough_models")
-})
+# test_that("anova.chantrics aborts when no model is supplied", {
+#   expect_error(chantrics:::anova.chantrics("foo", "bar", type = "vertical"), class = "chantrics_not_enough_models")
+# })
 
 test_that("anova.chantrics aborts if two models have the same # of params", {
   expect_error(anova(fm_pois_small_adj, adj_loglik(stats::update(
