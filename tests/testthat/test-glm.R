@@ -16,13 +16,15 @@ chantrics_pois_logLik <- logLik_vec(fm_pois, fm_pois$coefficients)
 # ==== generate logistic regression data ====
 # https://uvastatlab.github.io/2019/05/04/simulating-a-logistic-regression-model/
 set.seed(1)
-a_logit <- rbinom(250, 1, 0.5)
-b_logit <- runif(250, 10, 80)
+sample_logit <- 250
+a_logit <- rbinom(sample_logit, 1, 0.5)
+b_logit <- runif(sample_logit, 10, 80)
 eta_logit <- 2 + 0.3 * a_logit - 0.02 * b_logit
 # checked implementation with C source https://github.com/wch/r-source/blob/5a156a0865362bb8381dcd69ac335f5174a4f60c/src/library/stats/src/family.c#L73
 probs_logit <- exp(eta_logit) / (1 + exp(eta_logit))
-y_logit <- rbinom(n = 250, 1, probs_logit)
+y_logit <- rbinom(n = sample_logit, 1, probs_logit)
 df_logit <- data.frame(y = y_logit, a = a_logit, b = b_logit)
+
 logit_glm_loglik <- function(pars, df_logit) {
   eta <- pars[1] + pars[2] * df_logit$a + pars[3] * df_logit$b
   p <- exp(eta) / (1 + exp(eta))
@@ -36,13 +38,15 @@ chantrics_logit_logLik <- logLik_vec(bm_logit, bm_logit$coefficients)
 
 # ==== Generate Probit regression data ====
 set.seed(1)
-a_probit <- rbinom(250, 1, 0.5)
-b_probit <- runif(250, 10, 80)
+sample_probit <- 250
+a_probit <- rbinom(sample_probit, 1, 0.5)
+b_probit <- runif(sample_probit, 10, 80)
 eta_probit <- 2 + 0.3 * a_probit - 0.02 * b_probit
 # link is cdf of standard normal.
 probs_probit <- pnorm(eta_probit, mean = 0, sd = 1)
-y_probit <- rbinom(n = 250, 1, probs_probit)
+y_probit <- rbinom(n = sample_probit, 1, probs_probit)
 df_probit <- data.frame(y = y_probit, a = a_probit, b = b_probit)
+
 probit_glm_loglik <- function(pars, df_probit) {
   eta <- pars[1] + pars[2] * df_probit$a + pars[3] * df_probit$b
   p <- pnorm(eta, mean = 0, sd = 1)
@@ -83,7 +87,8 @@ test_that("adj_logLik can handle use_vcov = F (set very high error tolerance.)",
 test_that("Are generics accessible for adjusted glm models?", {
   # test that there is no error
   expect_error(model_generics_caller(fm_pois_adj), regexp = NA)
-  expect_error(model_generics_caller(bm_logit_adj))
+  expect_error(model_generics_caller(bm_logit_adj), regexp = NA)
+  expect_error(model_generics_caller(bm_probit_adj), regexp = NA)
 })
 
 ## === ANOVA ===

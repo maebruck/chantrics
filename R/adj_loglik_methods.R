@@ -79,7 +79,7 @@ adj_loglik <- function(x,
   }
   name_pieces <- c(class(x))
   # add glm family to name
-  try(name_pieces <- c(x$family$family, name_pieces), silent = TRUE)
+  try({name_pieces <- c(x$family$family, name_pieces)}, silent = TRUE)
   # get mle estimate from x
   mle <- stats::coef(x)
   # estimate Hessian if use_vcov is TRUE
