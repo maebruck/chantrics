@@ -1,6 +1,29 @@
 context("Tests the aLogLik method and submethods associated with glm models.")
 
-# poisson
+
+#stuff about dispersion parameters
+#https://stats.stackexchange.com/questions/33432/dispersion-parameter-in-glm-output
+
+# ==== generate gaussian data ====
+# following example in https://www.r-bloggers.com/2013/08/fitting-a-model-by-maximum-likelihood/
+
+set.seed(1001)
+sample_gaussian <- 250
+a_gauss <- rbinom(sample_gaussian, 1, 0.5)
+b_gauss <- runif(sample_gaussian, 10, 80)
+y_gauss <- 2 + 0.3 * a_gauss + 0.95 * b_gauss + rnorm(sample_gaussian, mean = 0, sd = 2)
+df_gauss <- data.frame(y = y_gauss, a = a_gauss, b = b_gauss)
+glm_gauss <- glm(y~a+b, data = df_gauss, family = gaussian())
+glm_gauss_adj <- adj_loglik(glm_gauss)
+gauss_glm_loglik <- function(pars, disp, df) {
+  eta <- df$y - pars[1] - pars[2] * df$a - pars[3]*df$b
+  return(dnorm(eta, 0, sd = sqrt(disp), log = TRUE))
+}
+reference_gauss_logLik <- gauss_glm_loglik(glm_gauss$coefficients, summary(glm_gauss)$dispersion, df_gauss)
+chantrics_gauss_logLik <- logLik_vec(glm_gauss, glm_gauss$coefficients)
+
+
+# ==== generate poisson data ====
 
 # fit the misspecified poisson model from Introducing chandwich
 # fitting happens in testthat.R
@@ -56,22 +79,19 @@ bm_probit <- glm(y ~ a + b, data = df_probit, family = binomial(link = "probit")
 bm_probit_adj <- adj_loglik(bm_probit)
 reference_probit_logLik <- probit_glm_loglik(bm_probit$coefficients, df_probit)
 chantrics_probit_logLik <- logLik_vec(bm_probit, bm_probit$coefficients)
-summary(bm_probit)
-summary(bm_probit_adj)
-
-
-
 
 test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct object", {
   expect_equal(c(reference_pois_logLik), unname(c(chantrics_pois_logLik)))
   expect_equal(c(reference_logit_logLik), unname(c(chantrics_logit_logLik)))
   expect_equal(c(reference_probit_logLik), unname(c(chantrics_probit_logLik)))
+  expect_equal(c(reference_gauss_logLik), unname(c(chantrics_gauss_logLik)))
 })
 
 test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
   expect_equal(logLik(fm_pois), logLik(chantrics_pois_logLik))
   expect_equal(logLik(bm_logit), logLik(chantrics_logit_logLik))
   expect_equal(logLik(bm_probit), logLik(chantrics_probit_logLik))
+  expect_equal(logLik(glm_gauss), logLik(chantrics_gauss_logLik))
   # add calculations for other families here
 })
 
@@ -89,6 +109,7 @@ test_that("Are generics accessible for adjusted glm models?", {
   expect_error(model_generics_caller(fm_pois_adj), regexp = NA)
   expect_error(model_generics_caller(bm_logit_adj), regexp = NA)
   expect_error(model_generics_caller(bm_probit_adj), regexp = NA)
+  expect_error(model_generics_caller(glm_gauss_adj), regexp = NA)
 })
 
 ## === ANOVA ===
@@ -96,4 +117,12 @@ test_that("Are generics accessible for adjusted glm models?", {
 test_that("Has the ANOVA function changed its output?", {
   expect_equivalent(round(anova(fm_pois_adj)[["I(x^2)", "ALRTS"]], 5), 1.82017)
   expect_equivalent(round(anova(fm_pois_adj, fm_pois_small_adj)[["2", "ALRTS"]], 5), 1.82017)
+})
+
+## === dispersion.gauss() ===
+
+test_that("Does dispersion.gauss() calculate the correct dispersion parameter?", {
+  realdisp <- summary(glm_gauss)$dispersion
+  testdisp <- chantrics:::dispersion.gauss(y_gauss, fitted(glm_gauss), stats::nobs(glm_gauss) - 3)
+  expect_equal(realdisp, testdisp)
 })

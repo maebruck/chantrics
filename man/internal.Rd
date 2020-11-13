@@ -5,6 +5,8 @@
 \alias{is.error}
 \alias{raise_yield_error}
 \alias{get_response_from_formula}
+\alias{get_response_from_model}
+\alias{get_design_matrix_from_model}
 \alias{abort_not_chantrics}
 \alias{get_variable_str_from_chantrics}
 \alias{get_formula_str_from_chantrics}
@@ -18,6 +20,10 @@ is.error(x)
 raise_yield_error(model = "model", what = "property", try_this = NULL)
 
 get_response_from_formula(x)
+
+get_response_from_model(object)
+
+get_design_matrix_from_model(object)
 
 abort_not_chantrics(x)
 
