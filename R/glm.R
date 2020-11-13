@@ -7,6 +7,9 @@
 #' * `gaussian`
 #' * `poisson`
 #' * `binomial`
+#' * `MASS::negative.binomial`
+#'
+#' Also works for [MASS::glm.nb()]
 #'
 #' @examples
 #' # binomial example from Applied Econometrics in R, Kleiber/Zeileis (2008)
@@ -56,8 +59,12 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
     pars <- c(pars, disp)
     names(pars)[length(pars)] <- "Dispersion"
     llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
+  } else if (substr(object$family$family, 1, 18) == "Negative Binomial(") {
+    theta <- object$call$family$theta
+    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+  } else {
+    rlang::abort(paste0(object$family$family, " is not supported."), class = "chantrics_not_supported_glm_family")
   }
-  # add other densities here
 
   # return other attributes from logLik objects
   attr(llv, "df") <- length(pars)
@@ -76,4 +83,39 @@ dispersion.gauss <- function(response_vec, mu_vec, df) {
   #response_vec are the true Y, the mu_vec are the fitted values
 
   return(sum((response_vec - mu_vec) ^ 2) / (df))
+}
+
+#' @keywords internal
+
+dispersion.stat <- function(response_vec, mu_vec, object) {
+  #modelcount-hilbe, pg. 78 (Eqn. 3.4, pearson chi-sq statistic), pg. 79, "The dispersion statistic of the Poisson model is defined as the Pearson Chi2 statistic divided by the residual degrees of freedom"
+  return(sum(((response_vec - mu_vec) ^ 2) / object$family$variance(mu_vec)) / (stats::df.residual(object)))
+}
+
+
+
+logLik_vec.negbin <- function(object, pars = NULL, ...) {
+  if (!missing(...)) {
+    rlang::warn("extra arguments discarded")
+  }
+  # import coefficients
+  if (is.null(pars)) {
+    pars <- stats::coef(object)
+  }
+  # calculate mus
+  # try getting the design matrix from glm object
+  x_mat <- get_design_matrix_from_model(object)
+  eta_vec <- x_mat %*% pars
+  mu_vec <- object$family$linkinv(eta_vec)
+  # try getting the response vector from glm
+  response_vec <- get_response_from_model(object)
+  theta <- dispersion.stat(response_vec, mu_vec, object)
+  pars <- c(pars, "theta")
+  llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+
+  # return other attributes from logLik objects
+  attr(llv, "df") <- length(pars)
+  attr(llv, "nobs") <- stats::nobs(object)
+  class(llv) <- "logLik_vec"
+  return(llv)
 }

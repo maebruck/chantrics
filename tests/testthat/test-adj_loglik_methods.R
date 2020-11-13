@@ -36,7 +36,7 @@ test_that("anova.chantrics aborts if two models have the same # of params", {
 })
 
 test_that("anova.chantrics aborts if attr(model, 'name') do not match", {
-  expect_error(anova(fm_pois_adj, fm_negbin_small_adj), class = "chantrics_model_does_not_match")
+  expect_error(anova(fm_pois_adj, fm_negbin_adj), class = "chantrics_model_does_not_match")
 })
 
 test_that("anova.chantrics warns if the response changes", {

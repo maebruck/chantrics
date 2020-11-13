@@ -12,7 +12,10 @@ Describe glm methods here
 \item \code{gaussian}
 \item \code{poisson}
 \item \code{binomial}
+\item \code{MASS::negative.binomial}
 }
+
+Also works for \code{\link[MASS:glm.nb]{MASS::glm.nb()}}
 }
 
 \examples{

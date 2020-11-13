@@ -36,7 +36,7 @@ model_generics_caller <- function(object) {
 
 # ===== glm test models =====
 
-# ==== generate poisson data ====
+# ==== generate negbin data ====
 
 # fit the misspecified poisson model from Introducing chandwich
 
@@ -44,6 +44,9 @@ set.seed(123)
 x_nbinom <- rnorm(250)
 y_nbinom <- rnbinom(250, mu = exp(1 + x_nbinom), size = 1)
 df_nbinom <- data.frame(x = x_nbinom, y = y_nbinom)
+
+# ==== poisson test objects ====
+
 fm_pois <- glm(y ~ x + I(x^2), data = df_nbinom, family = poisson)
 fm_pois_adj <- adj_loglik(fm_pois)
 fm_pois_small <- update(fm_pois, formula = . ~ . - I(x^2))
@@ -52,9 +55,6 @@ fm_pois_smallest <- update(fm_pois, formula = . ~ 1)
 fm_pois_smallest_adj <- adj_loglik(fm_pois_smallest)
 fm_pois_cube_only <- update(fm_pois, formula = . ~ I(x^3))
 fm_pois_cube_only_adj <- adj_loglik(fm_pois_cube_only)
-# just a dummy until implemented
-fm_negbin_small_adj <- fm_pois_small_adj
-attr(fm_negbin_small_adj, "name") <- "negbin_glm_lm"
 
 pois_glm_loglik <- function(pars, y, x) {
   log_mu <- pars[1] + pars[2] * x + pars[3] * x^2
@@ -62,6 +62,24 @@ pois_glm_loglik <- function(pars, y, x) {
 }
 reference_pois_logLik <- pois_glm_loglik(fm_pois$coefficients, y_nbinom, x_nbinom)
 chantrics_pois_logLik <- logLik_vec(fm_pois, fm_pois$coefficients)
+
+# ==== negbin test objects ====
+
+fm_negbin <- glm(y ~ x, data = df_nbinom, family = MASS::negative.binomial(theta = 1))
+summary(fm_negbin)
+summary(fm_pois_small)
+fm_negbin_adj <- adj_loglik(fm_negbin)
+summary(fm_negbin_adj)
+chantrics_negbin_logLik <- logLik_vec(fm_negbin, fm_negbin$coefficients)
+
+
+
+# estimation of theta
+fm_negbin_theta <- MASS::glm.nb(y~x, data = df_nbinom)
+summary(fm_negbin_theta)
+fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
+summary(fm_negbin_theta_adj)
+chantrics_negbin_theta_logLik <- chantrics:::logLik_vec.negbin(fm_negbin_theta, fm_negbin_theta$coefficients)
 
 
 # ==== generate gaussian data ====

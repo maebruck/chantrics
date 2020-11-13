@@ -57,7 +57,7 @@ adj_loglik <- function(x,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
-  supported_models <- c("glm")
+  supported_models <- c("glm", "negbin")
   # check if x is a supported model type
   if (!(class(x)[1] %in% supported_models)) {
     rlang::abort(
@@ -127,8 +127,20 @@ adj_loglik <- function(x,
       response_vec <- get_response_from_model(x)
       eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
       mu_vec <- x$family$linkinv(eta_vec)
-      attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec, mu_vec, stats::df.residual(x))
+      attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec, mu_vec, stats::df.residual(x) - 1)
+    } else if (substr(x$family$family, 1, 18) == "Negative Binomial(") {
+      #estimate dispersion
+      response_vec <- get_response_from_model(x)
+      eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
+      mu_vec <- x$family$linkinv(eta_vec)
+      attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
     }
+  } else if (class(x)[1] == "negbin") {
+    #estimate dispersion
+    response_vec <- get_response_from_model(x)
+    eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
+    mu_vec <- x$family$linkinv(eta_vec)
+    attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
