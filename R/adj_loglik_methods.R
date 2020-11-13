@@ -30,14 +30,15 @@
 #'   [chandwich::adjust_loglik()] using [stats::optimHess()].
 #'
 #' @section Supported models:
-#'   * [glm]
+#' * [glm]
 #'
 #' @return An object of class `"chantrics"` inheriting from class `"chandwich"`.
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
 #'   class are `class(x)`.
 #'
-#'   `chantrics` objects have `AIC`, `anova`, `coef`, `confint`, `logLik`,
-#'   `logLik_vec`, `nobs`, `plot`, `print`, `summary` and `vcov` methods.
+#'   `chantrics` objects have `AIC`, `anova`, `coef`, `confint`, `df.residual`,
+#'   `logLik`, `logLik_vec`, `nobs`, `plot`, `print`, `summary` and `vcov`
+#'   methods.
 #'
 #' @section Examples: See the model-specific pages in the *supported models*
 #'   section.
@@ -78,7 +79,7 @@ adj_loglik <- function(x,
   }
   name_pieces <- c(class(x))
   # add glm family to name
-  try(name_pieces <- c(x$family$family, name_pieces), silent = TRUE)
+  try({name_pieces <- c(x$family$family, name_pieces)}, silent = TRUE)
   # get mle estimate from x
   mle <- stats::coef(x)
 
@@ -88,7 +89,7 @@ adj_loglik <- function(x,
     if (any(paste0("vcov.", class(x)) %in% utils::methods("vcov"))) {
       H <- -solve(stats::vcov(x))
     } else {
-      # otherwise use integrated methods
+      # otherwise use integrated methods - emergency fallback.
       H <- NULL
     }
   } else {
@@ -276,19 +277,8 @@ anova.chantrics <- function(object, ...) {
     prev_adjusted_object <- model_objects[[1]]
     # unadjusted_object <- attr(adjusted_object, "unadj_object")
     # get list of variables by which anova should split
-    formula_full <-
-      try(attr(prev_adjusted_object, "formula"), silent = TRUE)
-    if (is.error(formula_full)) {
-      rlang::abort(
-        paste0(
-          "Formula not available in object ",
-          "via attr(model1, 'formula')\n",
-          "Handling of this case not supported."
-        )
-      )
-    }
     variable_vec <-
-      rev(attr(stats::terms(formula_full), "term.labels"))
+      rev(attr(stats::terms(prev_adjusted_object), "term.labels"))
     # initialise progress bar
     pb <- progress::progress_bar$new(total = length(variable_vec))
     for (rm_this_var in variable_vec) {
@@ -341,7 +331,7 @@ anova.chantrics <- function(object, ...) {
   silent = TRUE
   )
   result_df.resid_df <- integer(n_models)
-  result_df.resid_df[[1]] <- get_resid_df_from_chantrics(largest_m)
+  result_df.resid_df[[1]] <- df.residual.chantrics(largest_m)
   result_df.df <- integer(n_models)
   result_df.df[[1]] <- NA
   result_df.alrts <- numeric(n_models)
@@ -389,6 +379,7 @@ anova.chantrics <- function(object, ...) {
       }
     } else {
       # if formula not available, write variable list to result_df
+      # emergency fallback
       result_df_nr_formula <-
         get_variable_str_from_chantrics(smaller_m)
     }
@@ -420,8 +411,7 @@ anova.chantrics <- function(object, ...) {
       ), named_dotargs))
     # append to results data.frame
     result_df.formula[[i + 1]] <- result_df_nr_formula
-    result_df.resid_df[[i + 1]] <-
-      get_resid_df_from_chantrics(smaller_m)
+    result_df.resid_df[[i + 1]] <- df.residual.chantrics(smaller_m)
     result_df.df[[i + 1]] <- result[["df"]]
     result_df.alrts[[i + 1]] <- result[["alrts"]]
     result_df.p_value[[i + 1]] <- result[["p_value"]]
@@ -630,7 +620,7 @@ alrtest <- function(object, ...) {
     match_var_names <- function(x) {
       # check that all elements in flat_object_list are numericals or characters
       if (rlang::is_scalar_double(x)) {
-        # try coercing into integer
+        # try coercing into integer - emergency fallback.
         x_int <- try(as.integer(x), silent = TRUE)
         if (is.error(x_int)) {
           rlang::abort("Could not coerce ",
@@ -708,7 +698,8 @@ alrtest <- function(object, ...) {
         rlang::abort(paste0(as.character(curr_formula), " is not a formula."), class = "chantrics_alrtest_not_formula")
       } else {
         ready_objects <-
-          c(ready_objects,
+          c(
+            ready_objects,
             stats::update(ready_objects[[length(ready_objects)]], formula = curr_formula)
           )
       }
@@ -739,9 +730,19 @@ alrtest <- function(object, ...) {
   return(anova_result)
 }
 
+#' @importFrom stats df.residual
+#' @export
+
+df.residual.chantrics <- function(object, ...) {
+  abort_not_chantrics(object)
+  if (!missing(...)) {
+    rlang::warn("extra arguments discarded")
+  }
+  return(stats::nobs(object) - attr(object, "p_current"))
+}
 
 #' @export
 
 logLik_vec.chantrics <- function(object, ...) {
-  rlang::abort("Not yet implemented.")
+  return(attr(object, "loglikVecMLE"))
 }

@@ -104,3 +104,9 @@ test_that("alrtest aborts if the specified variable can't be found", {
   expect_error(alrtest(fm_pois_adj, 1456), class = "chantrics_alrtest_num_too_high")
   expect_error(alrtest(fm_pois_adj, "northernline"), class = "chantrics_alrtest_string_failed_matching")
 })
+
+# ==== df.residuals.chantrics() ====
+
+test_that("df.residuals works as expected", {
+  expect_equal(df.residual(fm_pois_adj), 247)
+})

@@ -33,9 +33,8 @@ pois_glm_loglik <- function(pars, y, x) {
   log_mu <- pars[1] + pars[2] * x + pars[3] * x^2
   return(dpois(y, lambda = exp(log_mu), log = TRUE))
 }
-reference_pois_logLik <- pois_glm_loglik(fm_pois$coefficients, y, x)
+reference_pois_logLik <- pois_glm_loglik(fm_pois$coefficients, y_nbinom, x_nbinom)
 chantrics_pois_logLik <- logLik_vec(fm_pois, fm_pois$coefficients)
-
 
 # ==== generate logistic regression data ====
 # https://uvastatlab.github.io/2019/05/04/simulating-a-logistic-regression-model/
@@ -81,10 +80,6 @@ bm_probit_adj <- adj_loglik(bm_probit)
 reference_probit_logLik <- probit_glm_loglik(bm_probit$coefficients, df_probit)
 chantrics_probit_logLik <- logLik_vec(bm_probit, bm_probit$coefficients)
 
-
-# sum(reference_gauss_logLik)
-# logLik(glm_gauss)
-
 test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct object", {
   expect_equal(c(reference_pois_logLik), unname(c(chantrics_pois_logLik)))
   expect_equal(c(reference_logit_logLik), unname(c(chantrics_logit_logLik)))
@@ -98,6 +93,11 @@ test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
   expect_equal(logLik(bm_probit), logLik(chantrics_probit_logLik))
   expect_equal(logLik(glm_gauss), logLik(chantrics_gauss_logLik))
   # add calculations for other families here
+})
+
+test_that("adj_logLik can handle use_vcov = F (set very high error tolerance.)", {
+  expect_equal(summary(fm_pois_adj), summary(adj_loglik(fm_pois, use_vcov = F)), tolerance = 1e-3)
+  expect_equal(summary(bm_logit_adj), summary(adj_loglik(bm_logit, use_vcov = F)), tolerance = 1e-3)
 })
 
 # !! add unit tests for other glm link functions for logLik_vec() here !!

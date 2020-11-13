@@ -28,13 +28,18 @@ model_generics_caller <- function(object) {
   vcov(object)
   logLik(object)
   AIC(object)
+  # sequential anova?
+  anova(object)
+  df.residual(object)
+  nobs(object)
 }
 
 # define test object using glm and poisson
 set.seed(123)
-x <- rnorm(250)
-y <- rnbinom(250, mu = exp(1 + x), size = 1)
-fm_pois <- glm(y ~ x + I(x^2), family = poisson)
+x_nbinom <- rnorm(250)
+y_nbinom <- rnbinom(250, mu = exp(1 + x_nbinom), size = 1)
+df_nbinom <- data.frame(x = x_nbinom, y = y_nbinom)
+fm_pois <- glm(y ~ x + I(x^2), data = df_nbinom, family = poisson)
 fm_pois_adj <- adj_loglik(fm_pois)
 fm_pois_small <- update(fm_pois, formula = . ~ . - I(x^2))
 fm_pois_small_adj <- adj_loglik(fm_pois_small)
