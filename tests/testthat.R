@@ -75,7 +75,7 @@ chantrics_negbin_logLik <- logLik_vec(fm_negbin, fm_negbin$coefficients)
 
 
 # estimation of theta
-fm_negbin_theta <- MASS::glm.nb(y~x, data = df_nbinom)
+fm_negbin_theta <- MASS::glm.nb(y ~ x, data = df_nbinom)
 summary(fm_negbin_theta)
 fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
 summary(fm_negbin_theta_adj)
@@ -91,10 +91,10 @@ a_gauss <- rbinom(sample_gaussian, 1, 0.5)
 b_gauss <- runif(sample_gaussian, 10, 80)
 y_gauss <- 2 + 0.3 * a_gauss + 0.95 * b_gauss + rnorm(sample_gaussian, mean = 0, sd = 2)
 df_gauss <- data.frame(y = y_gauss, a = a_gauss, b = b_gauss)
-glm_gauss <- glm(y~a+b, data = df_gauss, family = gaussian())
+glm_gauss <- glm(y ~ a + b, data = df_gauss, family = gaussian())
 glm_gauss_adj <- adj_loglik(glm_gauss)
 gauss_glm_loglik <- function(pars, disp, df) {
-  eta <- df$y - pars[1] - pars[2] * df$a - pars[3]*df$b
+  eta <- df$y - pars[1] - pars[2] * df$a - pars[3] * df$b
   return(dnorm(eta, 0, sd = sqrt(disp), log = TRUE))
 }
 reference_gauss_logLik <- gauss_glm_loglik(glm_gauss$coefficients, summary(glm_gauss)$dispersion, df_gauss)

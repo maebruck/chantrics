@@ -1,8 +1,8 @@
 context("Tests the aLogLik method and submethods associated with glm models.")
 
 
-#stuff about dispersion parameters
-#https://stats.stackexchange.com/questions/33432/dispersion-parameter-in-glm-output
+# stuff about dispersion parameters
+# https://stats.stackexchange.com/questions/33432/dispersion-parameter-in-glm-output
 
 test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct object", {
   expect_equal(c(reference_pois_logLik), unname(c(chantrics_pois_logLik)))

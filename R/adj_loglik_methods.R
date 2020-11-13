@@ -79,7 +79,12 @@ adj_loglik <- function(x,
   }
   name_pieces <- c(class(x))
   # add glm family to name
-  try({name_pieces <- c(x$family$family, name_pieces)}, silent = TRUE)
+  try(
+    {
+      name_pieces <- c(x$family$family, name_pieces)
+    },
+    silent = TRUE
+  )
   # get mle estimate from x
   mle <- stats::coef(x)
 
@@ -120,23 +125,23 @@ adj_loglik <- function(x,
       H = H,
       V = V
     )
-  #post-estimation
+  # post-estimation
   if (class(x)[1] == "glm") {
     if (x$family$family == "gaussian") {
-      #estimate dispersion
+      # estimate dispersion
       response_vec <- get_response_from_model(x)
       eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
       mu_vec <- x$family$linkinv(eta_vec)
       attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec, mu_vec, stats::df.residual(x) - 1)
     } else if (substr(x$family$family, 1, 18) == "Negative Binomial(") {
-      #estimate dispersion
+      # estimate dispersion
       response_vec <- get_response_from_model(x)
       eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
       mu_vec <- x$family$linkinv(eta_vec)
       attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
     }
   } else if (class(x)[1] == "negbin") {
-    #estimate dispersion
+    # estimate dispersion
     response_vec <- get_response_from_model(x)
     eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
     mu_vec <- x$family$linkinv(eta_vec)
@@ -156,7 +161,7 @@ adj_loglik <- function(x,
 #' @export
 
 summary.chantrics <- function(object, ...) {
-  #https://stackoverflow.com/a/8316856/
+  # https://stackoverflow.com/a/8316856/
   ans <- NextMethod()
   if (!is.null(attr(object, "dispersion"))) {
     attr(ans, "dispersion") <- attr(object, "dispersion")
@@ -168,8 +173,8 @@ summary.chantrics <- function(object, ...) {
 #' @export
 
 print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L),
-            #symbolic.cor = x$symbolic.cor,
-            signif.stars = getOption("show.signif.stars"), ...) {
+                                    # symbolic.cor = x$symbolic.cor,
+                                    signif.stars = getOption("show.signif.stars"), ...) {
   stats::printCoefmat(x, digits = digits)
   if (!is.null(attr(x, "dispersion"))) {
     cat("\n(Dispersion parameter taken to be ", format(attr(x, "dispersion"), digits = digits), ")\n", sep = "")
