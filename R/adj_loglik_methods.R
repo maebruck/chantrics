@@ -150,11 +150,12 @@ adj_loglik <- function(x,
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
     stats::formula(x), silent = TRUE)
-  attr(adjusted_x, "unadj_object") <- x
   args_list <- rlang::dots_list(...)
   args_list[["cluster"]] <- cluster
   args_list[["use_vcov"]] <- use_vcov
   attr(adjusted_x, "chantrics_args") <- args_list
+  #check if unadjusted model has been passed through, if not, add it
+  try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {attr(adjusted_x, "loglik_args")[["fitted_object"]] <- x})
   return(adjusted_x)
 }
 
@@ -292,7 +293,7 @@ anova.chantrics <- function(object, ...) {
     # ==== Sequential ANOVA ====
     # create sequential model objects
     prev_adjusted_object <- model_objects[[1]]
-    # unadjusted_object <- attr(adjusted_object, "unadj_object")
+    # unadjusted_object <- attr(adjusted_object, "loglik_args")[["fitted_object"]]
     # get list of variables by which anova should split
     variable_vec <-
       rev(attr(stats::terms(prev_adjusted_object), "term.labels"))
@@ -517,7 +518,7 @@ update.chantrics <- function(object, ...) {
     }
   }
   chantrics_args <- get_additional_args_from_chantrics_call(object)
-  orig_obj <- attr(object, "unadj_object")
+  orig_obj <- attr(object, "loglik_args")[["fitted_object"]]
   chantrics_args[["x"]] <-
     stats::update(orig_obj, ..., evaluate = TRUE)
   return(do.call(adj_loglik, chantrics_args))
@@ -528,7 +529,7 @@ update.chantrics <- function(object, ...) {
 
 terms.chantrics <- function(x, ...) {
   # passes terms object through from unadjusted object
-  return(terms(attr(x, "unadj_object")))
+  return(terms(attr(x, "loglik_args")[["fitted_object"]]))
 }
 
 #' Adjusted Likelihood Ratio Test of Nested Models
@@ -763,3 +764,4 @@ df.residual.chantrics <- function(object, ...) {
 logLik_vec.chantrics <- function(object, ...) {
   return(attr(object, "loglikVecMLE"))
 }
+
