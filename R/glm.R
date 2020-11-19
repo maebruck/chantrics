@@ -32,6 +32,7 @@
 #' swiss_logit_adj <- adj_loglik(swiss_logit)
 #' summary(swiss_logit_adj)
 #' @name glm
+#' @aliases glm.nb
 NULL
 
 #' @export

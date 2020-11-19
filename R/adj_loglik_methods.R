@@ -31,6 +31,7 @@
 #'
 #' @section Supported models:
 #' * [glm]
+#' * [glm.nb]
 #'
 #' @return An object of class `"chantrics"` inheriting from class `"chandwich"`.
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
@@ -79,12 +80,14 @@ adj_loglik <- function(x,
   }
   name_pieces <- c(class(x))
   # add glm family to name
-  try(
-    {
-      name_pieces <- c(x$family$family, name_pieces)
-    },
-    silent = TRUE
-  )
+  if (class(x)[1] == "glm") {
+    try(
+      {
+        name_pieces <- c(x$family$family, name_pieces)
+      },
+      silent = TRUE
+    )
+  }
   # get mle estimate from x
   mle <- stats::coef(x)
 
@@ -765,3 +768,35 @@ logLik_vec.chantrics <- function(object, ...) {
   return(attr(object, "loglikVecMLE"))
 }
 
+#' Predict Method for chantrics fits
+#'
+#' Obtains predictions from chantrics objects.
+#'
+#' @param object Object of class `chantrics`, as returned by `adj_loglik()`
+#' @param newdata optionally, a data frame in which to look for variables with which to predict. If omitted, the fitted linear predictors are used.
+#' @param type the type of prediction required. The default `"response"` is on the scale of the response variables. The alternative `"link"` is on the scale of the linear predictors, if applicable, otherwise, an error is returned.
+#'
+#' @details If `newdata` is omitted, the predictions are based on the data used for the fit.
+#' Any instances of `NA` will return `NA`.
+#'
+#' @return A vector of predictions.
+#'
+#' @importFrom stats predict
+#'
+
+predict.chantrics <- function(object, newdata = NULL, type = c("response", "link")) {
+  type <- match.arg(type)
+  #get the data frame with all observations
+  if (missing(newdata)) {
+    newdata <- get_design_matrix_from_model(object)
+  }
+  #check that the required parameters are available
+  if (inherits(object, "glm")) {
+    #get list of required coefficients
+    coef_names <- names(stats::coef(object))
+    #match these with newdata and create new matrix with only those columns
+    design_matrix <- newdata[coef_names]
+    eta_vec <- object %*% attr(object, "res_MLE")
+    mu_vec <- object$family$linkinv(eta_vec)
+  }
+}

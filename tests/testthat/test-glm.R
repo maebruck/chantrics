@@ -9,6 +9,8 @@ test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct 
   expect_equal(c(reference_logit_logLik), unname(c(chantrics_logit_logLik)))
   expect_equal(c(reference_probit_logLik), unname(c(chantrics_probit_logLik)))
   expect_equal(c(reference_gauss_logLik), unname(c(chantrics_gauss_logLik)))
+  expect_equal(c(reference_negbin_logLik), unname(c(chantrics_negbin_logLik)))
+  expect_equal(c(reference_negbin_theta_logLik), unname(c(chantrics_negbin_theta_logLik)))
 })
 
 test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
@@ -26,16 +28,14 @@ test_that("adj_logLik can handle use_vcov = F (set very high error tolerance.)",
   expect_equal(summary(bm_logit_adj), summary(adj_loglik(bm_logit, use_vcov = F)), tolerance = 1e-3)
 })
 
-# !! add unit tests for other glm link functions for logLik_vec() here !!
-
-# adjust fm_pois
-
 test_that("Are generics accessible for adjusted glm models?", {
   # test that there is no error
   expect_error(model_generics_caller(fm_pois_adj), regexp = NA)
   expect_error(model_generics_caller(bm_logit_adj), regexp = NA)
   expect_error(model_generics_caller(bm_probit_adj), regexp = NA)
   expect_error(model_generics_caller(glm_gauss_adj), regexp = NA)
+  expect_error(model_generics_caller(fm_negbin_adj), regexp = NA)
+  expect_error(model_generics_caller(fm_negbin_theta_adj), regexp = NA)
 })
 
 ## === ANOVA ===
@@ -51,4 +51,12 @@ test_that("Does dispersion.gauss() calculate the correct dispersion parameter?",
   realdisp <- summary(glm_gauss)$dispersion
   testdisp <- chantrics:::dispersion.gauss(y_gauss, fitted(glm_gauss), stats::nobs(glm_gauss) - 3)
   expect_equal(realdisp, testdisp)
+})
+
+## === dispersion_stat() ===
+
+test_that("Does dispersion.stat() calculate the correct dispersion parameter?", {
+  realtheta <- summary(fm_negbin_theta)$theta
+  testtheta <- chantrics:::dispersion.stat(y_nbinom, fitted(fm_negbin_theta), fm_negbin_theta)
+  expect_equal(testtheta, realtheta)
 })

@@ -71,6 +71,9 @@ get_response_from_model <- function(object) {
 #' @keywords internal
 
 get_design_matrix_from_model <- function(object) {
+  if (inherits(object, "chantrics")) {
+    object <- attr(object, "loglik_args")[["fitted_object"]]
+  }
   x_mat <- try(stats::model.matrix(object), silent = TRUE)
   if (is.error(x_mat)) {
     x_mat <- try(object$x, silent = TRUE)
@@ -78,7 +81,7 @@ get_design_matrix_from_model <- function(object) {
       raise_yield_error(
         "model object",
         "design matrix",
-        "executing the model with the option 'y = TRUE"
+        "executing the model with the option 'y = TRUE'"
       )
     }
   }
