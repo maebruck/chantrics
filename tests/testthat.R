@@ -64,21 +64,21 @@ reference_pois_logLik <- pois_glm_loglik(fm_pois$coefficients, y_nbinom, x_nbino
 chantrics_pois_logLik <- logLik_vec(fm_pois, fm_pois$coefficients)
 
 # ==== negbin test objects ====
-
+if (!requireNamespace("MASS", quietly = TRUE)) {rlang::abort("requires MASS")}
 fm_negbin <- glm(y ~ x, data = df_nbinom, family = MASS::negative.binomial(theta = 1))
-summary(fm_negbin)
-summary(fm_pois_small)
+#summary(fm_negbin)
+#summary(fm_pois_small)
 fm_negbin_adj <- adj_loglik(fm_negbin)
-summary(fm_negbin_adj)
+#summary(fm_negbin_adj)
 chantrics_negbin_logLik <- logLik_vec(fm_negbin, fm_negbin$coefficients)
 
 
 
 # estimation of theta
 fm_negbin_theta <- MASS::glm.nb(y ~ x, data = df_nbinom)
-summary(fm_negbin_theta)
+#summary(fm_negbin_theta)
 fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
-summary(fm_negbin_theta_adj)
+#summary(fm_negbin_theta_adj)
 chantrics_negbin_theta_logLik <- chantrics:::logLik_vec.negbin(fm_negbin_theta, fm_negbin_theta$coefficients)
 
 
