@@ -82,14 +82,14 @@
 
       
 
-      </header><link href="chantrics-vignette_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+      </header><script src="chantrics-vignette_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="chantrics-vignette_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
 <script src="chantrics-vignette_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introducing chandwich: Description</h1>
                         <h4 class="author">Theo Bruckbauer</h4>
             
-            <h4 class="date">2020-11-10</h4>
+            <h4 class="date">2020-11-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tbruckbauer/chantrics/blob/master/vignettes/chantrics-vignette.Rmd"><code>vignettes/chantrics-vignette.Rmd</code></a></small>
       <div class="hidden name"><code>chantrics-vignette.Rmd</code></div>
@@ -98,14 +98,14 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://chantrics.theobruckbauer.eu">chantrics</a></span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://chantrics.theobruckbauer.eu">chantrics</a></span><span class="op">)</span></code></pre></div>
 <div id="prototyping-count-data-adjustments-glm" class="section level1">
 <h1 class="hasAnchor">
 <a href="#prototyping-count-data-adjustments-glm" class="anchor"></a>prototyping count data adjustments GLM</h1>
 <p>this is from zeileis-ooc, pg. 9</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
 <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">250</span><span class="op">)</span>
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html">rnbinom</a></span><span class="op">(</span><span class="fl">250</span>, mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
 <span class="co">#fit count models</span>
@@ -142,7 +142,7 @@
 <span class="co">#&gt; x            0.996072   0.053534 18.6062  &lt; 2e-16 ***</span>
 <span class="co">#&gt; I(x^2)      -0.049124   0.023146 -2.1223  0.03381 *  </span>
 <span class="co">#&gt; ---</span>
-<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></pre></div>
+<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></code></pre></div>
 </div>
   </div>
 
