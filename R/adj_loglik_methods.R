@@ -149,9 +149,9 @@ adj_loglik <- function(x,
     eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
     mu_vec <- x$family$linkinv(eta_vec)
     attr(adjusted_x, "theta") <- MASS::theta.ml(y = response_vec, mu = mu_vec)
-    #hijack x to pass adjusted theta to original model object to circumvent reestimation for confint and anova
+    # hijack x to pass adjusted theta to original model object to circumvent reestimation for confint and anova
     attr(attr(adjusted_x, "loglik_args")[["fitted_object"]], "theta_chantrics") <- attr(adjusted_x, "theta")
-    #attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
+    # attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
@@ -160,8 +160,10 @@ adj_loglik <- function(x,
   args_list[["cluster"]] <- cluster
   args_list[["use_vcov"]] <- use_vcov
   attr(adjusted_x, "chantrics_args") <- args_list
-  #check if unadjusted model has been passed through, if not, add it
-  try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {attr(adjusted_x, "loglik_args")[["fitted_object"]] <- x})
+  # check if unadjusted model has been passed through, if not, add it
+  try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {
+    attr(adjusted_x, "loglik_args")[["fitted_object"]] <- x
+  })
   return(adjusted_x)
 }
 
@@ -821,15 +823,15 @@ confint.chantrics <- function(object, ...) {
 
 predict.chantrics <- function(object, newdata = NULL, type = c("response", "link")) {
   type <- match.arg(type)
-  #get the data frame with all observations
+  # get the data frame with all observations
   if (missing(newdata)) {
     newdata <- get_design_matrix_from_model(object)
   }
-  #check that the required parameters are available
+  # check that the required parameters are available
   if (inherits(object, "glm")) {
-    #get list of required coefficients
+    # get list of required coefficients
     coef_names <- names(stats::coef(object))
-    #match these with newdata and create new matrix with only those columns
+    # match these with newdata and create new matrix with only those columns
     design_matrix <- newdata[coef_names]
     eta_vec <- object %*% attr(object, "res_MLE")
     mu_vec <- object$family$linkinv(eta_vec)

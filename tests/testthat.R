@@ -29,7 +29,9 @@ model_generics_caller <- function(object, run.anova = TRUE) {
   logLik(object)
   AIC(object)
   # sequential anova?
-  if (run.anova) {anova(object)}
+  if (run.anova) {
+    anova(object)
+  }
   df.residual(object)
   nobs(object)
 }
@@ -64,12 +66,14 @@ reference_pois_logLik <- pois_glm_loglik(fm_pois$coefficients, y_nbinom, x_nbino
 chantrics_pois_logLik <- logLik_vec(fm_pois, fm_pois$coefficients)
 
 # ==== negbin test objects ====
-if (!requireNamespace("MASS", quietly = TRUE)) {rlang::abort("requires MASS")}
+if (!requireNamespace("MASS", quietly = TRUE)) {
+  rlang::abort("requires MASS")
+}
 fm_negbin <- glm(y ~ x, data = df_nbinom, family = MASS::negative.binomial(theta = 1))
-#summary(fm_negbin)
-#summary(fm_pois_small)
+# summary(fm_negbin)
+# summary(fm_pois_small)
 fm_negbin_adj <- adj_loglik(fm_negbin)
-#summary(fm_negbin_adj)
+# summary(fm_negbin_adj)
 negbin_glm_loglik <- function(pars, df, theta = 1) {
   eta <- pars[1] + pars[2] * df$x
   return(dnbinom(df$y, size = theta, mu = exp(eta), log = TRUE))
