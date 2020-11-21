@@ -148,7 +148,10 @@ adj_loglik <- function(x,
     response_vec <- get_response_from_model(x)
     eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
     mu_vec <- x$family$linkinv(eta_vec)
-    attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
+    attr(adjusted_x, "theta") <- MASS::theta.ml(y = response_vec, mu = mu_vec)
+    #hijack x to pass adjusted theta to original model object to circumvent reestimation for confint and anova
+    attr(attr(adjusted_x, "loglik_args")[["fitted_object"]], "theta_chantrics") <- attr(adjusted_x, "theta")
+    #attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
@@ -170,6 +173,9 @@ summary.chantrics <- function(object, ...) {
   if (!is.null(attr(object, "dispersion"))) {
     attr(ans, "dispersion") <- attr(object, "dispersion")
   }
+  if (!is.null(attr(object, "theta"))) {
+    attr(ans, "theta") <- attr(object, "theta")
+  }
   class(ans) <- c("summary.chantrics", class(ans))
   return(ans)
 }
@@ -180,6 +186,9 @@ print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L
                                     # symbolic.cor = x$symbolic.cor,
                                     signif.stars = getOption("show.signif.stars"), ...) {
   stats::printCoefmat(x, digits = digits)
+  if (!is.null(attr(x, "theta"))) {
+    cat("\n(Theta: ", format(attr(x, "theta"), digits = digits), ", SE: ", format(attr(attr(x, "theta"), "SE"), digits = digits), ")\n", sep = "")
+  }
   if (!is.null(attr(x, "dispersion"))) {
     cat("\n(Dispersion parameter taken to be ", format(attr(x, "dispersion"), digits = digits), ")\n", sep = "")
   }
@@ -766,6 +775,32 @@ df.residual.chantrics <- function(object, ...) {
 
 logLik_vec.chantrics <- function(object, ...) {
   return(attr(object, "loglikVecMLE"))
+}
+
+#' @importFrom stats confint
+#' @export
+
+confint.chantrics <- function(object, ...) {
+  if (!is.null(attr(object, "theta"))) {
+    # save theta in external env to discourage re-calculation
+    # https://stackoverflow.com/a/10904331/
+    assign("theta", attr(object, "theta"), envir = bypasses.env)
+  }
+  res <- NextMethod()
+  # http://adv-r.had.co.nz/Environments.html#env-basics
+  if (exists("theta", envir = bypasses.env, inherits = FALSE)) {
+    rm("theta", envir = bypasses.env)
+  }
+  return(res)
+  # args <- as.list(match.call())
+  # args[[1]] <- NULL
+  # #get theta
+  # theta <- attr(object, "theta")
+  # if (!is.null(theta)) {
+  #   # args[["theta"]] <- as.numeric(theta)
+  # }
+  # print(args)
+  # return(do.call(chandwich:::confint.chandwich, args))
 }
 
 #' Predict Method for chantrics fits

@@ -5,6 +5,8 @@
 #' @keywords internal
 NULL
 
+bypasses.env <- new.env()
+
 #' @keywords internal
 #' @rdname internal
 is.error <- function(x) {

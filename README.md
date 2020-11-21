@@ -4,9 +4,9 @@
 # chantrics
 
 <!-- badges: start -->
+<!--[![Travis build status](https://travis-ci.com/tbruckbauer/chantrics.svg?token=w8TadkqrUK2xbsPmJ7ty&branch=master)](https://travis-ci.com/tbruckbauer/chantrics)-->
 
-[![Travis build
-status](https://travis-ci.com/tbruckbauer/chantrics.svg?token=w8TadkqrUK2xbsPmJ7ty&branch=master)](https://travis-ci.com/tbruckbauer/chantrics)
+![R-CMD-check](https://github.com/tbruckbauer/chantrics/workflows/R-CMD-check/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/tbruckbauer/chantrics/branch/master/graph/badge.svg?token=EQQ177WODM)](https://codecov.io/gh/tbruckbauer/chantrics)
 <!-- badges: end -->
 
@@ -57,4 +57,4 @@ up-to-date.
 You can also embed plots, for example:
 
 In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub\!
+files, so they display on GitHub!

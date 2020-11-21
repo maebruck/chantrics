@@ -114,7 +114,12 @@ logLik_vec.negbin <- function(object, pars = NULL, ...) {
   mu_vec <- object$family$linkinv(eta_vec)
   # try getting the response vector from glm
   response_vec <- get_response_from_model(object)
-  theta <- dispersion.stat(response_vec, mu_vec, object)
+  # theta <- dispersion.stat(response_vec, mu_vec, object)
+  # bypass theta calculation
+  theta <- try(get("theta", envir = bypasses.env), silent = FALSE)
+  if (is.error(theta)) {
+    theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
+  }
   pars <- c(pars, "theta")
   llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
 

@@ -9,8 +9,8 @@ library(chantrics)
 #   expect_error(model_generics_caller(), regexp = NA)
 # })
 
-model_generics_caller <- function(object) {
-  print(object)
+model_generics_caller <- function(object, run.anova = TRUE) {
+  invisible(print(object))
   summary(object)
   # coef() and coefficients() call the same S3 methods
   coef(object)
@@ -21,7 +21,7 @@ model_generics_caller <- function(object) {
   # predict(object)
   # plot() requires a single free covariate
   if (attr(object, "p_current") == 1) {
-    plot(object, type = 1:4)
+    invisible(plot(object, type = 1:4))
   }
   confint(object)
   # deviance(object)
@@ -29,7 +29,7 @@ model_generics_caller <- function(object) {
   logLik(object)
   AIC(object)
   # sequential anova?
-  anova(object)
+  if (run.anova) {anova(object)}
   df.residual(object)
   nobs(object)
 }
