@@ -5,6 +5,8 @@
 #' @keywords internal
 NULL
 
+bypasses.env <- new.env()
+
 #' @keywords internal
 #' @rdname internal
 is.error <- function(x) {
@@ -51,8 +53,8 @@ get_response_from_formula <- function(x) {
 #' @rdname internal
 #' @keywords internal
 
-get_response_from_model <- function(object){
-  #get the vector of response variables from the model
+get_response_from_model <- function(object) {
+  # get the vector of response variables from the model
   response_vec <- try(stats::model.response(object), silent = TRUE)
   if (is.error(response_vec)) {
     response_vec <- try(object$y, silent = TRUE)
@@ -70,7 +72,10 @@ get_response_from_model <- function(object){
 #' @rdname internal
 #' @keywords internal
 
-get_design_matrix_from_model <- function(object){
+get_design_matrix_from_model <- function(object) {
+  if (inherits(object, "chantrics")) {
+    object <- attr(object, "loglik_args")[["fitted_object"]]
+  }
   x_mat <- try(stats::model.matrix(object), silent = TRUE)
   if (is.error(x_mat)) {
     x_mat <- try(object$x, silent = TRUE)
@@ -78,7 +83,7 @@ get_design_matrix_from_model <- function(object){
       raise_yield_error(
         "model object",
         "design matrix",
-        "executing the model with the option 'y = TRUE"
+        "executing the model with the option 'y = TRUE'"
       )
     }
   }

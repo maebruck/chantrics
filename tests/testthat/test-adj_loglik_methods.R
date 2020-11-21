@@ -24,10 +24,6 @@ test_that("anova.chantrics warns user if unnamed parameters are dropped", {
   )
 })
 
-# test_that("anova.chantrics aborts when no model is supplied", {
-#   expect_error(chantrics:::anova.chantrics("foo", "bar", type = "vertical"), class = "chantrics_not_enough_models")
-# })
-
 test_that("anova.chantrics aborts if two models have the same # of params", {
   expect_error(anova(fm_pois_small_adj, adj_loglik(stats::update(
     fm_pois,
@@ -36,7 +32,7 @@ test_that("anova.chantrics aborts if two models have the same # of params", {
 })
 
 test_that("anova.chantrics aborts if attr(model, 'name') do not match", {
-  expect_error(anova(fm_pois_adj, fm_negbin_small_adj), class = "chantrics_model_does_not_match")
+  expect_error(anova(fm_pois_adj, fm_negbin_adj), class = "chantrics_model_does_not_match")
 })
 
 test_that("anova.chantrics warns if the response changes", {
@@ -109,4 +105,10 @@ test_that("alrtest aborts if the specified variable can't be found", {
 
 test_that("df.residuals works as expected", {
   expect_equal(df.residual(fm_pois_adj), 247)
+})
+
+# ==== logLik_vec.chantrics() ====
+
+test_that("logLik_vec.chantrics() components sum correctly", {
+  expect_equal(sum(logLik_vec(fm_pois_adj)), as.numeric(logLik(fm_pois_adj)))
 })

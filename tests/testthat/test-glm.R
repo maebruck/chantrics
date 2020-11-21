@@ -1,97 +1,25 @@
 context("Tests the aLogLik method and submethods associated with glm models.")
 
 
-#stuff about dispersion parameters
-#https://stats.stackexchange.com/questions/33432/dispersion-parameter-in-glm-output
-
-# ==== generate gaussian data ====
-# following example in https://www.r-bloggers.com/2013/08/fitting-a-model-by-maximum-likelihood/
-
-set.seed(1001)
-sample_gaussian <- 250
-a_gauss <- rbinom(sample_gaussian, 1, 0.5)
-b_gauss <- runif(sample_gaussian, 10, 80)
-y_gauss <- 2 + 0.3 * a_gauss + 0.95 * b_gauss + rnorm(sample_gaussian, mean = 0, sd = 2)
-df_gauss <- data.frame(y = y_gauss, a = a_gauss, b = b_gauss)
-glm_gauss <- glm(y~a+b, data = df_gauss, family = gaussian())
-glm_gauss_adj <- adj_loglik(glm_gauss)
-gauss_glm_loglik <- function(pars, disp, df) {
-  eta <- df$y - pars[1] - pars[2] * df$a - pars[3]*df$b
-  return(dnorm(eta, 0, sd = sqrt(disp), log = TRUE))
-}
-reference_gauss_logLik <- gauss_glm_loglik(glm_gauss$coefficients, summary(glm_gauss)$dispersion, df_gauss)
-chantrics_gauss_logLik <- logLik_vec(glm_gauss, glm_gauss$coefficients)
-
-
-# ==== generate poisson data ====
-
-# fit the misspecified poisson model from Introducing chandwich
-# fitting happens in testthat.R
-# also all definitions of fm_pois, fm_pois_adj, ...
-# reference
-pois_glm_loglik <- function(pars, y, x) {
-  log_mu <- pars[1] + pars[2] * x + pars[3] * x^2
-  return(dpois(y, lambda = exp(log_mu), log = TRUE))
-}
-reference_pois_logLik <- pois_glm_loglik(fm_pois$coefficients, y_nbinom, x_nbinom)
-chantrics_pois_logLik <- logLik_vec(fm_pois, fm_pois$coefficients)
-
-# ==== generate logistic regression data ====
-# https://uvastatlab.github.io/2019/05/04/simulating-a-logistic-regression-model/
-set.seed(1)
-sample_logit <- 250
-a_logit <- rbinom(sample_logit, 1, 0.5)
-b_logit <- runif(sample_logit, 10, 80)
-eta_logit <- 2 + 0.3 * a_logit - 0.02 * b_logit
-# checked implementation with C source https://github.com/wch/r-source/blob/5a156a0865362bb8381dcd69ac335f5174a4f60c/src/library/stats/src/family.c#L73
-probs_logit <- exp(eta_logit) / (1 + exp(eta_logit))
-y_logit <- rbinom(n = sample_logit, 1, probs_logit)
-df_logit <- data.frame(y = y_logit, a = a_logit, b = b_logit)
-
-logit_glm_loglik <- function(pars, df_logit) {
-  eta <- pars[1] + pars[2] * df_logit$a + pars[3] * df_logit$b
-  p <- exp(eta) / (1 + exp(eta))
-  return(dbinom(df_logit$y, 1, p, log = TRUE))
-}
-bm_logit <- glm(y ~ a + b, data = df_logit, family = binomial(link = "logit"))
-bm_logit_adj <- adj_loglik(bm_logit)
-reference_logit_logLik <- logit_glm_loglik(bm_logit$coefficients, df_logit)
-chantrics_logit_logLik <- logLik_vec(bm_logit, bm_logit$coefficients)
-
-
-# ==== Generate Probit regression data ====
-set.seed(1)
-sample_probit <- 250
-a_probit <- rbinom(sample_probit, 1, 0.5)
-b_probit <- runif(sample_probit, 10, 80)
-eta_probit <- 2 + 0.3 * a_probit - 0.02 * b_probit
-# link is cdf of standard normal.
-probs_probit <- pnorm(eta_probit, mean = 0, sd = 1)
-y_probit <- rbinom(n = sample_probit, 1, probs_probit)
-df_probit <- data.frame(y = y_probit, a = a_probit, b = b_probit)
-
-probit_glm_loglik <- function(pars, df_probit) {
-  eta <- pars[1] + pars[2] * df_probit$a + pars[3] * df_probit$b
-  p <- pnorm(eta, mean = 0, sd = 1)
-  return(dbinom(df_probit$y, 1, p, log = TRUE))
-}
-bm_probit <- glm(y ~ a + b, data = df_probit, family = binomial(link = "probit"))
-bm_probit_adj <- adj_loglik(bm_probit)
-reference_probit_logLik <- probit_glm_loglik(bm_probit$coefficients, df_probit)
-chantrics_probit_logLik <- logLik_vec(bm_probit, bm_probit$coefficients)
+# stuff about dispersion parameters
+# https://stats.stackexchange.com/questions/33432/dispersion-parameter-in-glm-output
 
 test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct object", {
   expect_equal(c(reference_pois_logLik), unname(c(chantrics_pois_logLik)))
   expect_equal(c(reference_logit_logLik), unname(c(chantrics_logit_logLik)))
   expect_equal(c(reference_probit_logLik), unname(c(chantrics_probit_logLik)))
-  expect_equal(c(reference_gauss_logLik), unname(c(chantrics_gauss_logLik)))
+  expect_equal(c(reference_gauss_logLik), unname(c(chantrics_gauss_logLik)), tolerance = 1e-3)
+  expect_equal(c(reference_negbin_logLik), unname(c(chantrics_negbin_logLik)))
+  expect_equal(c(reference_negbin_theta_logLik), unname(c(chantrics_negbin_theta_logLik)))
 })
 
 test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
   expect_equal(logLik(fm_pois), logLik(chantrics_pois_logLik))
   expect_equal(logLik(bm_logit), logLik(chantrics_logit_logLik))
   expect_equal(logLik(bm_probit), logLik(chantrics_probit_logLik))
-  expect_equal(logLik(glm_gauss), logLik(chantrics_gauss_logLik))
+  expect_equal(logLik(glm_gauss), logLik(chantrics_gauss_logLik), tolerance = 1e-3)
+  expect_equal(logLik(fm_negbin), logLik(chantrics_negbin_logLik))
+  expect_equal(logLik(fm_negbin_theta), logLik(chantrics_negbin_theta_logLik))
   # add calculations for other families here
 })
 
@@ -100,16 +28,14 @@ test_that("adj_logLik can handle use_vcov = F (set very high error tolerance.)",
   expect_equal(summary(bm_logit_adj), summary(adj_loglik(bm_logit, use_vcov = F)), tolerance = 1e-3)
 })
 
-# !! add unit tests for other glm link functions for logLik_vec() here !!
-
-# adjust fm_pois
-
 test_that("Are generics accessible for adjusted glm models?", {
   # test that there is no error
   expect_error(model_generics_caller(fm_pois_adj), regexp = NA)
   expect_error(model_generics_caller(bm_logit_adj), regexp = NA)
   expect_error(model_generics_caller(bm_probit_adj), regexp = NA)
   expect_error(model_generics_caller(glm_gauss_adj), regexp = NA)
+  expect_error(model_generics_caller(fm_negbin_adj), regexp = NA)
+  expect_error(model_generics_caller(fm_negbin_theta_adj, run.anova = FALSE), regexp = NA)
 })
 
 ## === ANOVA ===
@@ -126,3 +52,11 @@ test_that("Does dispersion.gauss() calculate the correct dispersion parameter?",
   testdisp <- chantrics:::dispersion.gauss(y_gauss, fitted(glm_gauss), stats::nobs(glm_gauss) - 3)
   expect_equal(realdisp, testdisp)
 })
+
+## === dispersion_stat() ===
+
+# test_that("Does dispersion.stat() calculate the correct dispersion parameter?", {
+#   realtheta <- summary(fm_negbin_theta)$theta
+#   testtheta <- chantrics:::dispersion.stat(y_nbinom, fitted(fm_negbin_theta), fm_negbin_theta)
+#   expect_equal(testtheta, realtheta)
+# })

@@ -51,6 +51,7 @@ the variance-covariance matrix of the MLE is estimated inside
 
 \itemize{
 \item \link{glm}
+\item \link{glm.nb}
 }
 }
 

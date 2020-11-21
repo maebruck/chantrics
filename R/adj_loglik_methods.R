@@ -31,6 +31,7 @@
 #'
 #' @section Supported models:
 #' * [glm]
+#' * [glm.nb]
 #'
 #' @return An object of class `"chantrics"` inheriting from class `"chandwich"`.
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
@@ -57,7 +58,7 @@ adj_loglik <- function(x,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
-  supported_models <- c("glm")
+  supported_models <- c("glm", "negbin")
   # check if x is a supported model type
   if (!(class(x)[1] %in% supported_models)) {
     rlang::abort(
@@ -79,7 +80,14 @@ adj_loglik <- function(x,
   }
   name_pieces <- c(class(x))
   # add glm family to name
-  try({name_pieces <- c(x$family$family, name_pieces)}, silent = TRUE)
+  if (class(x)[1] == "glm") {
+    try(
+      {
+        name_pieces <- c(x$family$family, name_pieces)
+      },
+      silent = TRUE
+    )
+  }
   # get mle estimate from x
   mle <- stats::coef(x)
 
@@ -120,34 +128,53 @@ adj_loglik <- function(x,
       H = H,
       V = V
     )
-  #post-estimation
+  # post-estimation
   if (class(x)[1] == "glm") {
     if (x$family$family == "gaussian") {
-      #estimate dispersion
+      # estimate dispersion
       response_vec <- get_response_from_model(x)
       eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
       mu_vec <- x$family$linkinv(eta_vec)
-      attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec, mu_vec, stats::df.residual(x))
+      attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec, mu_vec, stats::df.residual(x) - 1)
+    } else if (substr(x$family$family, 1, 18) == "Negative Binomial(") {
+      # estimate dispersion
+      response_vec <- get_response_from_model(x)
+      eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
+      mu_vec <- x$family$linkinv(eta_vec)
+      attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
     }
+  } else if (class(x)[1] == "negbin") {
+    # estimate dispersion
+    response_vec <- get_response_from_model(x)
+    eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
+    mu_vec <- x$family$linkinv(eta_vec)
+    attr(adjusted_x, "theta") <- MASS::theta.ml(y = response_vec, mu = mu_vec)
+    #hijack x to pass adjusted theta to original model object to circumvent reestimation for confint and anova
+    attr(attr(adjusted_x, "loglik_args")[["fitted_object"]], "theta_chantrics") <- attr(adjusted_x, "theta")
+    #attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
     stats::formula(x), silent = TRUE)
-  attr(adjusted_x, "unadj_object") <- x
   args_list <- rlang::dots_list(...)
   args_list[["cluster"]] <- cluster
   args_list[["use_vcov"]] <- use_vcov
   attr(adjusted_x, "chantrics_args") <- args_list
+  #check if unadjusted model has been passed through, if not, add it
+  try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {attr(adjusted_x, "loglik_args")[["fitted_object"]] <- x})
   return(adjusted_x)
 }
 
 #' @export
 
 summary.chantrics <- function(object, ...) {
-  #https://stackoverflow.com/a/8316856/
+  # https://stackoverflow.com/a/8316856/
   ans <- NextMethod()
   if (!is.null(attr(object, "dispersion"))) {
     attr(ans, "dispersion") <- attr(object, "dispersion")
+  }
+  if (!is.null(attr(object, "theta"))) {
+    attr(ans, "theta") <- attr(object, "theta")
   }
   class(ans) <- c("summary.chantrics", class(ans))
   return(ans)
@@ -156,9 +183,12 @@ summary.chantrics <- function(object, ...) {
 #' @export
 
 print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L),
-            #symbolic.cor = x$symbolic.cor,
-            signif.stars = getOption("show.signif.stars"), ...) {
+                                    # symbolic.cor = x$symbolic.cor,
+                                    signif.stars = getOption("show.signif.stars"), ...) {
   stats::printCoefmat(x, digits = digits)
+  if (!is.null(attr(x, "theta"))) {
+    cat("\n(Theta: ", format(attr(x, "theta"), digits = digits), ", SE: ", format(attr(attr(x, "theta"), "SE"), digits = digits), ")\n", sep = "")
+  }
   if (!is.null(attr(x, "dispersion"))) {
     cat("\n(Dispersion parameter taken to be ", format(attr(x, "dispersion"), digits = digits), ")\n", sep = "")
   }
@@ -275,7 +305,7 @@ anova.chantrics <- function(object, ...) {
     # ==== Sequential ANOVA ====
     # create sequential model objects
     prev_adjusted_object <- model_objects[[1]]
-    # unadjusted_object <- attr(adjusted_object, "unadj_object")
+    # unadjusted_object <- attr(adjusted_object, "loglik_args")[["fitted_object"]]
     # get list of variables by which anova should split
     variable_vec <-
       rev(attr(stats::terms(prev_adjusted_object), "term.labels"))
@@ -500,7 +530,7 @@ update.chantrics <- function(object, ...) {
     }
   }
   chantrics_args <- get_additional_args_from_chantrics_call(object)
-  orig_obj <- attr(object, "unadj_object")
+  orig_obj <- attr(object, "loglik_args")[["fitted_object"]]
   chantrics_args[["x"]] <-
     stats::update(orig_obj, ..., evaluate = TRUE)
   return(do.call(adj_loglik, chantrics_args))
@@ -511,7 +541,7 @@ update.chantrics <- function(object, ...) {
 
 terms.chantrics <- function(x, ...) {
   # passes terms object through from unadjusted object
-  return(terms(attr(x, "unadj_object")))
+  return(terms(attr(x, "loglik_args")[["fitted_object"]]))
 }
 
 #' Adjusted Likelihood Ratio Test of Nested Models
@@ -745,4 +775,63 @@ df.residual.chantrics <- function(object, ...) {
 
 logLik_vec.chantrics <- function(object, ...) {
   return(attr(object, "loglikVecMLE"))
+}
+
+#' @importFrom stats confint
+#' @export
+
+confint.chantrics <- function(object, ...) {
+  if (!is.null(attr(object, "theta"))) {
+    # save theta in external env to discourage re-calculation
+    # https://stackoverflow.com/a/10904331/
+    assign("theta", attr(object, "theta"), envir = bypasses.env)
+  }
+  res <- NextMethod()
+  # http://adv-r.had.co.nz/Environments.html#env-basics
+  if (exists("theta", envir = bypasses.env, inherits = FALSE)) {
+    rm("theta", envir = bypasses.env)
+  }
+  return(res)
+  # args <- as.list(match.call())
+  # args[[1]] <- NULL
+  # #get theta
+  # theta <- attr(object, "theta")
+  # if (!is.null(theta)) {
+  #   # args[["theta"]] <- as.numeric(theta)
+  # }
+  # print(args)
+  # return(do.call(chandwich:::confint.chandwich, args))
+}
+
+#' Predict Method for chantrics fits
+#'
+#' Obtains predictions from chantrics objects.
+#'
+#' @param object Object of class `chantrics`, as returned by `adj_loglik()`
+#' @param newdata optionally, a data frame in which to look for variables with which to predict. If omitted, the fitted linear predictors are used.
+#' @param type the type of prediction required. The default `"response"` is on the scale of the response variables. The alternative `"link"` is on the scale of the linear predictors, if applicable, otherwise, an error is returned.
+#'
+#' @details If `newdata` is omitted, the predictions are based on the data used for the fit.
+#' Any instances of `NA` will return `NA`.
+#'
+#' @return A vector of predictions.
+#'
+#' @importFrom stats predict
+#'
+
+predict.chantrics <- function(object, newdata = NULL, type = c("response", "link")) {
+  type <- match.arg(type)
+  #get the data frame with all observations
+  if (missing(newdata)) {
+    newdata <- get_design_matrix_from_model(object)
+  }
+  #check that the required parameters are available
+  if (inherits(object, "glm")) {
+    #get list of required coefficients
+    coef_names <- names(stats::coef(object))
+    #match these with newdata and create new matrix with only those columns
+    design_matrix <- newdata[coef_names]
+    eta_vec <- object %*% attr(object, "res_MLE")
+    mu_vec <- object$family$linkinv(eta_vec)
+  }
 }
