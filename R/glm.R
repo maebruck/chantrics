@@ -116,7 +116,7 @@ logLik_vec.negbin <- function(object, pars = NULL, ...) {
   response_vec <- get_response_from_model(object)
   # theta <- dispersion.stat(response_vec, mu_vec, object)
   # bypass theta calculation
-  theta <- try(get("theta", envir = bypasses.env), silent = FALSE)
+  theta <- try(get("theta", envir = bypasses.env), silent = TRUE)
   if (is.error(theta)) {
     theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
   }
