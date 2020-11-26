@@ -834,7 +834,7 @@ fitted.chantrics <- function(object, ...) {
 #'
 #' M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. <https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/>
 #'
-#' @seealso [adj_logLik()] for model fitting, [stats::residuals.glm()] and [stats::residuals()], [stats::df.residual()].
+#' @seealso [adj_loglik()] for model fitting, [stats::residuals.glm()] and [stats::residuals()], [stats::df.residual()].
 #'
 #' @importFrom stats residuals
 #' @export

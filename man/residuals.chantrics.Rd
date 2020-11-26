@@ -28,5 +28,5 @@ A. C. Davison and E. J. Snell, Residuals and diagnostics. In: Statistical Theory
 M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. \url{https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/}
 }
 \seealso{
-\code{\link[=adj_logLik]{adj_logLik()}} for model fitting, \code{\link[stats:glm.summaries]{stats::residuals.glm()}} and \code{\link[stats:residuals]{stats::residuals()}}, \code{\link[stats:df.residual]{stats::df.residual()}}.
+\code{\link[=adj_loglik]{adj_loglik()}} for model fitting, \code{\link[stats:glm.summaries]{stats::residuals.glm()}} and \code{\link[stats:residuals]{stats::residuals()}}, \code{\link[stats:df.residual]{stats::df.residual()}}.
 }
