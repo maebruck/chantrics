@@ -132,15 +132,12 @@ logLik_vec.negbin <- function(object, pars = NULL, ...) {
 
 #' @keywords internal
 
-fittedhelper.glm <- function(object, modelname){
+fittedhelper.glm <- function(object, modelname) {
   x_mat <- get_design_matrix_from_model(object)
   pars <- stats::coef(object)
   eta_vec <- x_mat %*% pars
   mu_vec <- get_unadj_object(object)$family$linkinv(eta_vec)
   dim(mu_vec) <- NULL
-  names(mu_vec) <- seq(1,length(mu_vec), 1)
+  names(mu_vec) <- seq(1, length(mu_vec), 1)
   return(mu_vec)
 }
-
-
-

@@ -16,7 +16,7 @@ is.error <- function(x) {
 #' @keywords internal
 #' @rdname internal
 
-get_unadj_object <- function(object){
+get_unadj_object <- function(object) {
   abort_not_chantrics(object)
   return(attr(object, "loglik_args")[["fitted_object"]])
 }

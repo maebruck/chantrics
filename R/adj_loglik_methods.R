@@ -811,7 +811,7 @@ fitted.chantrics <- function(object, ...) {
   if ("glm" %in% modelname) {
     fittedvals <- fittedhelper.glm(object, modelname)
   } else {
-    rlang::abort(paste0("'",attr(object, "name"),"' is currently not supported."))
+    rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
   }
   return(fittedvals)
 }
@@ -832,7 +832,7 @@ residuals.chantrics <- function(object, type = c("response", "working", "pearson
     fitted_responselev <- fitted(object)
     resids_responselev <- response - fitted_responselev
   } else {
-    rlang::abort(paste0("'",attr(object, "name"),"' is currently not supported."))
+    rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
   }
   if (type == "response") {
     # standard residuals on response level
