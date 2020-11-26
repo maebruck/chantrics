@@ -820,7 +820,7 @@ fitted.chantrics <- function(object, ...) {
 #'
 #' `residuals()` returns the residuals specified in `type` from a `"chantrics"` object.
 #'
-#' @param object an object of class `"chantrics"`, returned by [adj_logLik()].
+#' @param object an object of class `"chantrics"`, returned by [adj_loglik()].
 #'
 #' @param type the type of residuals which should be returned. The alternatives are: `"response"` (default), `"working"`, and `"pearson"` (for glm fits).
 #'
@@ -832,9 +832,9 @@ fitted.chantrics <- function(object, ...) {
 #'
 #' @references A. C. Davison and E. J. Snell, Residuals and diagnostics. In: Statistical Theory and Modelling. In Honour of Sir David Cox, FRS ,1991. Eds. Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
 #'
-#' M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. [https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/]
+#' M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. <https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/>
 #'
-#' @seealso [adj_logLik()] for model fitting, [stats::residuals.glm()] and [stats::residuals()], [stats::df.residuals()].
+#' @seealso [adj_logLik()] for model fitting, [stats::residuals.glm()] and [stats::residuals()], [stats::df.residual()].
 #'
 #' @importFrom stats residuals
 #' @export
@@ -879,7 +879,7 @@ residuals.chantrics <- function(object, type = c("response", "working", "pearson
 #'
 #' Obtains predictions from chantrics objects.
 #'
-#' @param object Object of class `chantrics`, as returned by `adj_loglik()`
+#' @param object Object of class `chantrics`, as returned by [adj_loglik()]
 #' @param newdata optionally, a data frame in which to look for variables with which to predict. If omitted, the fitted linear predictors are used.
 #' @param type the type of prediction required. The default `"response"` is on the scale of the response variables. The alternative `"link"` is on the scale of the linear predictors, if applicable, otherwise, an error is returned.
 #'
