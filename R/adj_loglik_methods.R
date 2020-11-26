@@ -804,6 +804,8 @@ fitted.chantrics <- function(object, ...) {
   modelname <- unlist(strsplit(attr(object, "name"), "_"))
   if ("glm" %in% modelname) {
     fittedvals <- fittedhelper.glm(object, modelname)
+  } else {
+    rlang::abort(paste0("'",attr(object, "name"),"' is currently not supported."))
   }
   return(fittedvals)
 }
