@@ -532,7 +532,7 @@ update.chantrics <- function(object, ...) {
     }
   }
   chantrics_args <- get_additional_args_from_chantrics_call(object)
-  orig_obj <- attr(object, "loglik_args")[["fitted_object"]]
+  orig_obj <- get_unadj_object(object)
   chantrics_args[["x"]] <-
     stats::update(orig_obj, ..., evaluate = TRUE)
   return(do.call(adj_loglik, chantrics_args))

@@ -16,6 +16,14 @@ is.error <- function(x) {
 #' @keywords internal
 #' @rdname internal
 
+get_unadj_object <- function(object){
+  abort_not_chantrics(object)
+  return(attr(object, "loglik_args")[["fitted_object"]])
+}
+
+#' @keywords internal
+#' @rdname internal
+
 raise_yield_error <-
   function(model = "model",
            what = "property",
@@ -74,7 +82,7 @@ get_response_from_model <- function(object) {
 
 get_design_matrix_from_model <- function(object) {
   if (inherits(object, "chantrics")) {
-    object <- attr(object, "loglik_args")[["fitted_object"]]
+    object <- get_unadj_object(object)
   }
   x_mat <- try(stats::model.matrix(object), silent = TRUE)
   if (is.error(x_mat)) {

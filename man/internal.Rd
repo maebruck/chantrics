@@ -3,6 +3,7 @@
 \name{internal}
 \alias{internal}
 \alias{is.error}
+\alias{get_unadj_object}
 \alias{raise_yield_error}
 \alias{get_response_from_formula}
 \alias{get_response_from_model}
@@ -16,6 +17,8 @@
 \title{chandwich internal functions}
 \usage{
 is.error(x)
+
+get_unadj_object(object)
 
 raise_yield_error(model = "model", what = "property", try_this = NULL)
 
