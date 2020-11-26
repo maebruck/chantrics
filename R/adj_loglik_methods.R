@@ -794,15 +794,6 @@ confint.chantrics <- function(object, ...) {
     rm("theta", envir = bypasses.env)
   }
   return(res)
-  # args <- as.list(match.call())
-  # args[[1]] <- NULL
-  # #get theta
-  # theta <- attr(object, "theta")
-  # if (!is.null(theta)) {
-  #   # args[["theta"]] <- as.numeric(theta)
-  # }
-  # print(args)
-  # return(do.call(chandwich:::confint.chandwich, args))
 }
 
 #' Predict Method for chantrics fits

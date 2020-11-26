@@ -156,3 +156,4 @@ reference_probit_logLik <- probit_glm_loglik(bm_probit$coefficients, df_probit)
 chantrics_probit_logLik <- logLik_vec(bm_probit, bm_probit$coefficients)
 
 test_check("chantrics")
+

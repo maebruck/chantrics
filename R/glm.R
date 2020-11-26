@@ -9,7 +9,7 @@
 #' * `binomial`
 #' * `MASS::negative.binomial`
 #'
-#' Also works for [MASS::glm.nb()]
+#' Also works for [MASS::glm.nb()], note that the standard errors of the theta are not adjusted.
 #'
 #' @examples
 #' # binomial example from Applied Econometrics in R, Kleiber/Zeileis (2008)
@@ -97,7 +97,7 @@ dispersion.stat <- function(response_vec, mu_vec, object) {
   return(sum(((response_vec - mu_vec)^2) / object$family$variance(mu_vec)) / (stats::df.residual(object)))
 }
 
-
+#' @export
 
 logLik_vec.negbin <- function(object, pars = NULL, ...) {
   if (!missing(...)) {

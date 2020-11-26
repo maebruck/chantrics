@@ -16,7 +16,7 @@ Describe glm methods here
 \item \code{MASS::negative.binomial}
 }
 
-Also works for \code{\link[MASS:glm.nb]{MASS::glm.nb()}}
+Also works for \code{\link[MASS:glm.nb]{MASS::glm.nb()}}, note that the standard errors of the theta are not adjusted.
 }
 
 \examples{
