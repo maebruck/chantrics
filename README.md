@@ -8,6 +8,7 @@
 
 ![R-CMD-check](https://github.com/tbruckbauer/chantrics/workflows/R-CMD-check/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/tbruckbauer/chantrics/branch/master/graph/badge.svg?token=EQQ177WODM)](https://codecov.io/gh/tbruckbauer/chantrics)
+![pkgdown](https://github.com/tbruckbauer/chantrics/workflows/pkgdown/badge.svg)
 <!-- badges: end -->
 
 The goal of chantrics is to …
