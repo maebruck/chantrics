@@ -118,3 +118,12 @@ test_that("logLik_vec.chantrics() components sum correctly", {
 test_that("fitted.chantrics() generates values close to original ones", {
   expect_equal(stats::fitted(fm_pois_adj), stats::fitted(fm_pois))
 })
+
+# ==== residuals.chantrics() ====
+
+test_that("residuals.chantrics() generates values close to original ones", {
+  types <- c("response", "working", "pearson")
+  for (type in types) {
+    expect_equal(stats::residuals(fm_pois_adj, type = type), stats::residuals(fm_pois, type = type))
+  }
+})

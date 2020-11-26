@@ -62,6 +62,9 @@ get_response_from_formula <- function(x) {
 #' @keywords internal
 
 get_response_from_model <- function(object) {
+  if (inherits(object, "chantrics")) {
+    object <- get_unadj_object(object)
+  }
   # get the vector of response variables from the model
   response_vec <- try(stats::model.response(object), silent = TRUE)
   if (is.error(response_vec)) {
