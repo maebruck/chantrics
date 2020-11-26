@@ -7,7 +7,7 @@
 \method{predict}{chantrics}(object, newdata = NULL, type = c("response", "link"))
 }
 \arguments{
-\item{object}{Object of class \code{chantrics}, as returned by \code{adj_loglik()}}
+\item{object}{Object of class \code{chantrics}, as returned by \code{\link[=adj_loglik]{adj_loglik()}}}
 
 \item{newdata}{optionally, a data frame in which to look for variables with which to predict. If omitted, the fitted linear predictors are used.}
 

@@ -7,11 +7,14 @@
 \method{residuals}{chantrics}(object, type = c("response", "working", "pearson"), ...)
 }
 \arguments{
-\item{object}{an object of class \code{"chantrics"}, returned by \code{\link[=adj_logLik]{adj_logLik()}}.}
+\item{object}{an object of class \code{"chantrics"}, returned by \code{\link[=adj_loglik]{adj_loglik()}}.}
 
 \item{type}{the type of residuals which should be returned. The alternatives are: \code{"response"} (default), \code{"working"}, and \code{"pearson"} (for glm fits).}
 
 \item{...}{further arguments passed to or from other methods}
+}
+\value{
+A vector of residuals.
 }
 \description{
 \code{residuals()} returns the residuals specified in \code{type} from a \code{"chantrics"} object.
@@ -22,8 +25,8 @@ The different types of residuals are as in \code{\link[stats:glm.summaries]{stat
 \references{
 A. C. Davison and E. J. Snell, Residuals and diagnostics. In: Statistical Theory and Modelling. In Honour of Sir David Cox, FRS ,1991. Eds. Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
 
-M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. \link{https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/}
+M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. \url{https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/}
 }
 \seealso{
-\code{\link[=adj_logLik]{adj_logLik()}} for model fitting, \code{\link[stats:glm.summaries]{stats::residuals.glm()}} and \code{\link[stats:residuals]{stats::residuals()}}, \code{\link[stats:df.residuals]{stats::df.residuals()}}.
+\code{\link[=adj_logLik]{adj_logLik()}} for model fitting, \code{\link[stats:glm.summaries]{stats::residuals.glm()}} and \code{\link[stats:residuals]{stats::residuals()}}, \code{\link[stats:df.residual]{stats::df.residual()}}.
 }
