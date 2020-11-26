@@ -112,3 +112,9 @@ test_that("df.residuals works as expected", {
 test_that("logLik_vec.chantrics() components sum correctly", {
   expect_equal(sum(logLik_vec(fm_pois_adj)), as.numeric(logLik(fm_pois_adj)))
 })
+
+# ==== fitted.chantrics() ====
+
+test_that("fitted.chantrics() generates values close to original ones", {
+  expect_equal(stats::fitted(fm_pois_adj), stats::fitted(fm_pois))
+})

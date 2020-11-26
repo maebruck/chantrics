@@ -796,6 +796,19 @@ confint.chantrics <- function(object, ...) {
   return(res)
 }
 
+#' @importFrom stats fitted
+#' @export
+
+fitted.chantrics <- function(object, ...) {
+  abort_not_chantrics(object)
+  modelname <- unlist(strsplit(attr(object, "name"), "_"))
+  if ("glm" %in% modelname) {
+    fittedvals <- fittedhelper.glm(object, modelname)
+  }
+  return(fittedvals)
+}
+
+
 #' Predict Method for chantrics fits
 #'
 #' Obtains predictions from chantrics objects.
