@@ -816,11 +816,35 @@ fitted.chantrics <- function(object, ...) {
   return(fittedvals)
 }
 
+#' Residuals of chantrics model fits
+#'
+#' `residuals()` returns the residuals specified in `type` from a `"chantrics"` object.
+#'
+#' @param object an object of class `"chantrics"`, returned by [adj_logLik()].
+#'
+#' @param type the type of residuals which should be returned. The alternatives are: `"response"` (default), `"working"`, and `"pearson"` (for glm fits).
+#'
+#' @param ... further arguments passed to or from other methods
+#'
+#' @details The different types of residuals are as in [stats::residuals.glm()].
+#'
+#' @return A vector of residuals.
+#'
+#' @references A. C. Davison and E. J. Snell, Residuals and diagnostics. In: Statistical Theory and Modelling. In Honour of Sir David Cox, FRS ,1991. Eds. Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
+#'
+#' M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. [https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/]
+#'
+#' @seealso [adj_logLik()] for model fitting, [stats::residuals.glm()] and [stats::residuals()], [stats::df.residuals()].
+#'
 #' @importFrom stats residuals
 #' @export
 
 residuals.chantrics <- function(object, type = c("response", "working", "pearson"), ...) {
   # https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/
+
+  # Davison, A. C. and Snell, E. J. (1991) Residuals and diagnostics. In:
+  # Statistical Theory and Modelling. In Honour of Sir David Cox, FRS, eds.
+  # Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
   if (!missing(...)) {
     rlang::warn("extra arguments discarded")
   }
@@ -874,12 +898,15 @@ predict.chantrics <- function(object, newdata = NULL, type = c("response", "link
     newdata <- get_design_matrix_from_model(object)
   }
   # check that the required parameters are available
-  if (inherits(object, "glm")) {
+  modelname <- unlist(strsplit(attr(object, "name"), "_"))
+  if ("glm" %in% modelname) {
     # get list of required coefficients
     coef_names <- names(stats::coef(object))
     # match these with newdata and create new matrix with only those columns
     design_matrix <- newdata[coef_names]
     eta_vec <- object %*% attr(object, "res_MLE")
     mu_vec <- object$family$linkinv(eta_vec)
+  } else {
+    rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
   }
 }
