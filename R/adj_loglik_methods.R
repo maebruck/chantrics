@@ -831,20 +831,21 @@ residuals.chantrics <- function(object, type = c("response", "working", "pearson
     response <- get_response_from_model(object)
     fitted_responselev <- fitted(object)
     resids_responselev <- response - fitted_responselev
+    # might be relevant for non-GLM types - identify those!
+    if (type == "response") {
+      # standard residuals on response level
+      result <- resids_responselev
+    } else if (type == "working") {
+      # response residuals normalised by fitted values
+      result <- resids_responselev / fitted_responselev
+    } else if (type == "pearson") {
+      # response residuals normalised by sqrt of the estimate
+      result <- resids_responselev / sqrt(fitted_responselev)
+    } else {
+      rlang::abort(paste0("Residuals of type '", type, "' are not implemented."))
+    }
   } else {
     rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
-  }
-  if (type == "response") {
-    # standard residuals on response level
-    result <- resids_responselev
-  } else if (type == "working") {
-    # response residuals normalised by fitted values
-    result <- resids_responselev / fitted_responselev
-  } else if (type == "pearson") {
-    # response residuals normalised by sqrt of the estimate
-    result <- resids_responselev / sqrt(fitted_responselev)
-  } else {
-    rlang::abort(paste0("Residuals of type '", type, "' are not implemented."))
   }
   return(result)
 }

@@ -15,9 +15,8 @@ model_generics_caller <- function(object, run.anova = TRUE) {
   # coef() and coefficients() call the same S3 methods
   coef(object)
   # residuals() and resid() call the same S3 methods
-  # residuals(object)
-  # fitted(object)
-  # anova() tested in test-anova.R
+  residuals(object)
+  fitted(object)
   # predict(object)
   # plot() requires a single free covariate
   if (attr(object, "p_current") == 1) {
