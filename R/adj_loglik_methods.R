@@ -776,6 +776,9 @@ df.residual.chantrics <- function(object, ...) {
 #' @export
 
 logLik_vec.chantrics <- function(object, ...) {
+  if (!missing(...)) {
+    rlang::warn("extra arguments discarded")
+  }
   return(attr(object, "loglikVecMLE"))
 }
 
@@ -800,6 +803,9 @@ confint.chantrics <- function(object, ...) {
 #' @export
 
 fitted.chantrics <- function(object, ...) {
+  if (!missing(...)) {
+    rlang::warn("extra arguments discarded")
+  }
   abort_not_chantrics(object)
   modelname <- unlist(strsplit(attr(object, "name"), "_"))
   if ("glm" %in% modelname) {
