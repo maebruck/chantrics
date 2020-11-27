@@ -37,9 +37,9 @@
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
 #'   class are `class(x)`.
 #'
-#'   `chantrics` objects have `AIC`, `anova`, `coef`, `confint`, `df.residual`,
-#'   `logLik`, `logLik_vec`, `nobs`, `plot`, `print`, `summary` and `vcov`
-#'   methods.
+#'   `chantrics` objects have `AIC`, `anova`, `alrtest`, `coef`, `confint`,
+#'   `df.residual`, `fitted`, `logLik`, `logLik_vec`, `nobs`, `plot`, `print`,
+#'   `residuals`, `summary` and `vcov` methods.
 #'
 #' @section Examples: See the model-specific pages in the *supported models*
 #'   section.
