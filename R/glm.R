@@ -40,7 +40,6 @@ NULL
 # handling of dispersion parameters: http://people.stat.sfu.ca/~raltman/stat402/402L25.pdf
 
 logLik_vec.glm <- function(object, pars = NULL, ...) {
-
   if (!missing(...)) {
     rlang::warn("extra arguments discarded")
   }
@@ -102,18 +101,24 @@ dispersion.stat <- function(response_vec, mu_vec, object) {
 #' @keywords internal
 
 dimcheck <- function(x_mat, pars) {
-  #check that dimensions of xmat and pars coincide
+  # check that dimensions of xmat and pars coincide
   if (ncol(x_mat) != length(pars)) {
-    rlang::abort(paste0("The length of 'pars' (", length(pars), ") does not fit\n",
-                        "the number of columns in the design matrix, ", ncol(x_mat)),
-                 class = "chantrics_pars_wrong_length")
+    rlang::abort(paste0(
+      "The length of 'pars' (", length(pars), ") does not fit\n",
+      "the number of columns in the design matrix, ", ncol(x_mat)
+    ),
+    class = "chantrics_pars_wrong_length"
+    )
   }
   if (any(colnames(x_mat) != names(pars))) {
-    rlang::warn(paste0("names(pars) is not equal to the colnames() of the design matrix.\n",
-                       "Continuing with the parameters as matched below:",
-                       "Design matrix: ", paste(colnames(x_mat), sep = ", "),
-                       "\n names(pars): ", paste(names(pars), sep = ", ")),
-                class = "chantrics_parnames_do_not_match")
+    rlang::warn(paste0(
+      "names(pars) is not equal to the colnames() of the design matrix.\n",
+      "Continuing with the parameters as matched below:",
+      "Design matrix: ", paste(colnames(x_mat), sep = ", "),
+      "\n names(pars): ", paste(names(pars), sep = ", ")
+    ),
+    class = "chantrics_parnames_do_not_match"
+    )
   }
 }
 
