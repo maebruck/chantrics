@@ -40,6 +40,7 @@ NULL
 # handling of dispersion parameters: http://people.stat.sfu.ca/~raltman/stat402/402L25.pdf
 
 logLik_vec.glm <- function(object, pars = NULL, ...) {
+
   if (!missing(...)) {
     rlang::warn("extra arguments discarded")
   }
@@ -50,6 +51,7 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   # calculate mus
   # try getting the design matrix from glm object
   x_mat <- get_design_matrix_from_model(object)
+  dimcheck(x_mat, pars)
   eta_vec <- x_mat %*% pars
   mu_vec <- object$family$linkinv(eta_vec)
   # try getting the response vector from glm
@@ -97,6 +99,24 @@ dispersion.stat <- function(response_vec, mu_vec, object) {
   return(sum(((response_vec - mu_vec)^2) / object$family$variance(mu_vec)) / (stats::df.residual(object)))
 }
 
+#' @keywords internal
+
+dimcheck <- function(x_mat, pars) {
+  #check that dimensions of xmat and pars coincide
+  if (ncol(x_mat) != length(pars)) {
+    rlang::abort(paste0("The length of 'pars' (", length(pars), ") does not fit\n",
+                        "the number of columns in the design matrix, ", ncol(x_mat)),
+                 class = "chantrics_pars_wrong_length")
+  }
+  if (any(colnames(x_mat) != names(pars))) {
+    rlang::warn(paste0("names(pars) is not equal to the colnames() of the design matrix.\n",
+                       "Continuing with the parameters as matched below:",
+                       "Design matrix: ", paste(colnames(x_mat), sep = ", "),
+                       "\n names(pars): ", paste(names(pars), sep = ", ")),
+                class = "chantrics_parnames_do_not_match")
+  }
+}
+
 #' @export
 
 logLik_vec.negbin <- function(object, pars = NULL, ...) {
@@ -110,6 +130,7 @@ logLik_vec.negbin <- function(object, pars = NULL, ...) {
   # calculate mus
   # try getting the design matrix from glm object
   x_mat <- get_design_matrix_from_model(object)
+  dimcheck(x_mat, pars)
   eta_vec <- x_mat %*% pars
   mu_vec <- object$family$linkinv(eta_vec)
   # try getting the response vector from glm

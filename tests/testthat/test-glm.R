@@ -38,6 +38,15 @@ test_that("Are generics accessible for adjusted glm models?", {
   expect_error(model_generics_caller(fm_negbin_theta_adj, run.anova = FALSE), regexp = NA)
 })
 
+test_that("logLik_vec.glm() aborts/warns if pars does not conform to the design matrix", {
+  pars <- c(1, 2, 3)
+  names(pars) <- c("(Intercept)", "x", "I(x^2)")
+  expect_error(logLik_vec(fm_pois, pars = pars[1:2]), class = "chantrics_pars_wrong_length")
+  paes <- pars
+  names(paes)[1] <- "(Interbebd)"
+  expect_warning(logLik_vec(fm_pois, pars = paes), class = "chantrics_parnames_do_not_match")
+})
+
 ## === ANOVA ===
 
 test_that("Has the ANOVA function changed its output?", {
