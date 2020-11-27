@@ -22,7 +22,8 @@ model_generics_caller <- function(object, run.anova = TRUE) {
   if (attr(object, "p_current") == 1) {
     invisible(plot(object, type = 1:4))
   }
-  confint(object)
+  confinttest <- confint(object)
+  plot(confinttest)
   # deviance(object)
   vcov(object)
   logLik(object)

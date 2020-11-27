@@ -37,9 +37,24 @@
 #'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
 #'   class are `class(x)`.
 #'
-#'   `chantrics` objects have `AIC`, `anova`, `alrtest`, `coef`, `confint`,
-#'   `df.residual`, `fitted`, `logLik`, `logLik_vec`, `nobs`, `plot`, `print`,
-#'   `residuals`, `summary` and `vcov` methods.
+#' @section Available methods:
+#'
+#'   `"chantrics"` objects have the following methods available to them:
+#'   * [`AIC`][stats::AIC()]
+#'   * [`anova`][anova.chantrics()]
+#'   * [`alrtest`][alrtest()]
+#'   * [`coef`][chandwich::coef.chandwich()]
+#'   * [`confint`][chandwich::confint.chandwich()] and [`plot.confint`][chandwich::plot.confint()]
+#'   * [`df.residual`][stats::df.residual()]
+#'   * [`fitted`][stats::fitted()]
+#'   * [`logLik`][chandwich::logLik.chandwich()]
+#'   * [`logLik_vec`][logLik_vec()]
+#'   * [`nobs`][stats::nobs()]
+#'   * [`plot`][chandwich::plot.chandwich()]
+#'   * [`print`][chandwich::print.chandwich()]
+#'   * [`residuals`][residuals.chantrics()]
+#'   * [`summary`][chandwich::summary.chandwich()]
+#'   * [`vcov`][chandwich::vcov.chandwich()]
 #'
 #' @section Examples: See the model-specific pages in the *supported models*
 #'   section.
@@ -49,6 +64,8 @@
 #'   <http://doi.org/10.1093/biomet/asm015>.
 #'
 #' @seealso [lax::alogLik()] supports adjustment for user-supplied objects.
+#'
+#' @aliases coef.chantrics confint.chantrics logLik.chantrics plot.chantrics print.chantrics summary.chantrics vcov.chantrics
 #'
 #' @export
 

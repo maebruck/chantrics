@@ -2,6 +2,13 @@
 % Please edit documentation in R/adj_loglik_methods.R
 \name{adj_loglik}
 \alias{adj_loglik}
+\alias{coef.chantrics}
+\alias{confint.chantrics}
+\alias{logLik.chantrics}
+\alias{plot.chantrics}
+\alias{print.chantrics}
+\alias{summary.chantrics}
+\alias{vcov.chantrics}
 \title{Log-likelihood adjustments for fitted models}
 \usage{
 adj_loglik(x, cluster = NULL, use_vcov = TRUE, ...)
@@ -28,10 +35,6 @@ using \code{\link[stats:optim]{stats::optimHess()}} inside \code{\link[chandwich
 An object of class \code{"chantrics"} inheriting from class \code{"chandwich"}.
 See \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}. The remaining elements of the returned
 class are \code{class(x)}.
-
-\code{chantrics} objects have \code{AIC}, \code{anova}, \code{coef}, \code{confint}, \code{df.residual},
-\code{logLik}, \code{logLik_vec}, \code{nobs}, \code{plot}, \code{print}, \code{summary} and \code{vcov}
-methods.
 }
 \description{
 This function adjusts the log-likelihood of fitted model objects based on
@@ -52,6 +55,29 @@ the variance-covariance matrix of the MLE is estimated inside
 \itemize{
 \item \link{glm}
 \item \link{glm.nb}
+}
+}
+
+\section{Available methods}{
+
+
+\code{"chantrics"} objects have the following methods available to them:
+\itemize{
+\item \code{\link[stats:AIC]{AIC}}
+\item \code{\link[=anova.chantrics]{anova}}
+\item \code{\link[=alrtest]{alrtest}}
+\item \code{\link[chandwich:coef.chandwich]{coef}}
+\item \code{\link[chandwich:confint.chandwich]{confint}} and \code{\link[chandwich:plot.confint]{plot.confint}}
+\item \code{\link[stats:df.residual]{df.residual}}
+\item \code{\link[stats:fitted.values]{fitted}}
+\item \code{\link[chandwich:logLik.chandwich]{logLik}}
+\item \code{\link[=logLik_vec]{logLik_vec}}
+\item \code{\link[stats:nobs]{nobs}}
+\item \code{\link[chandwich:plot.chandwich]{plot}}
+\item \code{\link[chandwich:print.chandwich]{print}}
+\item \code{\link[=residuals.chantrics]{residuals}}
+\item \code{\link[chandwich:summary.chandwich]{summary}}
+\item \code{\link[chandwich:vcov.chandwich]{vcov}}
 }
 }
 
