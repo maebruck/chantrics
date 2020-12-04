@@ -75,7 +75,7 @@ adj_loglik <- function(x,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
-  supported_models <- c("glm", "negbin")
+  supported_models <- c("glm", "negbin", "hurdle")
   # check if x is a supported model type
   if (!(class(x)[1] %in% supported_models)) {
     rlang::abort(
@@ -91,6 +91,11 @@ adj_loglik <- function(x,
   if (!any(paste0("logLik_vec.", class(x)) %in% utils::methods("logLik_vec"))) {
     rlang::abort("x does not have a logLik_vec method")
   }
+  if (inherits(x, "hurdle")) {
+    if (is.null(x)) {
+      rlang::abort("Please run the original 'pscl::hurdle()' model with the argument 'x = TRUE'", class = "chantrics_missing_model_matrices")
+      }
+  }
   # create function for log-likelihood of x
   logLik_f <- function(pars, fitted_object, ...) {
     return(c(logLik_vec(fitted_object, pars = pars)))
@@ -104,6 +109,10 @@ adj_loglik <- function(x,
       },
       silent = TRUE
     )
+  } else if (inherits(x, "hurdle")) {
+    try({
+      name_pieces <- c(paste0("count:", x$dist$count), paste0("zero:", x$dist$zero))
+    }, silent = TRUE)
   }
   # get mle estimate from x
   mle <- stats::coef(x)

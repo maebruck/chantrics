@@ -83,19 +83,36 @@ get_response_from_model <- function(object) {
 #' @rdname internal
 #' @keywords internal
 
-get_design_matrix_from_model <- function(object) {
+get_design_matrix_from_model <- function(object, type = NULL) {
   if (inherits(object, "chantrics")) {
     object <- get_unadj_object(object)
   }
-  x_mat <- try(stats::model.matrix(object), silent = TRUE)
-  if (is.error(x_mat)) {
-    x_mat <- try(object$x, silent = TRUE)
-    if (is.error(x_mat)) {
+  if (inherits(object, "hurdle")) {
+    count_mat <- try(object$x$count)
+    zero_mat <- try(object$x$zero)
+    if (any(is.error(count_mat), is.error(zero_mat))) {
       raise_yield_error(
         "model object",
         "design matrix",
-        "executing the model with the option 'y = TRUE'"
+        "executing the model with the option 'x = TRUE'"
       )
+    }
+    if (!is.null(type)) {
+      x_mat <- switch(type, count = count_mat, zero = zero_mat)
+    } else {
+      x_mat <- list(count = count_mat, zero = zero_mat)
+    }
+  } else {
+  x_mat <- try(stats::model.matrix(object), silent = TRUE)
+    if (is.error(x_mat)) {
+      x_mat <- try(object$x, silent = TRUE)
+      if (is.error(x_mat)) {
+        raise_yield_error(
+          "model object",
+          "design matrix",
+          "executing the model with the option 'x = TRUE'"
+        )
+      }
     }
   }
   return(x_mat)

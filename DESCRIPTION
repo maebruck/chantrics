@@ -1,6 +1,6 @@
 Package: chantrics
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Loglikelihood Adjustments for Econometric Models
 Version: 0.0.0.9000
 Imports: 
     AER,
@@ -36,6 +36,7 @@ Suggests:
     testthat,
     lax,
     covr,
-    MASS
+    MASS,
+    pscl
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)

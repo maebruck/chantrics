@@ -155,4 +155,15 @@ bm_probit_adj <- adj_loglik(bm_probit)
 reference_probit_logLik <- probit_glm_loglik(bm_probit$coefficients, df_probit)
 chantrics_probit_logLik <- logLik_vec(bm_probit, bm_probit$coefficients)
 
+# ===== hurdle models =====
+
+# ==== Estimate hurdle model ====
+
+if (!requireNamespace("pscl", quietly = TRUE)) {
+  rlang::abort("requires pscl")
+}
+data("RecreationDemand", package = "AER")
+rd_hurdle <- hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
+summary(rd_hurdle)
+
 test_check("chantrics")
