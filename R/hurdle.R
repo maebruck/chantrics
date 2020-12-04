@@ -42,108 +42,72 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   if (!object$converged) {
     rlang::warn("The original model's parameters did not converge.")
   }
+  response_vec <- get_response_from_model(object)
   # calculate mus
   # try getting the design matrix from object
   count_mat <- get_design_matrix_from_model(object, "count")
-  zero_mat <- get_design_matrix_from_model(object, "zero")
+  # add "count_" to the colnames in order for pars to match
+  colnames(count_mat) <- vapply(colnames(count_mat), function(x) paste0("count_", x), character(1L))
   #split the parameters into the two models
   count_pars <- pars[startsWith(names(pars), "count")]
+  count_family <- object$dist$count
+  count_linkinv <- function(eta) {
+    pmax(exp(eta), .Machine$double.eps)
+  }
+  count_df.resid <- length(count_pars)
+  if (count_family == "negbin") {
+    count_df.resid <- count_df.resid + 1
+  }
+  count_theta <- try(object$theta[["count"]], silent = TRUE)
+  # remove all observations that are 0
+  count_llv <- glm_type_llv(family = count_family, x_mat = count_mat, pars = count_pars, response_vec = response_vec, linkinv = count_linkinv, df.resid = count_df.resid, theta = count_theta, hurdle = "count")
+ print(sum(count_llv))
+
+
+
+  zero_mat <- get_design_matrix_from_model(object, "zero")
+  # add "count_" to the colnames in order for pars to match
+  colnames(zero_mat) <- vapply(colnames(zero_mat), function(x) paste0("zero_", x), character(1L))
+  #split the parameters into the two models
   zero_pars <- pars[startsWith(names(pars), "zero")]
-  response_vec <- get_response_from_model(object)
-
-
+  zero_family <- object$dist$zero
+  zero_linkinv <- object$linkinv
+  if (is.null(zero_linkinv)) {
+    zero_linkinv <- function(eta) {
+      pmax(exp(eta), .Machine$double.eps)
+    }
+  }
+  zero_df.resid <- length(zero_pars)
+  zero_theta <- try(object$theta[["zero"]], silent = TRUE)
+  zero_response <- response_vec
+  zero_response[zero_response != 0] <- 1
+  if (zero_family == "binomial") {
+    zero_llv <- glm_type_llv(family = zero_family, x_mat = zero_mat, pars = zero_pars, response_vec = zero_response, linkinv = zero_linkinv, df.resid = zero_df.resid, theta = zero_theta, hurdle = "zero")
+  } else {
+    if (zero_family == "geometric") {
+      zero_theta <- 1
+    } else {
+      zero_df.resid <- zero_df.resid + 1
+    }
+    null_eta_vec <- zero_mat %*% zero_pars
+    null_mu_vec <- zero_linkinv(null_eta_vec)
+    lv_at_zero <- stats::dnbinom(rep(0,length(zero_response)), size = zero_theta, mu = null_mu_vec, log = FALSE)
+    zero_llv <- (1 - zero_response) * log(lv_at_zero) + zero_response * log(1 - lv_at_zero)
+  }
+  #print(sum(count_llv))
+  print(sum(zero_llv))
+  llv <- count_llv + zero_llv
   # return other attributes from logLik objects
-  attr(llv, "df") <- length(pars)
+
+  attr(llv, "df") <- count_df.resid + zero_df.resid
   attr(llv, "nobs") <- stats::nobs(object)
   class(llv) <- "logLik_vec"
   return(llv)
 }
 
-#' @keywords internal
-
-dispersion.gauss <- function(response_vec, mu_vec, df) {
-  # https://statmath.wu.ac.at/courses/heather_turner/glmCourse_001.pdf (last slide in GLM > Estimation section)
-
-  # http://people.stat.sfu.ca/~raltman/stat402/402L25.pdf (p. 4) -> dispersion is the residual variance
-  # final source: ISL, page 80, eqn. 3.25 (RSE formula)
-  # response_vec are the true Y, the mu_vec are the fitted values
-
-  return(sum((response_vec - mu_vec)^2) / (df))
-}
-
-#' @keywords internal
-
-dispersion.stat <- function(response_vec, mu_vec, object) {
-  # modelcount-hilbe, pg. 78 (Eqn. 3.4, pearson chi-sq statistic), pg. 79, "The dispersion statistic of the Poisson model is defined as the Pearson Chi2 statistic divided by the residual degrees of freedom"
-  return(sum(((response_vec - mu_vec)^2) / object$family$variance(mu_vec)) / (stats::df.residual(object)))
-}
-
-#' @keywords internal
-
-dimcheck <- function(x_mat, pars) {
-  # check that dimensions of xmat and pars coincide
-  if (ncol(x_mat) != length(pars)) {
-    rlang::abort(paste0(
-      "The length of 'pars' (", length(pars), ") does not fit\n",
-      "the number of columns in the design matrix, ", ncol(x_mat)
-    ),
-    class = "chantrics_pars_wrong_length"
-    )
-  }
-  if (any(colnames(x_mat) != names(pars))) {
-    rlang::warn(paste0(
-      "names(pars) is not equal to the colnames() of the design matrix.\n",
-      "Continuing with the parameters as matched below:",
-      "Design matrix: ", paste(colnames(x_mat), sep = ", "),
-      "\n names(pars): ", paste(names(pars), sep = ", ")
-    ),
-    class = "chantrics_parnames_do_not_match"
-    )
-  }
-}
-
+#' @importFrom stats nobs
 #' @export
 
-logLik_vec.negbin <- function(object, pars = NULL, ...) {
-  if (!missing(...)) {
-    rlang::warn("extra arguments discarded")
-  }
-  # import coefficients
-  if (is.null(pars)) {
-    pars <- stats::coef(object)
-  }
-  # calculate mus
-  # try getting the design matrix from glm object
-  x_mat <- get_design_matrix_from_model(object)
-  dimcheck(x_mat, pars)
-  eta_vec <- x_mat %*% pars
-  mu_vec <- object$family$linkinv(eta_vec)
-  # try getting the response vector from glm
-  response_vec <- get_response_from_model(object)
-  # theta <- dispersion.stat(response_vec, mu_vec, object)
-  # bypass theta calculation
-  theta <- try(get("theta", envir = bypasses.env), silent = TRUE)
-  if (is.error(theta)) {
-    theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
-  }
-  pars <- c(pars, "theta")
-  llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
-
-  # return other attributes from logLik objects
-  attr(llv, "df") <- length(pars)
-  attr(llv, "nobs") <- stats::nobs(object)
-  class(llv) <- "logLik_vec"
-  return(llv)
-}
-
-#' @keywords internal
-
-fittedhelper.glm <- function(object, modelname) {
-  x_mat <- get_design_matrix_from_model(object)
-  pars <- stats::coef(object)
-  eta_vec <- x_mat %*% pars
-  mu_vec <- get_unadj_object(object)$family$linkinv(eta_vec)
-  dim(mu_vec) <- NULL
-  names(mu_vec) <- seq(1, length(mu_vec), 1)
-  return(mu_vec)
+nobs.hurdle <- function(object, ...) {
+  return(object$n)
 }

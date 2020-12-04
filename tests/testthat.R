@@ -85,9 +85,9 @@ chantrics_negbin_logLik <- logLik_vec(fm_negbin, fm_negbin$coefficients)
 
 # estimation of theta
 fm_negbin_theta <- MASS::glm.nb(y ~ x, data = df_nbinom)
-summary(fm_negbin_theta)
+#summary(fm_negbin_theta)
 fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
-summary(fm_negbin_theta_adj)
+#summary(fm_negbin_theta_adj)
 reference_negbin_theta_logLik <- negbin_glm_loglik(fm_negbin_theta$coefficients, df_nbinom, theta = summary(fm_negbin_theta)$theta)
 chantrics_negbin_theta_logLik <- chantrics:::logLik_vec.negbin(fm_negbin_theta, fm_negbin_theta$coefficients)
 

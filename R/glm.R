@@ -53,16 +53,25 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   response_vec <- get_response_from_model(object)
   df.resid <- df.residual(object)
   theta <- try(object$call$family$theta, silent = TRUE)
-  llv <- glm_type_llv(family = object$family$family, x_mat = x_mat, pars = pars, response_vec = response_vec, linkinv = object$family$linkinv, df.resid = df.resid, theta = theta)
+  if (inherits(object, "negbin")) {
+    family <- "negbin"
+  } else {
+    family <- object$family$family
+  }
+  llv <- glm_type_llv(family = family, x_mat = x_mat, pars = pars, response_vec = response_vec, linkinv = object$family$linkinv, df.resid = df.resid, theta = theta)
 
   # return other attributes from logLik objects
+  if (inherits(object, "negbin")) {
+    pars <- c(pars, "theta")
+  }
   attr(llv, "df") <- length(pars)
   attr(llv, "nobs") <- stats::nobs(object)
   class(llv) <- "logLik_vec"
   return(llv)
 }
 
-glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = NULL, theta = NULL) {
+glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = NULL, theta = NULL, hurdle = c("no", "count", "zero")) {
+  hurdle <- match.arg(hurdle)
   linkinv <- match.fun(linkinv)
   dimcheck(x_mat, pars)
   eta_vec <- x_mat %*% pars
@@ -77,10 +86,27 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
     pars <- c(pars, disp)
     names(pars)[length(pars)] <- "Dispersion"
     llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
+  } else if (family == "geometric") {
+    theta <- 1
+    family <- "Negative Binomial("
   } else if (substr(family, 1, 18) == "Negative Binomial(") {
     llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
-  }  else {
+  } else if (family == "negbin") {
+    if (is.null(theta)) {
+      try({theta <- get("theta", envir = bypasses.env)}, silent = TRUE)
+    }
+    if (!is.numeric(theta)) {
+      theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
+    }
+    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+  } else {
     rlang::abort(paste0(family, " is not supported."), class = "chantrics_not_supported_glm_family")
+  }
+  if (hurdle == "count") {
+    #subtract the probability of the function being equal to 0, see countregression-cam, Eqn. 4.54
+    llv <- llv - log(1 - stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = FALSE))
+    # set all contributions whose count is 0 to 0
+    llv[response_vec == 0] <- 0
   }
   return(llv)
 }
@@ -126,40 +152,6 @@ dimcheck <- function(x_mat, pars) {
     class = "chantrics_parnames_do_not_match"
     )
   }
-}
-
-#' @export
-
-logLik_vec.negbin <- function(object, pars = NULL, ...) {
-  if (!missing(...)) {
-    rlang::warn("extra arguments discarded")
-  }
-  # import coefficients
-  if (is.null(pars)) {
-    pars <- stats::coef(object)
-  }
-  # calculate mus
-  # try getting the design matrix from glm object
-  x_mat <- get_design_matrix_from_model(object)
-  dimcheck(x_mat, pars)
-  eta_vec <- x_mat %*% pars
-  mu_vec <- object$family$linkinv(eta_vec)
-  # try getting the response vector from glm
-  response_vec <- get_response_from_model(object)
-  # theta <- dispersion.stat(response_vec, mu_vec, object)
-  # bypass theta calculation
-  theta <- try(get("theta", envir = bypasses.env), silent = TRUE)
-  if (is.error(theta)) {
-    theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
-  }
-  pars <- c(pars, "theta")
-  llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
-
-  # return other attributes from logLik objects
-  attr(llv, "df") <- length(pars)
-  attr(llv, "nobs") <- stats::nobs(object)
-  class(llv) <- "logLik_vec"
-  return(llv)
 }
 
 #' @keywords internal
