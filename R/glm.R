@@ -50,32 +50,38 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   # calculate mus
   # try getting the design matrix from glm object
   x_mat <- get_design_matrix_from_model(object)
-  dimcheck(x_mat, pars)
-  eta_vec <- x_mat %*% pars
-  mu_vec <- object$family$linkinv(eta_vec)
-  # try getting the response vector from glm
   response_vec <- get_response_from_model(object)
-  if (object$family$family == "poisson") {
-    llv <- stats::dpois(response_vec, lambda = mu_vec, log = TRUE)
-  } else if (object$family$family == "binomial") {
-    llv <- stats::dbinom(response_vec, 1, prob = mu_vec, log = TRUE)
-  } else if (object$family$family == "gaussian") {
-    # estimate the dispersion parameter
-    disp <- dispersion.gauss(response_vec, mu_vec, df.residual(object) - 1)
-    pars <- c(pars, disp)
-    names(pars)[length(pars)] <- "Dispersion"
-    llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
-  } else if (substr(object$family$family, 1, 18) == "Negative Binomial(") {
-    theta <- object$call$family$theta
-    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
-  } else {
-    rlang::abort(paste0(object$family$family, " is not supported."), class = "chantrics_not_supported_glm_family")
-  }
+  df.resid <- df.residual(object)
+  theta <- try(object$call$family$theta, silent = TRUE)
+  llv <- glm_type_llv(family = object$family$family, x_mat = x_mat, pars = pars, response_vec = response_vec, linkinv = object$family$linkinv, df.resid = df.resid, theta = theta)
 
   # return other attributes from logLik objects
   attr(llv, "df") <- length(pars)
   attr(llv, "nobs") <- stats::nobs(object)
   class(llv) <- "logLik_vec"
+  return(llv)
+}
+
+glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = NULL, theta = NULL) {
+  linkinv <- match.fun(linkinv)
+  dimcheck(x_mat, pars)
+  eta_vec <- x_mat %*% pars
+  mu_vec <- linkinv(eta_vec)
+  if (family == "poisson") {
+    llv <- stats::dpois(response_vec, lambda = mu_vec, log = TRUE)
+  } else if (family == "binomial") {
+    llv <- stats::dbinom(response_vec, 1, prob = mu_vec, log = TRUE)
+  } else if (family == "gaussian") {
+    # estimate the dispersion parameter
+    disp <- dispersion.gauss(response_vec, mu_vec, df.resid - 1)
+    pars <- c(pars, disp)
+    names(pars)[length(pars)] <- "Dispersion"
+    llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
+  } else if (substr(family, 1, 18) == "Negative Binomial(") {
+    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+  }  else {
+    rlang::abort(paste0(family, " is not supported."), class = "chantrics_not_supported_glm_family")
+  }
   return(llv)
 }
 

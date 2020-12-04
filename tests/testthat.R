@@ -163,7 +163,7 @@ if (!requireNamespace("pscl", quietly = TRUE)) {
   rlang::abort("requires pscl")
 }
 data("RecreationDemand", package = "AER")
-rd_hurdle <- hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
+rd_hurdle_nb <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
 summary(rd_hurdle)
 
 test_check("chantrics")

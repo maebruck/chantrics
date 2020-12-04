@@ -45,30 +45,12 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   # calculate mus
   # try getting the design matrix from object
   count_mat <- get_design_matrix_from_model(object, "count")
-  zero_mat <- get_design_matrix_from_model(object, "null")
+  zero_mat <- get_design_matrix_from_model(object, "zero")
   #split the parameters into the two models
-  #match to beginning of strings of names(pars)
-  dimcheck(x_mat, pars)
-  eta_vec <- x_mat %*% pars
-  mu_vec <- object$family$linkinv(eta_vec)
-  # try getting the response vector from glm
+  count_pars <- pars[startsWith(names(pars), "count")]
+  zero_pars <- pars[startsWith(names(pars), "zero")]
   response_vec <- get_response_from_model(object)
-  if (object$family$family == "poisson") {
-    llv <- stats::dpois(response_vec, lambda = mu_vec, log = TRUE)
-  } else if (object$family$family == "binomial") {
-    llv <- stats::dbinom(response_vec, 1, prob = mu_vec, log = TRUE)
-  } else if (object$family$family == "gaussian") {
-    # estimate the dispersion parameter
-    disp <- dispersion.gauss(response_vec, mu_vec, df.residual(object) - 1)
-    pars <- c(pars, disp)
-    names(pars)[length(pars)] <- "Dispersion"
-    llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
-  } else if (substr(object$family$family, 1, 18) == "Negative Binomial(") {
-    theta <- object$call$family$theta
-    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
-  } else {
-    rlang::abort(paste0(object$family$family, " is not supported."), class = "chantrics_not_supported_glm_family")
-  }
+
 
   # return other attributes from logLik objects
   attr(llv, "df") <- length(pars)
