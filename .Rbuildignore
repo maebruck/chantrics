@@ -14,5 +14,5 @@
 ^codecov\.yml$
 ^LICENSE\.md$
 ^sources\.txt$
-^.github$
 ^.LICENSE\.rmd$
+^\.github$
