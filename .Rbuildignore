@@ -16,3 +16,4 @@
 ^sources\.txt$
 ^.github$
 ^.LICENSE\.rmd$
+^\.github$
