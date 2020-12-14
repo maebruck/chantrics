@@ -112,7 +112,14 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
   }
   if (hurdle == "count") {
     #subtract the probability of the function being equal to 0, see countregression-cam, Eqn. 4.54
-    llv <- llv - log(1 - stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = FALSE))
+    if (any(family == "negbin", family == "Negative Binomial(")) {
+      llv <- llv - log(1 - stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = FALSE))
+    } else if (family == "poisson") {
+      llv <- llv - log(1 - stats::dpois(response_vec, lambda = mu_vec, log = FALSE))
+    } else {
+      # safety break
+      rlang::abort("Could not match count distribution specification.")
+    }
     # set all contributions whose count is 0 to 0
     llv[response_vec == 0] <- 0
   }

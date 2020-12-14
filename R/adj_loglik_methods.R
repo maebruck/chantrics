@@ -185,8 +185,10 @@ adj_loglik <- function(x,
     # # need to do this to two different objects due to different call structures
     # environment(attr(adjusted_x, "loglik"))[["x"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
   } else if (inherits(x, "hurdle")) {
-    try(attr(adjusted_x, "theta") <- get("negbin_theta_est", envir = bypasses.env), silent = TRUE)
-    rm("negbin_theta_est", envir = bypasses.env)
+    try({
+      attr(adjusted_x, "theta") <- get("negbin_theta_est", envir = bypasses.env)
+      rm("negbin_theta_est", envir = bypasses.env)
+    }, silent = TRUE)
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
