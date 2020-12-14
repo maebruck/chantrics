@@ -26,7 +26,7 @@ get_response_from_formula(x)
 
 get_response_from_model(object)
 
-get_design_matrix_from_model(object)
+get_design_matrix_from_model(object, type = NULL)
 
 abort_not_chantrics(x)
 

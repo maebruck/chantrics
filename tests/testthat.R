@@ -9,21 +9,25 @@ library(chantrics)
 #   expect_error(model_generics_caller(), regexp = NA)
 # })
 
-model_generics_caller <- function(object, run.anova = TRUE) {
+model_generics_caller <- function(object, run.anova = TRUE, run.confint = TRUE, run.residuals = TRUE) {
   invisible(print(object))
   summary(object)
   # coef() and coefficients() call the same S3 methods
   coef(object)
   # residuals() and resid() call the same S3 methods
-  residuals(object)
-  fitted(object)
+  if (run.residuals) {
+    residuals(object)
+    fitted(object)
+  }
   # predict(object)
   # plot() requires a single free covariate
   if (attr(object, "p_current") == 1) {
     invisible(plot(object, type = 1:4))
   }
-  confinttest <- confint(object)
-  plot(confinttest)
+  if (run.confint) {
+    confinttest <- confint(object)
+    plot(confinttest)
+  }
   # deviance(object)
   vcov(object)
   logLik(object)
@@ -85,11 +89,11 @@ chantrics_negbin_logLik <- logLik_vec(fm_negbin, fm_negbin$coefficients)
 
 # estimation of theta
 fm_negbin_theta <- MASS::glm.nb(y ~ x, data = df_nbinom)
-summary(fm_negbin_theta)
+# summary(fm_negbin_theta)
 fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
-summary(fm_negbin_theta_adj)
+# summary(fm_negbin_theta_adj)
 reference_negbin_theta_logLik <- negbin_glm_loglik(fm_negbin_theta$coefficients, df_nbinom, theta = summary(fm_negbin_theta)$theta)
-chantrics_negbin_theta_logLik <- chantrics:::logLik_vec.negbin(fm_negbin_theta, fm_negbin_theta$coefficients)
+chantrics_negbin_theta_logLik <- chantrics:::logLik_vec(fm_negbin_theta, fm_negbin_theta$coefficients)
 
 
 # ==== generate gaussian data ====
@@ -154,5 +158,26 @@ bm_probit <- glm(y ~ a + b, data = df_probit, family = binomial(link = "probit")
 bm_probit_adj <- adj_loglik(bm_probit)
 reference_probit_logLik <- probit_glm_loglik(bm_probit$coefficients, df_probit)
 chantrics_probit_logLik <- logLik_vec(bm_probit, bm_probit$coefficients)
+
+# ===== hurdle models =====
+
+# ==== Estimate hurdle model ====
+
+if (!requireNamespace("pscl", quietly = TRUE)) {
+  rlang::abort("requires pscl")
+}
+data("RecreationDemand", package = "AER")
+rd_hurdle_nb <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
+rd_hurdle_nb_adj <- adj_loglik(rd_hurdle_nb)
+rd_hurdle_nb_small <- pscl::hurdle(trips ~ . - income | quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
+rd_hurdle_nb_small_adj <- adj_loglik(rd_hurdle_nb_small)
+
+rd_hurdle_logit_poi <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "poisson", zero.dist = "binomial", link = "logit", x = TRUE)
+rd_hurdle_logit_poi_adj <- adj_loglik(rd_hurdle_logit_poi)
+
+rd_hurdle_geom_geom <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "geometric", zero.dist = "geometric", link = "logit", x = TRUE)
+rd_hurdle_geom_geom_adj <- adj_loglik(rd_hurdle_geom_geom)
+#
+
 
 test_check("chantrics")

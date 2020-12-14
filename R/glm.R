@@ -50,32 +50,84 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   # calculate mus
   # try getting the design matrix from glm object
   x_mat <- get_design_matrix_from_model(object)
-  dimcheck(x_mat, pars)
-  eta_vec <- x_mat %*% pars
-  mu_vec <- object$family$linkinv(eta_vec)
-  # try getting the response vector from glm
   response_vec <- get_response_from_model(object)
-  if (object$family$family == "poisson") {
-    llv <- stats::dpois(response_vec, lambda = mu_vec, log = TRUE)
-  } else if (object$family$family == "binomial") {
-    llv <- stats::dbinom(response_vec, 1, prob = mu_vec, log = TRUE)
-  } else if (object$family$family == "gaussian") {
-    # estimate the dispersion parameter
-    disp <- dispersion.gauss(response_vec, mu_vec, df.residual(object) - 1)
-    pars <- c(pars, disp)
-    names(pars)[length(pars)] <- "Dispersion"
-    llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
-  } else if (substr(object$family$family, 1, 18) == "Negative Binomial(") {
-    theta <- object$call$family$theta
-    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+  df.resid <- df.residual(object)
+  # theta for constant negbin models
+  theta <- try(object$call$family$theta, silent = TRUE)
+
+  if (inherits(object, "negbin")) {
+    family <- "negbin"
+    # get theta if saved
+    if (!is.numeric(theta)) {
+      try(
+        {
+          theta <- get("theta", envir = bypasses.env)
+        },
+        silent = TRUE
+      )
+    }
   } else {
-    rlang::abort(paste0(object$family$family, " is not supported."), class = "chantrics_not_supported_glm_family")
+    family <- object$family$family
   }
+  llv <- glm_type_llv(family = family, x_mat = x_mat, pars = pars, response_vec = response_vec, linkinv = object$family$linkinv, df.resid = df.resid, theta = theta)
 
   # return other attributes from logLik objects
+  if (inherits(object, "negbin")) {
+    pars <- c(pars, "theta")
+  }
   attr(llv, "df") <- length(pars)
   attr(llv, "nobs") <- stats::nobs(object)
   class(llv) <- "logLik_vec"
+  return(llv)
+}
+
+glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = NULL, theta = NULL, hurdle = c("no", "count", "zero")) {
+  hurdle <- match.arg(hurdle)
+  linkinv <- match.fun(linkinv)
+  dimcheck(x_mat, pars)
+  eta_vec <- x_mat %*% pars
+  mu_vec <- linkinv(eta_vec)
+  # "geometric" is negbin with theta = 1
+  if (family == "geometric") {
+    theta <- 1
+    family <- "Negative Binomial("
+  }
+  if (family == "poisson") {
+    llv <- stats::dpois(response_vec, lambda = mu_vec, log = TRUE)
+  } else if (family == "binomial") {
+    llv <- stats::dbinom(response_vec, 1, prob = mu_vec, log = TRUE)
+  } else if (family == "gaussian") {
+    # estimate the dispersion parameter
+    disp <- dispersion.gauss(response_vec, mu_vec, df.resid - 1)
+    pars <- c(pars, disp)
+    names(pars)[length(pars)] <- "Dispersion"
+    llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
+  } else if (substr(family, 1, 18) == "Negative Binomial(") {
+    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+  } else if (family == "negbin") {
+    # if theta should not be estimated (if through confint, etc.), then this should be set previously.
+    # If theta is not a number, reestimate
+    if (!is.numeric(theta)) {
+      theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
+    }
+    llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+    assign("last_est_theta", theta, envir = bypasses.env)
+  } else {
+    rlang::abort(paste0(family, " is not supported."), class = "chantrics_not_supported_glm_family")
+  }
+  if (hurdle == "count") {
+    # subtract the probability of the function being equal to 0, see countregression-cam, Eqn. 4.54
+    if (any(family == "negbin", family == "Negative Binomial(")) {
+      llv <- llv - log(1 - stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = FALSE))
+    } else if (family == "poisson") {
+      llv <- llv - log(1 - stats::dpois(response_vec, lambda = mu_vec, log = FALSE))
+    } else {
+      # safety break
+      rlang::abort("Could not match count distribution specification.")
+    }
+    # set all contributions whose count is 0 to 0
+    llv[response_vec == 0] <- 0
+  }
   return(llv)
 }
 
@@ -120,40 +172,6 @@ dimcheck <- function(x_mat, pars) {
     class = "chantrics_parnames_do_not_match"
     )
   }
-}
-
-#' @export
-
-logLik_vec.negbin <- function(object, pars = NULL, ...) {
-  if (!missing(...)) {
-    rlang::warn("extra arguments discarded")
-  }
-  # import coefficients
-  if (is.null(pars)) {
-    pars <- stats::coef(object)
-  }
-  # calculate mus
-  # try getting the design matrix from glm object
-  x_mat <- get_design_matrix_from_model(object)
-  dimcheck(x_mat, pars)
-  eta_vec <- x_mat %*% pars
-  mu_vec <- object$family$linkinv(eta_vec)
-  # try getting the response vector from glm
-  response_vec <- get_response_from_model(object)
-  # theta <- dispersion.stat(response_vec, mu_vec, object)
-  # bypass theta calculation
-  theta <- try(get("theta", envir = bypasses.env), silent = TRUE)
-  if (is.error(theta)) {
-    theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
-  }
-  pars <- c(pars, "theta")
-  llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
-
-  # return other attributes from logLik objects
-  attr(llv, "df") <- length(pars)
-  attr(llv, "nobs") <- stats::nobs(object)
-  class(llv) <- "logLik_vec"
-  return(llv)
 }
 
 #' @keywords internal
