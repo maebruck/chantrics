@@ -52,9 +52,15 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   x_mat <- get_design_matrix_from_model(object)
   response_vec <- get_response_from_model(object)
   df.resid <- df.residual(object)
+  # theta for constant negbin models
   theta <- try(object$call$family$theta, silent = TRUE)
+
   if (inherits(object, "negbin")) {
     family <- "negbin"
+    # get theta if saved
+    if (!is.numeric(theta)) {
+      try({theta <- get("theta", envir = bypasses.env)}, silent = TRUE)
+    }
   } else {
     family <- object$family$family
   }
@@ -76,6 +82,11 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
   dimcheck(x_mat, pars)
   eta_vec <- x_mat %*% pars
   mu_vec <- linkinv(eta_vec)
+  # "geometric" is negbin with theta = 1
+  if (family == "geometric") {
+    theta <- 1
+    family <- "Negative Binomial("
+  }
   if (family == "poisson") {
     llv <- stats::dpois(response_vec, lambda = mu_vec, log = TRUE)
   } else if (family == "binomial") {
@@ -86,19 +97,16 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
     pars <- c(pars, disp)
     names(pars)[length(pars)] <- "Dispersion"
     llv <- stats::dnorm(response_vec - mu_vec, mean = 0, sd = sqrt(disp), log = TRUE)
-  } else if (family == "geometric") {
-    theta <- 1
-    family <- "Negative Binomial("
   } else if (substr(family, 1, 18) == "Negative Binomial(") {
     llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
   } else if (family == "negbin") {
-    if (is.null(theta)) {
-      try({theta <- get("theta", envir = bypasses.env)}, silent = TRUE)
-    }
+    # if theta should not be estimated (if through confint, etc.), then this should be set previously.
+    # If theta is not a number, reestimate
     if (!is.numeric(theta)) {
       theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
     }
     llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
+    assign("last_est_theta", theta, envir = bypasses.env)
   } else {
     rlang::abort(paste0(family, " is not supported."), class = "chantrics_not_supported_glm_family")
   }

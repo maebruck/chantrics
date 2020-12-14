@@ -92,7 +92,7 @@ adj_loglik <- function(x,
     rlang::abort("x does not have a logLik_vec method")
   }
   if (inherits(x, "hurdle")) {
-    if (is.null(x)) {
+    if (is.null(x[["x"]])) {
       rlang::abort("Please run the original 'pscl::hurdle()' model with the argument 'x = TRUE'", class = "chantrics_missing_model_matrices")
       }
   }
@@ -154,6 +154,10 @@ adj_loglik <- function(x,
       H = H,
       V = V
     )
+  # check if unadjusted model has been passed through, if not, add it
+  try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {
+    attr(adjusted_x, "loglik_args")[["fitted_object"]] <- x
+  })
   # post-estimation
   if (class(x)[1] == "glm") {
     if (x$family$family == "gaussian") {
@@ -176,8 +180,13 @@ adj_loglik <- function(x,
     mu_vec <- x$family$linkinv(eta_vec)
     attr(adjusted_x, "theta") <- MASS::theta.ml(y = response_vec, mu = mu_vec)
     # hijack x to pass adjusted theta to original model object to circumvent reestimation for confint and anova
-    attr(attr(adjusted_x, "loglik_args")[["fitted_object"]], "theta_chantrics") <- attr(adjusted_x, "theta")
-    # attr(adjusted_x, "dispersion") <- dispersion.stat(response_vec, mu_vec, x)
+    # does not currently work...
+    # attr(adjusted_x, "loglik_args")[["fitted_object"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
+    # # need to do this to two different objects due to different call structures
+    # environment(attr(adjusted_x, "loglik"))[["x"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
+  } else if (inherits(x, "hurdle")) {
+    try(attr(adjusted_x, "theta") <- get("negbin_theta_est", envir = bypasses.env), silent = TRUE)
+    rm("negbin_theta_est", envir = bypasses.env)
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
@@ -186,10 +195,6 @@ adj_loglik <- function(x,
   args_list[["cluster"]] <- cluster
   args_list[["use_vcov"]] <- use_vcov
   attr(adjusted_x, "chantrics_args") <- args_list
-  # check if unadjusted model has been passed through, if not, add it
-  try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {
-    attr(adjusted_x, "loglik_args")[["fitted_object"]] <- x
-  })
   return(adjusted_x)
 }
 
@@ -215,7 +220,14 @@ print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L
                                     signif.stars = getOption("show.signif.stars"), ...) {
   stats::printCoefmat(x, digits = digits)
   if (!is.null(attr(x, "theta"))) {
-    cat("\n(Theta: ", format(attr(x, "theta"), digits = digits), ", SE: ", format(attr(attr(x, "theta"), "SE"), digits = digits), ")\n", sep = "")
+    theta <- attr(x, "theta")
+    if (inherits(attr(x, "theta"), "list")) {
+      for (i in 1:length(theta)) {
+        cat("\n(", names(theta)[[i]], " - theta: ", format(theta[[i]], digits = digits), ", SE: ", format(attr(theta[[i]], "SE"), digits = digits), ")\n", sep = "")
+      }
+    } else {
+      cat("\n(Theta: ", format(theta, digits = digits), ", SE: ", format(attr(theta, "SE"), digits = digits), ")\n", sep = "")
+    }
   }
   if (!is.null(attr(x, "dispersion"))) {
     cat("\n(Dispersion parameter taken to be ", format(attr(x, "dispersion"), digits = digits), ")\n", sep = "")
@@ -328,6 +340,10 @@ anova.chantrics <- function(object, ...) {
 
   # check if there is at least one chantrics objects after dropping
   if (length(model_objects) == 1) {
+    if (inherits(object, "hurdle")) {
+      # unclear how the sequence should run - better if the user specifies this manually.
+      rlang::abort(paste0("Hurdle models are not available for sequential anova\n", "Specify two or more nested models."))
+    }
     # ==== Sequential ANOVA ====
     # create sequential model objects
     prev_adjusted_object <- model_objects[[1]]

@@ -89,7 +89,7 @@ fm_negbin_theta <- MASS::glm.nb(y ~ x, data = df_nbinom)
 fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
 #summary(fm_negbin_theta_adj)
 reference_negbin_theta_logLik <- negbin_glm_loglik(fm_negbin_theta$coefficients, df_nbinom, theta = summary(fm_negbin_theta)$theta)
-chantrics_negbin_theta_logLik <- chantrics:::logLik_vec.negbin(fm_negbin_theta, fm_negbin_theta$coefficients)
+chantrics_negbin_theta_logLik <- chantrics:::logLik_vec(fm_negbin_theta, fm_negbin_theta$coefficients)
 
 
 # ==== generate gaussian data ====
@@ -164,6 +164,18 @@ if (!requireNamespace("pscl", quietly = TRUE)) {
 }
 data("RecreationDemand", package = "AER")
 rd_hurdle_nb <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
-summary(rd_hurdle)
+rd_hurdle_nb_adj <- adj_loglik(rd_hurdle_nb)
+rd_hurdle_nb_small <- pscl::hurdle(trips ~ . - income| quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
+rd_hurdle_nb_small_adj <- adj_loglik(rd_hurdle_nb_small)
+
+summary(rd_hurdle_nb)
+summary(rd_hurdle_nb_adj)
+
+rd_hurdle_logit_poi <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "poisson", zero.dist = "binomial", link = "logit", x = TRUE)
+
+rd_hurdle_geom_geom <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "geometric", zero.dist = "geometric", link = "logit", x = TRUE)
+rd_hurdle_geom_geom_adj <- adj_loglik(rd_hurdle_geom_geom)
+#
+
 
 test_check("chantrics")

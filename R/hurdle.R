@@ -42,6 +42,25 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   if (!object$converged) {
     rlang::warn("The original model's parameters did not converge.")
   }
+  # if none is saved, reestimate
+  theta <- try(get("theta", envir = bypasses.env), silent = TRUE)
+  if (is.error(theta)) {
+    count_theta <- NULL
+    zero_theta <- NULL
+  } else {
+    #if not error, parse
+    if (!is.null(theta[["count"]])) {
+      count_theta <- theta[["count"]]
+    } else {
+      count_theta <- NULL
+    }
+    if (!is.null(theta[["zero"]])) {
+      zero_theta <- theta[["zero"]]
+    } else {
+      zero_theta <- NULL
+    }
+  }
+
   response_vec <- get_response_from_model(object)
   # calculate mus
   # try getting the design matrix from object
@@ -58,17 +77,19 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   if (count_family == "negbin") {
     count_df.resid <- count_df.resid + 1
   }
-  count_theta <- try(object$theta[["count"]], silent = TRUE)
   # remove all observations that are 0
   count_llv <- glm_type_llv(family = count_family, x_mat = count_mat, pars = count_pars, response_vec = response_vec, linkinv = count_linkinv, df.resid = count_df.resid, theta = count_theta, hurdle = "count")
- print(sum(count_llv))
-
+  # print(sum(count_llv))
+  count_theta_est <- try(get("last_est_theta", envir = bypasses.env), silent = TRUE)
+  if (exists("last_est_theta", envir = bypasses.env, inherits = FALSE)) {
+    rm("last_est_theta", envir = bypasses.env)
+  }
 
 
   zero_mat <- get_design_matrix_from_model(object, "zero")
   # add "count_" to the colnames in order for pars to match
   colnames(zero_mat) <- vapply(colnames(zero_mat), function(x) paste0("zero_", x), character(1L))
-  #split the parameters into the two models
+  # split the parameters into the two models
   zero_pars <- pars[startsWith(names(pars), "zero")]
   zero_family <- object$dist$zero
   zero_linkinv <- object$linkinv
@@ -78,9 +99,10 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     }
   }
   zero_df.resid <- length(zero_pars)
-  zero_theta <- try(object$theta[["zero"]], silent = TRUE)
+  #zero_theta <- try(object$theta[["zero"]], silent = TRUE)
   zero_response <- response_vec
   zero_response[zero_response != 0] <- 1
+  zero_theta <- NULL
   if (zero_family == "binomial") {
     zero_llv <- glm_type_llv(family = zero_family, x_mat = zero_mat, pars = zero_pars, response_vec = zero_response, linkinv = zero_linkinv, df.resid = zero_df.resid, theta = zero_theta, hurdle = "zero")
   } else {
@@ -91,12 +113,26 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     }
     null_eta_vec <- zero_mat %*% zero_pars
     null_mu_vec <- zero_linkinv(null_eta_vec)
+    if (!is.numeric(zero_theta)) {
+      zero_theta <- MASS::theta.ml(y = zero_response, mu = null_mu_vec)
+    }
     lv_at_zero <- stats::dnbinom(rep(0,length(zero_response)), size = zero_theta, mu = null_mu_vec, log = FALSE)
     zero_llv <- (1 - zero_response) * log(lv_at_zero) + zero_response * log(1 - lv_at_zero)
   }
-  #print(sum(count_llv))
-  print(sum(zero_llv))
+  # print(sum(zero_llv))
   llv <- count_llv + zero_llv
+  # save theta objects in bypasses
+  if (any("negbin" == c(count_family, zero_family))) {
+    theta_ret <- list()
+    if (is.numeric(count_theta_est)) {
+      theta_ret[["count"]] <- count_theta_est
+    }
+    if (is.numeric(zero_theta)) {
+      theta_ret[["zero"]] <- zero_theta
+    }
+    assign("negbin_theta_est", theta_ret, envir = bypasses.env)
+  }
+
   # return other attributes from logLik objects
 
   attr(llv, "df") <- count_df.resid + zero_df.resid
