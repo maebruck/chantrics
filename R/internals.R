@@ -103,7 +103,7 @@ get_design_matrix_from_model <- function(object, type = NULL) {
       x_mat <- list(count = count_mat, zero = zero_mat)
     }
   } else {
-  x_mat <- try(stats::model.matrix(object), silent = TRUE)
+    x_mat <- try(stats::model.matrix(object), silent = TRUE)
     if (is.error(x_mat)) {
       x_mat <- try(object$x, silent = TRUE)
       if (is.error(x_mat)) {

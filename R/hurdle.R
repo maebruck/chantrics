@@ -17,13 +17,12 @@
 #' # hurdle model from AER, pg. 139-140
 #' library(pscl)
 #' data("RecreationDemand", package = "AER")
-#' rd_hurdle <- hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
+#' rd_hurdle <- hurdle(trips ~ . | quality + income, data = RecreationDemand,
+#'                     dist = "negbin", x = TRUE)
 #' summary(rd_hurdle)
 #'
 #' # adjust model
 #' adj_loglik(rd_hurdle)
-#'
-#'
 #' @name hurdle
 NULL
 
@@ -48,7 +47,7 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     count_theta <- NULL
     zero_theta <- NULL
   } else {
-    #if not error, parse
+    # if not error, parse
     if (!is.null(theta[["count"]])) {
       count_theta <- theta[["count"]]
     } else {
@@ -67,7 +66,7 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   count_mat <- get_design_matrix_from_model(object, "count")
   # add "count_" to the colnames in order for pars to match
   colnames(count_mat) <- vapply(colnames(count_mat), function(x) paste0("count_", x), character(1L))
-  #split the parameters into the two models
+  # split the parameters into the two models
   count_pars <- pars[startsWith(names(pars), "count")]
   count_family <- object$dist$count
   count_linkinv <- function(eta) {
@@ -99,7 +98,7 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     }
   }
   zero_df.resid <- length(zero_pars)
-  #zero_theta <- try(object$theta[["zero"]], silent = TRUE)
+  # zero_theta <- try(object$theta[["zero"]], silent = TRUE)
   zero_response <- response_vec
   zero_response[zero_response != 0] <- 1
   zero_theta <- NULL
@@ -116,7 +115,7 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     if (!is.numeric(zero_theta)) {
       zero_theta <- MASS::theta.ml(y = zero_response, mu = null_mu_vec)
     }
-    lv_at_zero <- stats::dnbinom(rep(0,length(zero_response)), size = zero_theta, mu = null_mu_vec, log = FALSE)
+    lv_at_zero <- stats::dnbinom(rep(0, length(zero_response)), size = zero_theta, mu = null_mu_vec, log = FALSE)
     zero_llv <- (1 - zero_response) * log(lv_at_zero) + zero_response * log(1 - lv_at_zero)
   }
   # print(sum(zero_llv))

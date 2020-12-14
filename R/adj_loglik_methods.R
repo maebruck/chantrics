@@ -94,7 +94,7 @@ adj_loglik <- function(x,
   if (inherits(x, "hurdle")) {
     if (is.null(x[["x"]])) {
       rlang::abort("Please run the original 'pscl::hurdle()' model with the argument 'x = TRUE'", class = "chantrics_missing_model_matrices")
-      }
+    }
   }
   # create function for log-likelihood of x
   logLik_f <- function(pars, fitted_object, ...) {
@@ -110,9 +110,12 @@ adj_loglik <- function(x,
       silent = TRUE
     )
   } else if (inherits(x, "hurdle")) {
-    try({
-      name_pieces <- c(paste0("count:", x$dist$count), paste0("zero:", x$dist$zero))
-    }, silent = TRUE)
+    try(
+      {
+        name_pieces <- c(paste0("count:", x$dist$count), paste0("zero:", x$dist$zero))
+      },
+      silent = TRUE
+    )
   }
   # get mle estimate from x
   mle <- stats::coef(x)
@@ -185,10 +188,13 @@ adj_loglik <- function(x,
     # # need to do this to two different objects due to different call structures
     # environment(attr(adjusted_x, "loglik"))[["x"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
   } else if (inherits(x, "hurdle")) {
-    try({
-      attr(adjusted_x, "theta") <- get("negbin_theta_est", envir = bypasses.env)
-      rm("negbin_theta_est", envir = bypasses.env)
-    }, silent = TRUE)
+    try(
+      {
+        attr(adjusted_x, "theta") <- get("negbin_theta_est", envir = bypasses.env)
+        rm("negbin_theta_est", envir = bypasses.env)
+      },
+      silent = TRUE
+    )
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-

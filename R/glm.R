@@ -59,7 +59,12 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
     family <- "negbin"
     # get theta if saved
     if (!is.numeric(theta)) {
-      try({theta <- get("theta", envir = bypasses.env)}, silent = TRUE)
+      try(
+        {
+          theta <- get("theta", envir = bypasses.env)
+        },
+        silent = TRUE
+      )
     }
   } else {
     family <- object$family$family
@@ -111,7 +116,7 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
     rlang::abort(paste0(family, " is not supported."), class = "chantrics_not_supported_glm_family")
   }
   if (hurdle == "count") {
-    #subtract the probability of the function being equal to 0, see countregression-cam, Eqn. 4.54
+    # subtract the probability of the function being equal to 0, see countregression-cam, Eqn. 4.54
     if (any(family == "negbin", family == "Negative Binomial(")) {
       llv <- llv - log(1 - stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = FALSE))
     } else if (family == "poisson") {
