@@ -9,21 +9,25 @@ library(chantrics)
 #   expect_error(model_generics_caller(), regexp = NA)
 # })
 
-model_generics_caller <- function(object, run.anova = TRUE) {
+model_generics_caller <- function(object, run.anova = TRUE, run.confint = TRUE, run.residuals = TRUE) {
   invisible(print(object))
   summary(object)
   # coef() and coefficients() call the same S3 methods
   coef(object)
   # residuals() and resid() call the same S3 methods
-  residuals(object)
-  fitted(object)
+  if (run.residuals) {
+    residuals(object)
+    fitted(object)
+  }
   # predict(object)
   # plot() requires a single free covariate
   if (attr(object, "p_current") == 1) {
     invisible(plot(object, type = 1:4))
   }
-  confinttest <- confint(object)
-  plot(confinttest)
+  if (run.confint) {
+    confinttest <- confint(object)
+    plot(confinttest)
+  }
   # deviance(object)
   vcov(object)
   logLik(object)
@@ -168,10 +172,8 @@ rd_hurdle_nb_adj <- adj_loglik(rd_hurdle_nb)
 rd_hurdle_nb_small <- pscl::hurdle(trips ~ . - income| quality + income, data = RecreationDemand, dist = "negbin", x = TRUE)
 rd_hurdle_nb_small_adj <- adj_loglik(rd_hurdle_nb_small)
 
-summary(rd_hurdle_nb)
-summary(rd_hurdle_nb_adj)
-
 rd_hurdle_logit_poi <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "poisson", zero.dist = "binomial", link = "logit", x = TRUE)
+rd_hurdle_logit_poi_adj <- adj_loglik(rd_hurdle_logit_poi)
 
 rd_hurdle_geom_geom <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "geometric", zero.dist = "geometric", link = "logit", x = TRUE)
 rd_hurdle_geom_geom_adj <- adj_loglik(rd_hurdle_geom_geom)
