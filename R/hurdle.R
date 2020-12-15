@@ -1,17 +1,24 @@
 #' Loglikelihood adjustments for pscl::hurdle fits
 #'
-#' Adjust the loglikelihood and the standard errors of a fitted [pscl::hurdle()] model.
+#' Adjust the loglikelihood and the standard errors of a fitted [pscl::hurdle()]
+#' model.
 #'
 #' Describe zeroinfl models here
 #'
-#' Note that the [pscl::hurdle()] model has to be run with the option `x = TRUE` in order for the adjustment to execute properly
+#' Note that the [pscl::hurdle()] model has to be run with the option `x = TRUE`
+#' in order for the adjustment to execute properly. Also note that the functions
+#' [residuals.chantrics()] and [fitted.chantrics()] are currently disabled for
+#' `hurdle` models. Additionally, sequential [anova.chantrics()] are not
+#' available
 #'
-#' @section Supported families (within each family, any link function should work):
+#' @section Supported families:
+#' Within each family, any link function should work.
 #'
-#' * `geometric`
-#' * `poisson`
-#' * `negbin`
-#' * `binomial` (for the zero mass distribution only)
+#'   * `geometric`
+#'   * `poisson`
+#'   * `negbin`
+#'   * `binomial` (for the zero mass distribution only)
+#'
 #'
 #' @examples
 #' # hurdle model from AER, pg. 139-140

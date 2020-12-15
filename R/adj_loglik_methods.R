@@ -44,7 +44,8 @@
 #'   * [`anova`][anova.chantrics()]
 #'   * [`alrtest`][alrtest()]
 #'   * [`coef`][chandwich::coef.chandwich()]
-#'   * [`confint`][chandwich::confint.chandwich()] and [`plot.confint`][chandwich::plot.confint()]
+#'   * [`confint`][chandwich::confint.chandwich()]
+#'   and [`plot.confint`][chandwich::plot.confint()]
 #'   * [`df.residual`][stats::df.residual()]
 #'   * [`fitted`][stats::fitted()]
 #'   * [`logLik`][chandwich::logLik.chandwich()]
@@ -65,7 +66,8 @@
 #'
 #' @seealso [lax::alogLik()] supports adjustment for user-supplied objects.
 #'
-#' @aliases coef.chantrics confint.chantrics logLik.chantrics plot.chantrics print.chantrics summary.chantrics vcov.chantrics
+#' @aliases coef.chantrics confint.chantrics logLik.chantrics plot.chantrics
+#'     print.chantrics summary.chantrics vcov.chantrics
 #'
 #' @export
 
@@ -91,10 +93,10 @@ adj_loglik <- function(x,
   if (!any(paste0("logLik_vec.", class(x)) %in% utils::methods("logLik_vec"))) {
     rlang::abort("x does not have a logLik_vec method")
   }
-  if (inherits(x, "hurdle")) {
-    if (is.null(x[["x"]])) {
-      rlang::abort("Please run the original 'pscl::hurdle()' model with the argument 'x = TRUE'", class = "chantrics_missing_model_matrices")
-    }
+  if (all(inherits(x, "hurdle"), is.null(x[["x"]]))) {
+      rlang::abort(paste0("Please run the original 'pscl::hurdle()' model\n",
+                          "with the argument 'x = TRUE'"),
+                          class = "chantrics_missing_model_matrices")
   }
   # create function for log-likelihood of x
   logLik_f <- function(pars, fitted_object, ...) {
@@ -103,18 +105,15 @@ adj_loglik <- function(x,
   name_pieces <- c(class(x))
   # add glm family to name
   if (class(x)[1] == "glm") {
-    try(
-      {
+    try({
         name_pieces <- c(x$family$family, name_pieces)
-      },
-      silent = TRUE
+      }, silent = TRUE
     )
   } else if (inherits(x, "hurdle")) {
-    try(
-      {
-        name_pieces <- c(paste0("count:", x$dist$count), paste0("zero:", x$dist$zero))
-      },
-      silent = TRUE
+    try({
+        name_pieces <- c(paste0("count:", x$dist$count),
+                         paste0("zero:", x$dist$zero))
+      }, silent = TRUE
     )
   }
   # get mle estimate from x

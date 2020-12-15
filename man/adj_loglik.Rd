@@ -67,7 +67,8 @@ the variance-covariance matrix of the MLE is estimated inside
 \item \code{\link[=anova.chantrics]{anova}}
 \item \code{\link[=alrtest]{alrtest}}
 \item \code{\link[chandwich:coef.chandwich]{coef}}
-\item \code{\link[chandwich:confint.chandwich]{confint}} and \code{\link[chandwich:plot.confint]{plot.confint}}
+\item \code{\link[chandwich:confint.chandwich]{confint}}
+and \code{\link[chandwich:plot.confint]{plot.confint}}
 \item \code{\link[stats:df.residual]{df.residual}}
 \item \code{\link[stats:fitted.values]{fitted}}
 \item \code{\link[chandwich:logLik.chandwich]{logLik}}
