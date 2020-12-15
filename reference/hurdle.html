@@ -148,7 +148,7 @@ model.</p>
     <p>Describe zeroinfl models here</p>
 <p>Note that the <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code> model has to be run with the option <code>x = TRUE</code>
 in order for the adjustment to execute properly. Also note that the functions
-<code><a href='residuals.chantrics.html'>residuals.chantrics()</a></code> and <code>fitted.chantrics()</code> are currently disabled for
+<code><a href='residuals.chantrics.html'>residuals.chantrics()</a></code> and <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted.chantrics()</a></code> are currently disabled for
 <code>hurdle</code> models. Additionally, sequential <code><a href='anova.chantrics.html'>anova.chantrics()</a></code> are not
 available</p>
     <h2 class="hasAnchor" id="supported-families"><a class="anchor" href="#supported-families"></a>Supported families</h2>
@@ -172,8 +172,10 @@ available</p>
 #&gt; <span class='message'>Stanford University</span>
 #&gt; <span class='message'>Simon Jackman</span>
 #&gt; <span class='message'>hurdle and zeroinfl functions by Achim Zeileis</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"RecreationDemand"</span>, package <span class='op'>=</span> <span class='st'>"AER"</span><span class='op'>)</span>
-<span class='va'>rd_hurdle</span> <span class='op'>&lt;-</span> <span class='fu'>hurdle</span><span class='op'>(</span><span class='va'>trips</span> <span class='op'>~</span> <span class='va'>.</span> <span class='op'>|</span> <span class='va'>quality</span> <span class='op'>+</span> <span class='va'>income</span>, data <span class='op'>=</span> <span class='va'>RecreationDemand</span>,
-                    dist <span class='op'>=</span> <span class='st'>"negbin"</span>, x <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='va'>rd_hurdle</span> <span class='op'>&lt;-</span> <span class='fu'>hurdle</span><span class='op'>(</span><span class='va'>trips</span> <span class='op'>~</span> <span class='va'>.</span> <span class='op'>|</span> <span class='va'>quality</span> <span class='op'>+</span> <span class='va'>income</span>,
+  data <span class='op'>=</span> <span class='va'>RecreationDemand</span>,
+  dist <span class='op'>=</span> <span class='st'>"negbin"</span>, x <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>rd_hurdle</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
 #&gt; Call:
