@@ -94,9 +94,12 @@ adj_loglik <- function(x,
     rlang::abort("x does not have a logLik_vec method")
   }
   if (all(inherits(x, "hurdle"), is.null(x[["x"]]))) {
-      rlang::abort(paste0("Please run the original 'pscl::hurdle()' model\n",
-                          "with the argument 'x = TRUE'"),
-                          class = "chantrics_missing_model_matrices")
+    rlang::abort(paste0(
+      "Please run the original 'pscl::hurdle()' model\n",
+      "with the argument 'x = TRUE'"
+    ),
+    class = "chantrics_missing_model_matrices"
+    )
   }
   # create function for log-likelihood of x
   logLik_f <- function(pars, fitted_object, ...) {
@@ -111,8 +114,10 @@ adj_loglik <- function(x,
     )
   } else if (inherits(x, "hurdle")) {
     try({
-        name_pieces <- c(paste0("count:", x$dist$count),
-                         paste0("zero:", x$dist$zero))
+        name_pieces <- c(
+          paste0("count:", x$dist$count),
+          paste0("zero:", x$dist$zero)
+        )
       }, silent = TRUE
     )
   }

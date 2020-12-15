@@ -24,8 +24,10 @@
 #' # hurdle model from AER, pg. 139-140
 #' library(pscl)
 #' data("RecreationDemand", package = "AER")
-#' rd_hurdle <- hurdle(trips ~ . | quality + income, data = RecreationDemand,
-#'                     dist = "negbin", x = TRUE)
+#' rd_hurdle <- hurdle(trips ~ . | quality + income,
+#'   data = RecreationDemand,
+#'   dist = "negbin", x = TRUE
+#' )
 #' summary(rd_hurdle)
 #'
 #' # adjust model
