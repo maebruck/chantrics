@@ -7,7 +7,7 @@
 #'
 #' Note that the [pscl::hurdle()] model has to be run with the option `x = TRUE`
 #' in order for the adjustment to execute properly. Also note that the functions
-#' [residuals.chantrics()] and [fitted.chantrics()] are currently disabled for
+#' [residuals.chantrics()] and [`fitted.chantrics()`][fitted()] are currently disabled for
 #' `hurdle` models. Additionally, sequential [anova.chantrics()] are not
 #' available
 #'

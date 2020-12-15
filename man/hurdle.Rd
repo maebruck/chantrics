@@ -12,7 +12,7 @@ Describe zeroinfl models here
 
 Note that the \code{\link[pscl:hurdle]{pscl::hurdle()}} model has to be run with the option \code{x = TRUE}
 in order for the adjustment to execute properly. Also note that the functions
-\code{\link[=residuals.chantrics]{residuals.chantrics()}} and \code{\link[=fitted.chantrics]{fitted.chantrics()}} are currently disabled for
+\code{\link[=residuals.chantrics]{residuals.chantrics()}} and \code{\link[=fitted]{fitted.chantrics()}} are currently disabled for
 \code{hurdle} models. Additionally, sequential \code{\link[=anova.chantrics]{anova.chantrics()}} are not
 available
 }
@@ -31,8 +31,10 @@ Within each family, any link function should work.
 # hurdle model from AER, pg. 139-140
 library(pscl)
 data("RecreationDemand", package = "AER")
-rd_hurdle <- hurdle(trips ~ . | quality + income, data = RecreationDemand,
-                    dist = "negbin", x = TRUE)
+rd_hurdle <- hurdle(trips ~ . | quality + income,
+  data = RecreationDemand,
+  dist = "negbin", x = TRUE
+)
 summary(rd_hurdle)
 
 # adjust model
