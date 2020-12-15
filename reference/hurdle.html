@@ -40,7 +40,8 @@
 
 
 <meta property="og:title" content="Loglikelihood adjustments for pscl::hurdle fits — hurdle" />
-<meta property="og:description" content="Adjust the loglikelihood and the standard errors of a fitted pscl::hurdle() model." />
+<meta property="og:description" content="Adjust the loglikelihood and the standard errors of a fitted pscl::hurdle()
+model." />
 
 
 
@@ -90,7 +91,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -113,7 +114,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/tbruckbauer/chantrics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -136,7 +137,8 @@
     </div>
 
     <div class="ref-description">
-    <p>Adjust the loglikelihood and the standard errors of a fitted <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code> model.</p>
+    <p>Adjust the loglikelihood and the standard errors of a fitted <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code>
+model.</p>
     </div>
 
 
@@ -144,12 +146,16 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Describe zeroinfl models here</p>
-<p>Note that the <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code> model has to be run with the option <code>x = TRUE</code> in order for the adjustment to execute properly</p>
-    <h2 class="hasAnchor" id="supported-families-within-each-family-any-link-function-should-work-"><a class="anchor" href="#supported-families-within-each-family-any-link-function-should-work-"></a>Supported families (within each family, any link function should work)</h2>
+<p>Note that the <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code> model has to be run with the option <code>x = TRUE</code>
+in order for the adjustment to execute properly. Also note that the functions
+<code><a href='residuals.chantrics.html'>residuals.chantrics()</a></code> and <code>fitted.chantrics()</code> are currently disabled for
+<code>hurdle</code> models. Additionally, sequential <code><a href='anova.chantrics.html'>anova.chantrics()</a></code> are not
+available</p>
+    <h2 class="hasAnchor" id="supported-families"><a class="anchor" href="#supported-families"></a>Supported families</h2>
 
     
 
-<ul>
+<p>Within each family, any link function should work.</p><ul>
 <li><p><code>geometric</code></p></li>
 <li><p><code>poisson</code></p></li>
 <li><p><code>negbin</code></p></li>
