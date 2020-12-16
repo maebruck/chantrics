@@ -175,7 +175,7 @@ rd_hurdle_nb_small_adj <- adj_loglik(rd_hurdle_nb_small)
 rd_hurdle_logit_poi <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "poisson", zero.dist = "binomial", link = "logit", x = TRUE)
 rd_hurdle_logit_poi_adj <- adj_loglik(rd_hurdle_logit_poi)
 
-rd_hurdle_geom_geom <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "geometric", zero.dist = "geometric", link = "logit", x = TRUE)
+rd_hurdle_geom_geom <- pscl::hurdle(trips ~ . | quality + income, data = RecreationDemand, dist = "geometric", zero.dist = "geometric", x = TRUE)
 rd_hurdle_geom_geom_adj <- adj_loglik(rd_hurdle_geom_geom)
 #
 
