@@ -43,7 +43,7 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     rlang::warn("extra arguments discarded")
   }
   # import coefficients
-  if (is.null(pars)) {
+  if (any(is.null(pars), length(pars) == 0)) {
     pars <- stats::coef(object)
   }
   # issue warning if the model has not converged
@@ -76,7 +76,13 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   # add "count_" to the colnames in order for pars to match
   colnames(count_mat) <- vapply(colnames(count_mat), function(x) paste0("count_", x), character(1L))
   # split the parameters into the two models
-  count_pars <- pars[startsWith(names(pars), "count")]
+  count_pars <- try(pars[startsWith(names(pars), "count")], silent = TRUE)
+  if (is.error(count_pars)) {
+    # if pars has no names, reconstruct from object$coefficients
+    count_mle_names <- names(object[["coefficients"]][["count"]])
+    count_pars <- pars[1:length(count_mle_names)]
+    names(count_pars) <- vapply(count_mle_names, function(x) paste0("count_", x), character(1L))
+  }
   count_family <- object$dist$count
   count_linkinv <- function(eta) {
     pmax(exp(eta), .Machine$double.eps)
@@ -98,7 +104,13 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   # add "count_" to the colnames in order for pars to match
   colnames(zero_mat) <- vapply(colnames(zero_mat), function(x) paste0("zero_", x), character(1L))
   # split the parameters into the two models
-  zero_pars <- pars[startsWith(names(pars), "zero")]
+  zero_pars <- try(pars[startsWith(names(pars), "zero")])
+  if (is.error(zero_pars)) {
+    # if pars has no names, reconstruct from object$coefficients
+    zero_mle_names <- names(object[["coefficients"]][["zero"]])
+    zero_pars <- pars[(length(pars) - length(zero_mle_names)):length(pars)]
+    names(zero_pars) <- vapply(zero_mle_names, function(x) paste0("zero_", x), character(1L))
+  }
   zero_family <- object$dist$zero
   zero_linkinv <- object$linkinv
   if (is.null(zero_linkinv)) {
