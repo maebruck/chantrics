@@ -73,7 +73,7 @@
 
 adj_loglik <- function(x,
                        cluster = NULL,
-                       use_vcov = TRUE,
+                       use_vcov = TRUE, use_mle = TRUE,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
@@ -149,17 +149,31 @@ adj_loglik <- function(x,
         ...
       ) * stats::nobs(x)
   }
+  if (!use_mle) {
+    init <- rep(1, length(mle))
+    p <- length(mle)
+    par_names <- names(mle)
+    mle <- NULL
+    V <- NULL
+    H <- NULL
+  } else {
+    # restore the values in adjust_loglik to these to reset.
+    init <- NULL
+    p <- length(mle)
+    par_names <- names(mle)
+  }
   # adjust object using chandwich
   adjusted_x <-
     chandwich::adjust_loglik(
       loglik = logLik_f,
       fitted_object = x,
-      p = length(mle),
-      par_names = names(mle),
+      p = p,
+      par_names = par_names,
       name = paste(name_pieces, collapse = "_"),
       mle = mle,
       H = H,
-      V = V
+      V = V,
+      init = init
     )
   # check if unadjusted model has been passed through, if not, add it
   try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {

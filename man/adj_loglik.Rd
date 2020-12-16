@@ -11,7 +11,7 @@
 \alias{vcov.chantrics}
 \title{Log-likelihood adjustments for fitted models}
 \usage{
-adj_loglik(x, cluster = NULL, use_vcov = TRUE, ...)
+adj_loglik(x, cluster = NULL, use_vcov = TRUE, use_mle = TRUE, ...)
 }
 \arguments{
 \item{x}{A fitted model object that is supported, see \strong{Supported models}}
