@@ -19,6 +19,12 @@
 #'   function exists. Otherwise, or if `use_vcov = FALSE`, `H` is estimated
 #'   using [stats::optimHess()] inside [chandwich::adjust_loglik()].
 #'
+#' @param use_mle A logical scalar. By default, the MLE from `x` is taken as
+#'   given, and not reestimated. By setting `use_mle` to `FALSE`, the parameters
+#'   are reestimated in [chandwich::adjust_loglik()] using [stats::optim()].
+#'   This feature is currently for development purposes only, may return
+#'   misleading/false results and may be removed without notice.
+#'
 #' @param ... Further arguments to be passed to [sandwich::meatCL()] if
 #'   `cluster` is defined, if `cluster = NULL`, they are passed into
 #'   [sandwich::meat()].
