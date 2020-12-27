@@ -248,7 +248,7 @@ print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L
   if (!is.null(attr(x, "theta"))) {
     theta <- attr(x, "theta")
     if (inherits(attr(x, "theta"), "list")) {
-      for (i in 1:length(theta)) {
+      for (i in seq_along(theta)) {
         cat("\n(", names(theta)[[i]], " - theta: ", format(theta[[i]], digits = digits), ", SE: ", format(attr(theta[[i]], "SE"), digits = digits), ")\n", sep = "")
       }
     } else {
