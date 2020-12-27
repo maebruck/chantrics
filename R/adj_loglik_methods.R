@@ -79,7 +79,8 @@
 
 adj_loglik <- function(x,
                        cluster = NULL,
-                       use_vcov = TRUE, use_mle = TRUE,
+                       use_vcov = TRUE,
+                       use_mle = TRUE,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
@@ -114,17 +115,21 @@ adj_loglik <- function(x,
   name_pieces <- c(class(x))
   # add glm family to name
   if (class(x)[1] == "glm") {
-    try({
+    try(
+      {
         name_pieces <- c(x$family$family, name_pieces)
-      }, silent = TRUE
+      },
+      silent = TRUE
     )
   } else if (inherits(x, "hurdle")) {
-    try({
+    try(
+      {
         name_pieces <- c(
           paste0("count:", x$dist$count),
           paste0("zero:", x$dist$zero)
         )
-      }, silent = TRUE
+      },
+      silent = TRUE
     )
   }
   # get mle estimate from x
