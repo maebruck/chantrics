@@ -80,7 +80,7 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   if (is.error(count_pars)) {
     # if pars has no names, reconstruct from object$coefficients
     count_mle_names <- names(object[["coefficients"]][["count"]])
-    count_pars <- pars[1:length(count_mle_names)]
+    count_pars <- pars[seq_along(count_mle_names)]
     names(count_pars) <- vapply(count_mle_names, function(x) paste0("count_", x), character(1L))
   }
   count_family <- object$dist$count

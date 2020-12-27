@@ -19,6 +19,12 @@
 #'   function exists. Otherwise, or if `use_vcov = FALSE`, `H` is estimated
 #'   using [stats::optimHess()] inside [chandwich::adjust_loglik()].
 #'
+#' @param use_mle A logical scalar. By default, the MLE from `x` is taken as
+#'   given, and not reestimated. By setting `use_mle` to `FALSE`, the parameters
+#'   are reestimated in [chandwich::adjust_loglik()] using [stats::optim()].
+#'   This feature is currently for development purposes only, may return
+#'   misleading/false results and may be removed without notice.
+#'
 #' @param ... Further arguments to be passed to [sandwich::meatCL()] if
 #'   `cluster` is defined, if `cluster = NULL`, they are passed into
 #'   [sandwich::meat()].
@@ -74,6 +80,7 @@
 adj_loglik <- function(x,
                        cluster = NULL,
                        use_vcov = TRUE,
+                       use_mle = TRUE,
                        ...) {
   # if required, turn this into a method (see logLik_vec) and the below into the
   # .default() method
@@ -108,17 +115,21 @@ adj_loglik <- function(x,
   name_pieces <- c(class(x))
   # add glm family to name
   if (class(x)[1] == "glm") {
-    try({
+    try(
+      {
         name_pieces <- c(x$family$family, name_pieces)
-      }, silent = TRUE
+      },
+      silent = TRUE
     )
   } else if (inherits(x, "hurdle")) {
-    try({
+    try(
+      {
         name_pieces <- c(
           paste0("count:", x$dist$count),
           paste0("zero:", x$dist$zero)
         )
-      }, silent = TRUE
+      },
+      silent = TRUE
     )
   }
   # get mle estimate from x
@@ -149,17 +160,31 @@ adj_loglik <- function(x,
         ...
       ) * stats::nobs(x)
   }
+  if (!use_mle) {
+    init <- rep(1, length(mle))
+    p <- length(mle)
+    par_names <- names(mle)
+    mle <- NULL
+    V <- NULL
+    H <- NULL
+  } else {
+    # restore the values in adjust_loglik to these to reset.
+    init <- NULL
+    p <- length(mle)
+    par_names <- names(mle)
+  }
   # adjust object using chandwich
   adjusted_x <-
     chandwich::adjust_loglik(
       loglik = logLik_f,
       fitted_object = x,
-      p = length(mle),
-      par_names = names(mle),
+      p = p,
+      par_names = par_names,
       name = paste(name_pieces, collapse = "_"),
       mle = mle,
       H = H,
-      V = V
+      V = V,
+      init = init
     )
   # check if unadjusted model has been passed through, if not, add it
   try(if (is.null(attr(adjusted_x, "loglik_args")[["fitted_object"]])) {
@@ -234,7 +259,7 @@ print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L
   if (!is.null(attr(x, "theta"))) {
     theta <- attr(x, "theta")
     if (inherits(attr(x, "theta"), "list")) {
-      for (i in 1:length(theta)) {
+      for (i in seq_along(theta)) {
         cat("\n(", names(theta)[[i]], " - theta: ", format(theta[[i]], digits = digits), ", SE: ", format(attr(theta[[i]], "SE"), digits = digits), ")\n", sep = "")
       }
     } else {

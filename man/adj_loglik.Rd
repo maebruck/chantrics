@@ -11,7 +11,7 @@
 \alias{vcov.chantrics}
 \title{Log-likelihood adjustments for fitted models}
 \usage{
-adj_loglik(x, cluster = NULL, use_vcov = TRUE, ...)
+adj_loglik(x, cluster = NULL, use_vcov = TRUE, use_mle = TRUE, ...)
 }
 \arguments{
 \item{x}{A fitted model object that is supported, see \strong{Supported models}}
@@ -26,6 +26,12 @@ cluster.}
 used to estimate the Hessian of the independence loglikelihood, if the
 function exists. Otherwise, or if \code{use_vcov = FALSE}, \code{H} is estimated
 using \code{\link[stats:optim]{stats::optimHess()}} inside \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}.}
+
+\item{use_mle}{A logical scalar. By default, the MLE from \code{x} is taken as
+given, and not reestimated. By setting \code{use_mle} to \code{FALSE}, the parameters
+are reestimated in \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}} using \code{\link[stats:optim]{stats::optim()}}.
+This feature is currently for development purposes only, may return
+misleading/false results and may be removed without notice.}
 
 \item{...}{Further arguments to be passed to \code{\link[sandwich:vcovCL]{sandwich::meatCL()}} if
 \code{cluster} is defined, if \code{cluster = NULL}, they are passed into

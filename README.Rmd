@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 ![R-CMD-check](https://github.com/tbruckbauer/chantrics/workflows/R-CMD-check/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/tbruckbauer/chantrics/branch/master/graph/badge.svg?token=EQQ177WODM)](https://codecov.io/gh/tbruckbauer/chantrics)
 ![pkgdown](https://github.com/tbruckbauer/chantrics/workflows/pkgdown/badge.svg)
+[![CodeFactor](https://www.codefactor.io/repository/github/tbruckbauer/chantrics/badge?s=8292aacb6a947f6280b202c4f29e21e4510dce53)](https://www.codefactor.io/repository/github/tbruckbauer/chantrics)
 <!-- badges: end -->
 
 The goal of chantrics is to ...
