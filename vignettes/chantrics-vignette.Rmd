@@ -1,5 +1,5 @@
 ---
-title: "Introducing chandwich: Description"
+title: "An introduction to chantrics"
 author: "Theo Bruckbauer"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -35,5 +35,4 @@ lmtest::coeftest(fm_pois)
 #spuriously significant, zeileis-ooc then uses sandwich estimator to decrease overdispersion
 lmtest::coeftest(fm_pois, vcov = sandwich::sandwich)
 
-lmtest::coeftest(fm_pois, vcov =  )
-````
+```

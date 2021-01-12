@@ -50,6 +50,7 @@
 #'   * [`anova`][anova.chantrics()]
 #'   * [`alrtest`][alrtest()]
 #'   * [`coef`][chandwich::coef.chandwich()]
+#'   * [`lmtest::coeftest()`][lmtest::coeftest()]
 #'   * [`confint`][chandwich::confint.chandwich()]
 #'   and [`plot.confint`][chandwich::plot.confint()]
 #'   * [`df.residual`][stats::df.residual()]

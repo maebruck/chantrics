@@ -1,5 +1,6 @@
 ---
 output: github_document
+bibliography: vignettes/chantrics.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -16,50 +17,58 @@ knitr::opts_chunk$set(
 # chantrics
 
 <!-- badges: start -->
-<!--[![Travis build status](https://travis-ci.com/tbruckbauer/chantrics.svg?token=w8TadkqrUK2xbsPmJ7ty&branch=master)](https://travis-ci.com/tbruckbauer/chantrics)-->
 ![R-CMD-check](https://github.com/tbruckbauer/chantrics/workflows/R-CMD-check/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/tbruckbauer/chantrics/branch/master/graph/badge.svg?token=EQQ177WODM)](https://codecov.io/gh/tbruckbauer/chantrics)
 ![pkgdown](https://github.com/tbruckbauer/chantrics/workflows/pkgdown/badge.svg)
 [![CodeFactor](https://www.codefactor.io/repository/github/tbruckbauer/chantrics/badge?s=8292aacb6a947f6280b202c4f29e21e4510dce53)](https://www.codefactor.io/repository/github/tbruckbauer/chantrics)
 <!-- badges: end -->
 
-The goal of chantrics is to ...
+`chantrics` applies the Chandler-Bate loglikelihood adjustment [@chanbate07] implemented in the [chandwich](https://cran.r-project.org/package=chandwich) package to different models frequently used in basic Econometrics applications. `adj_loglik()` adjusts the parameter covariance matrix of the models to incorporate clustered data, and can mitigate for model misspecification by wrapping `chandwich::adjust_loglik` for the supported models.
+
+The returned model of class `chantrics` can be plugged into standard model evaluation and model comparison methods, for example `summary()`, `confint()` and `anova`, and a hypothesis test framework provided by `alrtest()`.
 
 ## Installation
 
-You can install the released version of chantrics from [CRAN](https://CRAN.R-project.org) with:
+<!--You can install the released version of chantrics from [CRAN](https://CRAN.R-project.org) with:
 
-``` r
-install.packages("chantrics")
+```{r}
+# install.packages("chantrics")
 ```
+-->
 
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from [GitHub](https://github.com/) with:
 
-``` r
+```{r eval=FALSE}
+## Remove the # if "devtools" is not installed yet.
 # install.packages("devtools")
 devtools::install_github("tbruckbauer/chantrics")
 ```
-## Example
+## Usage
 
-This is a basic example which shows you how to solve a common problem:
+This example is using the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the *sandwich* package [@zeileis06]. First, data from a negative binomial model is generated, and then a Poisson model is fit, which is clearly misspecified.
 
-```{r example}
+```{r}
 library(chantrics)
-## basic example code
+
+set.seed(123)
+x <- rnorm(250)
+y <- rnbinom(250, mu = exp(1 + x), size = 1)
+
+## Fit the Poisson glm model, which is not correctly specified
+fm_pois <- glm(y~x +I(x^2), family = poisson)
+lmtest::coeftest(fm_pois)
+# The I(x^2) term is spuriously significant.
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+In order to mitigate the misspecification, the loglikelihood adjustment is applied to the model object using `adj_loglik(model_object)`. If clustered data is available, a vector or factor indicating from which cluster the observation originates can be passed into the function using `cluster`. If it is not supplied, it is assumed that each observation originates from its own cluster and is independent. More information on this can be found in the [clustering vignette](https://chantrics.theobruckbauer.eu/articles/clustering-vignette.html).
 
-```{r cars}
-summary(cars)
+```{r}
+## Apply the loglikelihood adjustment to the model
+fm_pois_adj <- adj_loglik(fm_pois)
+lmtest::coeftest(fm_pois_adj)
+# The I(x^2) term is no longer significant.
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
+After this, some of the functionality is demonstrated. More information on the different methods can be found in the [Introducing chantrics vignette](https://chantrics.theobruckbauer.eu/articles/chantrics-vignette.html).
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-#plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+## References
