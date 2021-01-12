@@ -12,7 +12,7 @@
 ^docs$
 ^pkgdown$
 ^codecov\.yml$
-^LICENSE\.md$
 ^sources\.txt$
-^.LICENSE\.rmd$
+^LICENSE\.md$
+^LICENSE\.Rmd$
 ^\.github$
