@@ -53,6 +53,7 @@
 #'   * [`lmtest::coeftest()`][lmtest::coeftest()]
 #'   * [`confint`][chandwich::confint.chandwich()]
 #'   and [`plot.confint`][chandwich::plot.confint()]
+#'   * [`conf_region`][chandwich::conf_region()]
 #'   * [`df.residual`][stats::df.residual()]
 #'   * [`fitted`][stats::fitted()]
 #'   * [`logLik`][chandwich::logLik.chandwich()]
@@ -73,7 +74,8 @@
 #'
 #' @seealso [lax::alogLik()] supports adjustment for user-supplied objects.
 #'
-#' @aliases coef.chantrics confint.chantrics logLik.chantrics plot.chantrics
+#' @aliases coef.chantrics confint.chantrics coeftest.chantrics
+#'     conf_region.chantrics logLik.chantrics plot.chantrics
 #'     print.chantrics summary.chantrics vcov.chantrics
 #'
 #' @export

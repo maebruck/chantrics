@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 `chantrics` applies the Chandler-Bate loglikelihood adjustment [@chanbate07] implemented in the [chandwich](https://cran.r-project.org/package=chandwich) package to different models frequently used in basic Econometrics applications. `adj_loglik()` adjusts the parameter covariance matrix of the models to incorporate clustered data, and can mitigate for model misspecification by wrapping `chandwich::adjust_loglik` for the supported models.
 
-The returned model of class `chantrics` can be plugged into standard model evaluation and model comparison methods, for example `summary()`, `confint()` and `anova`, and a hypothesis test framework provided by `alrtest()`.
+The returned model of class `chantrics` can be plugged into standard model evaluation and model comparison methods, for example `summary()`, `confint()` and `anova()`, and a hypothesis test framework provided by `alrtest()`.
 
 ## Installation
 
@@ -65,10 +65,31 @@ In order to mitigate the misspecification, the loglikelihood adjustment is appli
 ```{r}
 ## Apply the loglikelihood adjustment to the model
 fm_pois_adj <- adj_loglik(fm_pois)
+summary(fm_pois_adj)
+
 lmtest::coeftest(fm_pois_adj)
 # The I(x^2) term is no longer significant.
+
+# Produce confidence intervals for the parameter estimates
+confint(fm_pois_adj)
+
+# Generate a nested model from fm_pois_adj
+fm_pois_small_adj <- update(fm_pois_adj, .~.-I(x^2))
+lmtest::coeftest(fm_pois_small_adj)
+
+# Perform an adjusted likelihood ratio test on the two models
+anova(fm_pois_adj, fm_pois_small_adj)
+# Similarly, specify to remove I(x^2) from the larger model
+alrtest(fm_pois_adj, "I(x^2)")
+
+# Plot confidence regions for the parameter estimates
+fm_pois_adj_vert <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))
+fm_pois_adj_none <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"), type = "none")
+plot(fm_pois_adj_vert, fm_pois_adj_none, conf = c(60,80,90,95), col = c("brown", "darkgreen"), lty = c(1,2), lwd = 2.5)
 ```
 
-After this, some of the functionality is demonstrated. More information on the different methods can be found in the [Introducing chantrics vignette](https://chantrics.theobruckbauer.eu/articles/chantrics-vignette.html).
+More information on the different methods can be found in the [Introducing chantrics vignette](https://chantrics.theobruckbauer.eu/articles/chantrics-vignette.html), and in the corresponding help pages..
+
+
 
 ## References
