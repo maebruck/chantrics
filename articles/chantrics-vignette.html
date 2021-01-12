@@ -102,16 +102,19 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://chantrics.theobruckbauer.eu">chantrics</a></span><span class="op">)</span></code></pre></div>
-<div id="prototyping-count-data-adjustments-glm" class="section level1">
-<h1 class="hasAnchor">
-<a href="#prototyping-count-data-adjustments-glm" class="anchor"></a>prototyping count data adjustments GLM</h1>
-<p>this is from zeileis-ooc, pg. 9</p>
+<p><code>chantrics</code> applies the Chandler-Bate loglikelihood adjustment <span class="citation">(Chandler and Bate 2007)</span> implemented in the <a href="https://cran.r-project.org/package=chandwich">chandwich</a> package <span class="citation">(Northrop and Chandler 2020)</span> to different models frequently used in basic Econometrics applications. <code><a href="../reference/adj_loglik.html">adj_loglik()</a></code> is the central function of <code>chantrics</code>, it is a generic function adjusting the parameter covariance matrix of the models to incorporate clustered data, and can mitigate for model misspecification. The returned object can then be plugged into a range of model analysis functions, which will be described below. <a href="https://chantrics.theobruckbauer.eu/articles/clustering-vignette.html">For an introduction on modelling with clustered data using <code>chantrics</code>, visit this vignette.</a>.</p>
+<div id="functionality" class="section level2">
+<h2 class="hasAnchor">
+<a href="#functionality" class="anchor"></a>Functionality</h2>
+<p><em>Note that not all functionality demonstrated below is available for all types of models.</em></p>
+<p>In order to be able to demonstrate the range of functionality available, this example will be using the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the <em>sandwich</em> package <span class="citation">(Zeileis 2006)</span>.</p>
+<p>First, data from a negative binomial model is generated, and then a Poisson model is fit, which is clearly misspecified.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
 <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">250</span><span class="op">)</span>
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html">rnbinom</a></span><span class="op">(</span><span class="fl">250</span>, mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="co">#fit count models</span>
-<span class="co">#glm poisson (which is not correctly specified)</span>
+
+<span class="co">## Fit the Poisson glm model, which is not correctly specified</span>
 <span class="va">fm_pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">x</span> <span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, family <span class="op">=</span> <span class="va">poisson</span><span class="op">)</span>
 <span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span>
 <span class="co">#&gt; </span>
@@ -123,8 +126,19 @@
 <span class="co">#&gt; I(x^2)      -0.049124   0.023146 -2.1223  0.03381 *  </span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co">#spuriously significant, zeileis-ooc then uses sandwich estimator to decrease overdispersion</span>
-<span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">fm_pois</span>, vcov <span class="op">=</span> <span class="fu">sandwich</span><span class="fu">::</span><span class="va"><a href="http://sandwich.R-Forge.R-project.org//reference/sandwich.html">sandwich</a></span><span class="op">)</span>
+<span class="co"># The I(x^2) term is spuriously significant.</span></code></pre></div>
+<p>We can now use the model object <code>fm_pois</code>, and adjust it using <code><a href="../reference/adj_loglik.html">adj_loglik()</a></code>. Use <code><a href="https://rdrr.io/r/stats/coef.html">coef()</a></code> to get a vector of the coefficients, <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to get an overview over the adjustment, or use <code><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">lmtest::coeftest</a></code> to see the results of <span class="math inline">\(z\)</span> tests on each of the coefficients.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fm_pois_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span> <span class="co"># class "numeric"</span>
+<span class="co">#&gt; (Intercept)           x      I(x^2) </span>
+<span class="co">#&gt;  1.06326821  0.99607219 -0.04912373</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span>
+<span class="co">#&gt;                  MLE       SE adj. SE</span>
+<span class="co">#&gt; (Intercept)  1.06300  0.04136   0.084</span>
+<span class="co">#&gt; x            0.99610  0.05353   0.105</span>
+<span class="co">#&gt; I(x^2)      -0.04912  0.02315   0.036</span>
+<span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; z test of coefficients:</span>
 <span class="co">#&gt; </span>
@@ -134,6 +148,92 @@
 <span class="co">#&gt; I(x^2)      -0.049124   0.036284 -1.3539   0.1758    </span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></code></pre></div>
+<div id="confidence-intervals-of-the-estimates" class="section level3">
+<h3 class="hasAnchor">
+<a href="#confidence-intervals-of-the-estimates" class="anchor"></a>Confidence intervals of the estimates</h3>
+<p>The function <code><a href="https://rdrr.io/pkg/chandwich/man/conf_intervals.html">chandwich::conf_intervals()</a></code> returns confidence intervals at the level specified in <code>conf</code> (default: <code>95</code>). To use one of the other specifications of the adjustment from <span class="citation">Chandler and Bate (2007)</span>, use the <code>type</code> argument. Many other adjustments are available. The classic S3 method <code><a href="https://rdrr.io/r/stats/confint.html">confint()</a></code> is also available.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_intervals.html">conf_intervals</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span>
+<span class="co">#&gt; Waiting for profiling to be done...</span>
+<span class="co">#&gt; Model: poisson_glm_lm </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; 95% confidence intervals, adjusted loglikelihod with type = ''vertical'' </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Symmetric:</span>
+<span class="co">#&gt;              lower     upper   </span>
+<span class="co">#&gt; (Intercept)   0.89907   1.22747</span>
+<span class="co">#&gt; x             0.78985   1.20229</span>
+<span class="co">#&gt; I(x^2)       -0.12024   0.02199</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Profile likelihood-based:</span>
+<span class="co">#&gt;              lower    upper  </span>
+<span class="co">#&gt; (Intercept)   0.8954   1.2232</span>
+<span class="co">#&gt; x             0.7877   1.1991</span>
+<span class="co">#&gt; I(x^2)       -0.1198   0.0222</span>
+<span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_intervals.html">conf_intervals</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, type <span class="op">=</span> <span class="st">"spectral"</span>, conf <span class="op">=</span> <span class="fl">99</span><span class="op">)</span>
+<span class="co">#&gt; Waiting for profiling to be done...</span>
+<span class="co">#&gt; Model: poisson_glm_lm </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; 99% confidence intervals, adjusted loglikelihod with type = ''spectral'' </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Symmetric:</span>
+<span class="co">#&gt;              lower     upper   </span>
+<span class="co">#&gt; (Intercept)   0.84748   1.27906</span>
+<span class="co">#&gt; x             0.72505   1.26709</span>
+<span class="co">#&gt; I(x^2)       -0.14258   0.04434</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Profile likelihood-based:</span>
+<span class="co">#&gt;              lower     upper   </span>
+<span class="co">#&gt; (Intercept)   0.84491   1.27554</span>
+<span class="co">#&gt; x             0.73069   1.27167</span>
+<span class="co">#&gt; I(x^2)       -0.14497   0.04169</span>
+<span class="fu"><a href="https://rdrr.io/r/stats/confint.html">confint</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span>
+<span class="co">#&gt; Waiting for profiling to be done...</span>
+<span class="co">#&gt;                  2.5 %     97.5 %</span>
+<span class="co">#&gt; (Intercept)  0.8954172 1.22323347</span>
+<span class="co">#&gt; x            0.7876855 1.19906286</span>
+<span class="co">#&gt; I(x^2)      -0.1198278 0.02220215</span></code></pre></div>
+<p>We can also plot confidence regions of the estimates for two coefficients using <code>conf_region()</code>, where we can specify the parameters using <code>which_pars</code>, the type of specification of the adjustment from <span class="citation">Chandler and Bate (2007)</span> using <code>type</code>, and the confidence levels using <code>conf</code>. Other adjustments are available.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fm_pois_adj_vert</span> <span class="op">&lt;-</span> <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Waiting for profiling to be done...</span>
+<span class="va">fm_pois_adj_none</span> <span class="op">&lt;-</span> <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>
+<span class="co">#&gt; Waiting for profiling to be done...</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fm_pois_adj_vert</span>, <span class="va">fm_pois_adj_none</span>, conf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">90</span>, <span class="fl">95</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"brown"</span>, <span class="st">"darkgreen"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></code></pre></div>
+<p><img src="chantrics-vignette_files/figure-html/conf_region-1.png" width="672" style="display: block; margin: auto;"></p>
+</div>
+<div id="creating-nested-models" class="section level3">
+<h3 class="hasAnchor">
+<a href="#creating-nested-models" class="anchor"></a>Creating nested models</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fm_pois_small_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="other-diagnostic-functions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#other-diagnostic-functions" class="anchor"></a>Other diagnostic functions</h3>
+<p>The methods * <code><a href="https://rdrr.io/r/stats/AIC.html">AIC()</a></code> for the Akaike Information Criterion, * <code><a href="https://rdrr.io/r/stats/df.residual.html">df.residual()</a></code> for the degrees of freedom of the residuals * <code><a href="https://rdrr.io/r/stats/fitted.values.html">fitted()</a></code> for the fitted values, * <code><a href="https://rdrr.io/r/stats/logLik.html">logLik()</a></code> for the sum of the loglikelihoods and <code><a href="../reference/logLik_vec.html">logLik_vec()</a></code> for the loglikelihood contributions for each of the observations, and * <code><a href="https://rdrr.io/r/stats/vcov.html">vcov()</a></code> for the variance-covariance matrix, are available.</p>
+<p>The performance of the types of adjustments that are shown in <span class="citation">Chandler and Bate (2007)</span> can be seen using <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> if there is a single free parameter. Use <code>type</code> to specify the types of adjustment that should show in the plot.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fm_pois_smallest_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">fm_pois_small_adj</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fm_pois_smallest_adj</span>, type <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, col <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, legend_pos <span class="op">=</span> <span class="st">"bottom"</span>, lwd <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></code></pre></div>
+<p><img src="chantrics-vignette_files/figure-html/plot_chan-1.png" width="672" style="display: block; margin: auto;"></p>
+<p>Note that for one free parameter, the Cholesky and the spectral adjustments are identical, and the vertical adjustment only deviates slightly at the edges of the plot.</p>
+</div>
+</div>
+<div id="supported-models" class="section level2 unnumbered">
+<h2 class="hasAnchor">
+<a href="#supported-models" class="anchor"></a>Supported models</h2>
+<div id="refs" class="references">
+<div id="ref-chanbate07">
+<p>Chandler, Richard, and Steven Bate. 2007. “Inference for Clustered Data Using the Independence Loglikelihood.” <em>Biometrika</em> 94 (1): 167–83. <a href="https://doi.org/doi:10.1093/biomet/asm015">https://doi.org/doi:10.1093/biomet/asm015</a>.</p>
+</div>
+<div id="ref-chandwich">
+<p>Northrop, Paul J., and Richard E. Chandler. 2020. <em>Chandwich: Chandler-Bate Sandwich Loglikelihood Adjustment</em>. <a href="https://CRAN.R-project.org/package=chandwich">https://CRAN.R-project.org/package=chandwich</a>.</p>
+</div>
+<div id="ref-zeileis06">
+<p>Zeileis, Achim. 2006. “Object-Oriented Computation of Sandwich Estimators.” <em>Journal of Statistical Software, Articles</em> 16 (9): 1–16. <a href="https://doi.org/10.18637/jss.v016.i09">https://doi.org/10.18637/jss.v016.i09</a>.</p>
+</div>
+</div>
 </div>
   </div>
 
