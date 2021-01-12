@@ -48,12 +48,16 @@
 #'   `"chantrics"` objects have the following methods available to them:
 #'   * [`AIC`][stats::AIC()]
 #'   * [`anova`][anova.chantrics()]
-#'   * [`alrtest`][alrtest()]
+#'   * [`alrtest`][alrtest()] - Adjusted Likelihood ratio tests
 #'   * [`coef`][chandwich::coef.chandwich()]
-#'   * [`lmtest::coeftest()`][lmtest::coeftest()]
+#'   * [`lmtest::coeftest()`][lmtest::coeftest()] - \(z\) tests for all
+#'   coefficients
 #'   * [`confint`][chandwich::confint.chandwich()]
-#'   and [`plot.confint`][chandwich::plot.confint()]
-#'   * [`conf_region`][chandwich::conf_region()]
+#'   and [`plot.confint`][chandwich::plot.confint()] - confidence intervals for
+#'   all coefficients, and diagnostics plots for `confint()`.
+#'   * [`conf_intervals`] - enhanced confidence interval reports
+#'   * [`conf_region`][chandwich::conf_region()] - two-dimensional confidence
+#'   regions
 #'   * [`df.residual`][stats::df.residual()]
 #'   * [`fitted`][stats::fitted()]
 #'   * [`logLik`][chandwich::logLik.chandwich()]
@@ -75,8 +79,8 @@
 #' @seealso [lax::alogLik()] supports adjustment for user-supplied objects.
 #'
 #' @aliases coef.chantrics confint.chantrics coeftest.chantrics
-#'     conf_region.chantrics logLik.chantrics plot.chantrics
-#'     print.chantrics summary.chantrics vcov.chantrics
+#'     conf_region.chantrics conf_intervals.chantrics logLik.chantrics
+#'     plot.chantrics print.chantrics summary.chantrics vcov.chantrics
 #'
 #' @export
 

@@ -16,8 +16,8 @@ and Bate 2007) implemented in the
 [chandwich](https://cran.r-project.org/package=chandwich) package to
 different models frequently used in basic Econometrics applications.
 `adj_loglik()` adjusts the parameter covariance matrix of the models to
-incorporate clustered data, and can mitigate for model misspecification
-by wrapping `chandwich::adjust_loglik` for the supported models.
+incorporate clustered data, and can mitigate model misspecification by
+wrapping `chandwich::adjust_loglik` for the supported models.
 
 The returned model of class `chantrics` can be plugged into standard
 model evaluation and model comparison methods, for example `summary()`,
@@ -59,7 +59,7 @@ x <- rnorm(250)
 y <- rnbinom(250, mu = exp(1 + x), size = 1)
 
 ## Fit the Poisson glm model, which is not correctly specified
-fm_pois <- glm(y~x +I(x^2), family = poisson)
+fm_pois <- glm(y ~ x + I(x^2), family = poisson)
 lmtest::coeftest(fm_pois)
 #> 
 #> z test of coefficients:
@@ -104,15 +104,26 @@ lmtest::coeftest(fm_pois_adj)
 # The I(x^2) term is no longer significant.
 
 # Produce confidence intervals for the parameter estimates
-confint(fm_pois_adj)
+chandwich::conf_intervals(fm_pois_adj)
 #> Waiting for profiling to be done...
-#>                  2.5 %     97.5 %
-#> (Intercept)  0.8954172 1.22323347
-#> x            0.7876855 1.19906286
-#> I(x^2)      -0.1198278 0.02220215
+#> Model: poisson_glm_lm 
+#> 
+#> 95% confidence intervals, adjusted loglikelihod with type = ''vertical'' 
+#> 
+#> Symmetric:
+#>              lower     upper   
+#> (Intercept)   0.89907   1.22747
+#> x             0.78985   1.20229
+#> I(x^2)       -0.12024   0.02199
+#> 
+#> Profile likelihood-based:
+#>              lower    upper  
+#> (Intercept)   0.8954   1.2232
+#> x             0.7877   1.1991
+#> I(x^2)       -0.1198   0.0222
 
 # Generate a nested model from fm_pois_adj
-fm_pois_small_adj <- update(fm_pois_adj, .~.-I(x^2))
+fm_pois_small_adj <- update(fm_pois_adj, . ~ . - I(x^2))
 lmtest::coeftest(fm_pois_small_adj)
 #> 
 #> z test of coefficients:
@@ -147,15 +158,15 @@ fm_pois_adj_vert <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x
 #> Waiting for profiling to be done...
 fm_pois_adj_none <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"), type = "none")
 #> Waiting for profiling to be done...
-plot(fm_pois_adj_vert, fm_pois_adj_none, conf = c(60,80,90,95), col = c("brown", "darkgreen"), lty = c(1,2), lwd = 2.5)
+plot(fm_pois_adj_vert, fm_pois_adj_none, conf = c(60, 80, 90, 95), col = c("brown", "darkgreen"), lty = c(1, 2), lwd = 2.5)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-demo-1.png" width="100%" />
 
 More information on the different methods can be found in the
 [Introducing chantrics
 vignette](https://chantrics.theobruckbauer.eu/articles/chantrics-vignette.html),
-and in the corresponding help pages..
+and in the corresponding help pages.
 
 ## References
 

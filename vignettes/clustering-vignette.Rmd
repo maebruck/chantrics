@@ -3,6 +3,7 @@ title: "An introduction to clustering with chantrics"
 author: "Theo Bruckbauer"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: chantrics.bib
 vignette: >
   %\VignetteIndexEntry{An introduction to clustering with chantrics}
   %\VignetteEngine{knitr::rmarkdown}
@@ -21,3 +22,5 @@ library(chantrics)
 ```
 
 include the clustering dataset used in the project.
+
+WIP.
