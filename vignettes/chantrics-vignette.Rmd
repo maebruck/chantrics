@@ -150,3 +150,18 @@ alrtest(swiss_probit_adj, swiss_probit_small_adj)
 
 ### `glm` models
 
+Within the array of `glm` families presented below, any link function should work.
+
+#### `poisson` family
+
+The Poisson family of models are commonly used specifications for count models. For this example, I will reuse the example of the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the *sandwich* package [@zeileis06].
+
+```{r poisson}
+summary(fm_pois) # fm_pois is the fitted poisson model from above.
+fm_pois_adj <- adj_loglik(fm_pois)
+summary(fm_pois_adj)
+```
+
+#### `binomial` family
+
+The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties.
