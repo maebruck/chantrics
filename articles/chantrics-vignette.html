@@ -364,9 +364,50 @@
 <div id="supported-models" class="section level2">
 <h2 class="hasAnchor">
 <a href="#supported-models" class="anchor"></a>Supported models</h2>
-<div id="glm-models" class="section level3 unnumbered">
+<div id="glm-models" class="section level3">
 <h3 class="hasAnchor">
 <a href="#glm-models" class="anchor"></a><code>glm</code> models</h3>
+<p>Within the array of <code>glm</code> families presented below, any link function should work.</p>
+<div id="poisson-family" class="section level4">
+<h4 class="hasAnchor">
+<a href="#poisson-family" class="anchor"></a><code>poisson</code> family</h4>
+<p>The Poisson family of models are commonly used specifications for count models. For this example, I will reuse the example of the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the <em>sandwich</em> package <span class="citation">(Zeileis 2006)</span>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span> <span class="co"># fm_pois is the fitted poisson model from above.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Call:</span>
+<span class="co">#&gt; glm(formula = y ~ x + I(x^2), family = poisson)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Deviance Residuals: </span>
+<span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span>
+<span class="co">#&gt; -5.6471  -1.6122  -0.6344   0.7245   7.1645  </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Coefficients:</span>
+<span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)    </span>
+<span class="co">#&gt; (Intercept)  1.06327    0.04136  25.709   &lt;2e-16 ***</span>
+<span class="co">#&gt; x            0.99607    0.05353  18.606   &lt;2e-16 ***</span>
+<span class="co">#&gt; I(x^2)      -0.04912    0.02315  -2.122   0.0338 *  </span>
+<span class="co">#&gt; ---</span>
+<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; (Dispersion parameter for poisson family taken to be 1)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     Null deviance: 1998.1  on 249  degrees of freedom</span>
+<span class="co">#&gt; Residual deviance: 1069.7  on 247  degrees of freedom</span>
+<span class="co">#&gt; AIC: 1635.2</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Number of Fisher Scoring iterations: 5</span>
+<span class="va">fm_pois_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span>
+<span class="co">#&gt;                  MLE       SE adj. SE</span>
+<span class="co">#&gt; (Intercept)  1.06300  0.04136   0.084</span>
+<span class="co">#&gt; x            0.99610  0.05353   0.105</span>
+<span class="co">#&gt; I(x^2)      -0.04912  0.02315   0.036</span></code></pre></div>
+</div>
+<div id="binomial-family" class="section level4">
+<h4 class="hasAnchor">
+<a href="#binomial-family" class="anchor"></a><code>binomial</code> family</h4>
+<p>The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties.</p>
 <div id="refs" class="references">
 <div id="ref-chanbate07">
 <p>Chandler, Richard E., and Steven Bate. 2007. “Inference for Clustered Data Using the Independence Loglikelihood.” <em>Biometrika</em> 94 (1): 167–83. <a href="https://doi.org/doi:10.1093/biomet/asm015">https://doi.org/doi:10.1093/biomet/asm015</a>.</p>
@@ -382,6 +423,7 @@
 </div>
 <div id="ref-zeileis06">
 <p>Zeileis, Achim. 2006. “Object-Oriented Computation of Sandwich Estimators.” <em>Journal of Statistical Software, Articles</em> 16 (9): 1–16. <a href="https://doi.org/10.18637/jss.v016.i09">https://doi.org/10.18637/jss.v016.i09</a>.</p>
+</div>
 </div>
 </div>
 </div>
