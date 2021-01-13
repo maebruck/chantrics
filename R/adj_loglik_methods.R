@@ -547,12 +547,12 @@ anova.chantrics <- function(object, ...) {
   )
   title <- "Analysis of Adjusted Deviance Table\n"
   topnote <-
-    paste0("Model ",
+    paste0(paste0("Model ",
       format(1:n_models),
       ": ",
       result_df.formula,
       collapse = "\n"
-    )
+    ), "\n")
   structure(
     result_df,
     heading = c(title, topnote),
@@ -632,9 +632,9 @@ terms.chantrics <- function(x, ...) {
 
 #' Adjusted Likelihood Ratio Test of Nested Models
 #'
-#' `alrtest` is a helper function to simulate the functions
-#' [lmtest::waldtest()]/[lmtest::lrtest()] for adjusted `chantrics` objects. The
-#' method can be employed to compare nested models (see details).
+#' `alrtest` is a helper function to simulate the functions [lmtest::waldtest()]
+#' and [lmtest::lrtest()] for adjusted `chantrics` objects. The method can be
+#' employed to compare nested models (see details).
 #'
 #' @param object a `chantrics` object as returned from [adj_loglik()].
 #' @param ... further object specifications and/or parameters that will be

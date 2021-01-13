@@ -21,11 +21,12 @@ knitr::opts_chunk$set(
 library(chantrics)
 ```
 
-`chantrics` applies the Chandler-Bate loglikelihood adjustment [@chanbate07] implemented in the [chandwich](https://cran.r-project.org/package=chandwich) package [@chandwich] to different models frequently used in basic Econometrics applications. `adj_loglik()` is the central function of `chantrics`, it is a generic function adjusting the parameter covariance matrix of the models to incorporate clustered data, and can mitigate for model misspecification. The returned object can then be plugged into a range of model analysis functions, which will be described below. [For an introduction on modelling with clustered data using `chantrics`, visit this vignette.](https://chantrics.theobruckbauer.eu/articles/clustering-vignette.html).
+`chantrics` applies the Chandler-Bate loglikelihood adjustment [@chanbate07] implemented in the [chandwich](https://cran.r-project.org/package=chandwich) package [@chandwich] to different models frequently used in basic Econometrics applications. `adj_loglik()` is the central function of `chantrics`, it is a generic function adjusting the parameter covariance matrix of the models to incorporate clustered data, and can mitigate for model misspecification. The returned object can then be plugged into a range of model analysis functions, which will be described below. [For an introduction on modelling with clustered data using `chantrics`, visit this vignette](https://chantrics.theobruckbauer.eu/articles/clustering-vignette.html).
 
 
 
-## Functionality
+## Functionality for singular model objects
+
 *Note that not all functionality demonstrated below is available for all types of models.*
 
 In order to be able to demonstrate the range of functionality available, this example will be using the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the *sandwich* package [@zeileis06]. 
@@ -43,7 +44,7 @@ lmtest::coeftest(fm_pois)
 # The I(x^2) term is spuriously significant.
 ```
 
-We can now use the model object `fm_pois`, and adjust it using `adj_loglik()`. Use `coef()` to get a vector of the coefficients, `summary()` to get an overview over the adjustment, or use `lmtest::coeftest` to see the results of \(z\) tests on each of the coefficients.
+We can now use the model object `fm_pois`, and adjust it using `adj_loglik()`. Use `coef()` to get a vector of the coefficients, `summary()` to get an overview over the adjustment, or use `lmtest::coeftest()` to see the results of \(z\) tests on each of the coefficients.
 
 ```{r adjust_fmpois}
 fm_pois_adj <- adj_loglik(fm_pois)
@@ -62,23 +63,29 @@ chandwich::conf_intervals(fm_pois_adj, type = "spectral", conf = 99)
 confint(fm_pois_adj)
 ```
 
-We can also plot confidence regions of the estimates for two coefficients using `conf_region()`, where we can specify the parameters using `which_pars`, the type of specification of the adjustment from @chanbate07  using `type`, and the confidence levels using `conf`. Other adjustments are available.
+We can also plot confidence regions of the estimates for two coefficients using `chandwich::conf_region()`, where we can specify the parameters using `which_pars`, the type of specification of the adjustment from @chanbate07  using `type`, and the confidence levels using `conf`. Other adjustments are available.
 
 ```{r conf_region, fig.align='center', fig.width=7, fig.height=7}
-fm_pois_adj_vert <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))
-fm_pois_adj_none <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"), type = "none")
-plot(fm_pois_adj_vert, fm_pois_adj_none, conf = c(60, 80, 90, 95), col = c("brown", "darkgreen"), lty = c(1, 2), lwd = 2.5)
-```
-
-### Creating nested models
-
-```{r update}
-fm_pois_small_adj <- update(fm_pois_adj, .~.-I(x^2))
-
+fm_pois_adj_vert <-
+  chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))
+fm_pois_adj_none <-
+  chandwich::conf_region(fm_pois_adj,
+                         which_pars = c("x", "I(x^2)"),
+                         type = "none")
+plot(
+  fm_pois_adj_vert,
+  fm_pois_adj_none,
+  conf = c(60, 80, 90, 95),
+  col = c("brown", "darkgreen"),
+  lty = c(1, 2),
+  lwd = 2.5
+)
 ```
 
 ### Other diagnostic functions
+
 The methods 
+
 * `AIC()` for the Akaike Information Criterion, 
 * `df.residual()` for the degrees of freedom of the residuals
 * `fitted()` for the fitted values, 
@@ -86,15 +93,60 @@ The methods
 * `vcov()` for the variance-covariance matrix,
 are available.
 
-
 The performance of the types of adjustments that are shown in @chanbate07 can be seen using `plot()` if there is a single free parameter. Use `type` to specify the types of adjustment that should show in the plot.
 
 ```{r plot_chan, fig.align='center', fig.width=7, fig.height=7}
-fm_pois_smallest_adj <- update(fm_pois_small_adj, .~.-1)
+fm_pois_smallest_adj <- update(fm_pois_adj, . ~ 1)
 plot(fm_pois_smallest_adj, type = 1:4, col = 1:4, legend_pos = "bottom", lwd = 2.5)
 ```
 
 Note that for one free parameter, the Cholesky and the spectral adjustments are identical, and the vertical adjustment only deviates slightly at the edges of the plot.
 
+## Functionality for multiple model objects
+
+In order to have a wider range of coefficients to do model comparisons on, we will follow a Probit regression example in @AER-book [p. 124] using the `SwissLabor` dataset from the `AER` package [@AER].
+
+```{r swisslaborimport}
+data("SwissLabor", package = "AER")
+swiss_probit <- glm(participation ~ . + I(age^2), data = SwissLabor, family = binomial(link = "probit"))
+swiss_probit_adj <- adj_loglik(swiss_probit)
+lmtest::coeftest(swiss_probit_adj)
+```
+
+### Creating nested models
+
+The `update()` function is also available for `chantrics` objects, it automatically re-estimates the updated model, and adjusts the loglikelihood.
+
+```{r update}
+swiss_probit_small_adj <-
+  update(swiss_probit_adj, . ~ . - I(age ^ 2) - education)
+swiss_probit_smaller_adj <-
+  update(swiss_probit_adj, . ~ . - I(age ^ 2) - education - youngkids - oldkids)
+```
+
+### Compare nested models
+
+Nested models can be compared with `anova()` using an adjusted likelihood ratio test as outlined in Section 3.5 in @chanbate07. The type of adjustment can again be set using `type`. `anova()` sorts the models by the number of free variables as returned by `attr(model, "p_current")`, where `model` is the `chantrics` model object.
+
+```{r anova}
+anova(swiss_probit_adj, swiss_probit_small_adj, swiss_probit_smaller_adj)
+```
+
+By passing in a singular model, we can also use `anova()` to generate a *sequential* analysis of deviance table, where each of the covariates is sequentially removed from the model.
+
+```{r sequential}
+anova(swiss_probit_adj)
+```
+
+Another way of performing an adjusted likelihood ration test is by using `alrtest()`, which is inspired and similar in usage to `lmtest::waldtest()` and `lmtest::lrtest()`, where a model, and an indicator of the variables that should be restricted/removed. These indicators can be *character strings* of the names of the covariates, *integers* corresponding to the position of a covariate, *formula* objects, or *nested model objects*, allowing a flexible and easy specification of nested models.
+
+```{r alrtest}
+alrtest(swiss_probit_adj, 3, "oldkids")
+alrtest(swiss_probit_adj, . ~ . - youngkids-foreign, .~.-education)
+alrtest(swiss_probit_adj, swiss_probit_small_adj)
+```
+
 ## Supported models
+
+### `glm` models
 

@@ -6,6 +6,7 @@
 \alias{confint.chantrics}
 \alias{coeftest.chantrics}
 \alias{conf_region.chantrics}
+\alias{conf_intervals.chantrics}
 \alias{logLik.chantrics}
 \alias{plot.chantrics}
 \alias{print.chantrics}
@@ -73,12 +74,16 @@ the variance-covariance matrix of the MLE is estimated inside
 \itemize{
 \item \code{\link[stats:AIC]{AIC}}
 \item \code{\link[=anova.chantrics]{anova}}
-\item \code{\link[=alrtest]{alrtest}}
+\item \code{\link[=alrtest]{alrtest}} - Adjusted Likelihood ratio tests
 \item \code{\link[chandwich:coef.chandwich]{coef}}
-\item \code{\link[lmtest:coeftest]{lmtest::coeftest()}}
+\item \code{\link[lmtest:coeftest]{lmtest::coeftest()}} - \(z\) tests for all
+coefficients
 \item \code{\link[chandwich:confint.chandwich]{confint}}
-and \code{\link[chandwich:plot.confint]{plot.confint}}
-\item \code{\link[chandwich:conf_region]{conf_region}}
+and \code{\link[chandwich:plot.confint]{plot.confint}} - confidence intervals for
+all coefficients, and diagnostics plots for \code{confint()}.
+\item \code{\link{conf_intervals}} - enhanced confidence interval reports
+\item \code{\link[chandwich:conf_region]{conf_region}} - two-dimensional confidence
+regions
 \item \code{\link[stats:df.residual]{df.residual}}
 \item \code{\link[stats:fitted.values]{fitted}}
 \item \code{\link[chandwich:logLik.chandwich]{logLik}}

@@ -24,9 +24,9 @@ test that the model above is a "significantly better" model as the one in
 the current row.}
 }
 \description{
-\code{alrtest} is a helper function to simulate the functions
-\code{\link[lmtest:waldtest]{lmtest::waldtest()}}/\code{\link[lmtest:lrtest]{lmtest::lrtest()}} for adjusted \code{chantrics} objects. The
-method can be employed to compare nested models (see details).
+\code{alrtest} is a helper function to simulate the functions \code{\link[lmtest:waldtest]{lmtest::waldtest()}}
+and \code{\link[lmtest:lrtest]{lmtest::lrtest()}} for adjusted \code{chantrics} objects. The method can be
+employed to compare nested models (see details).
 }
 \details{
 This function is a helper function that creates an interface to
