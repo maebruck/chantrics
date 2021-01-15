@@ -50,12 +50,12 @@
 #'   * [`anova`][anova.chantrics()]
 #'   * [`alrtest`][alrtest()] - Adjusted Likelihood ratio tests
 #'   * [`coef`][chandwich::coef.chandwich()]
-#'   * [`lmtest::coeftest()`][lmtest::coeftest()] - \(z\) tests for all
+#'   * [`lmtest::coeftest`][lmtest::coeftest()] - \(z\) tests for all
 #'   coefficients
 #'   * [`confint`][chandwich::confint.chandwich()]
 #'   and [`plot.confint`][chandwich::plot.confint()] - confidence intervals for
 #'   all coefficients, and diagnostics plots for `confint()`.
-#'   * [`conf_intervals`] - enhanced confidence interval reports
+#'   * [`conf_intervals`][chandwich::conf_intervals()] - enhanced confidence interval reports
 #'   * [`conf_region`][chandwich::conf_region()] - two-dimensional confidence
 #'   regions
 #'   * [`df.residual`][stats::df.residual()]
