@@ -165,3 +165,5 @@ summary(fm_pois_adj)
 #### `binomial` family
 
 The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties.
+
+## References
