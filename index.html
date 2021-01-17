@@ -123,7 +123,7 @@
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html">rnbinom</a></span><span class="op">(</span><span class="fl">250</span>, mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
 
 <span class="co">## Fit the Poisson glm model, which is not correctly specified</span>
-<span class="va">fm_pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/glm.html">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, family <span class="op">=</span> <span class="va">poisson</span><span class="op">)</span>
+<span class="va">fm_pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/glm.html">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">x</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span>, family <span class="op">=</span> <span class="va">poisson</span><span class="op">)</span>
 <span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; z test of coefficients:</span>
@@ -194,6 +194,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Model 1: y ~ x + I(x^2)</span>
 <span class="co">#&gt; Model 2: y ~ x</span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt;   Resid.df df  ALRTS Pr(&gt;ALRTS)</span>
 <span class="co">#&gt; 1      247                     </span>
 <span class="co">#&gt; 2      248  1 1.8202     0.1773</span>
@@ -203,16 +204,29 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Model 1: y ~ x + I(x^2)</span>
 <span class="co">#&gt; Model 2: y ~ x</span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt;   Resid.df df  ALRTS Pr(&gt;ALRTS)</span>
 <span class="co">#&gt; 1      247                     </span>
 <span class="co">#&gt; 2      248  1 1.8202     0.1773</span>
 
 <span class="co"># Plot confidence regions for the parameter estimates</span>
-<span class="va">fm_pois_adj_vert</span> <span class="op">&lt;-</span> <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">fm_pois_adj_vert</span> <span class="op">&lt;-</span>
+  <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Waiting for profiling to be done...</span>
-<span class="va">fm_pois_adj_none</span> <span class="op">&lt;-</span> <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>
+<span class="va">fm_pois_adj_none</span> <span class="op">&lt;-</span>
+  <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>,
+    which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span>,
+    type <span class="op">=</span> <span class="st">"none"</span>
+  <span class="op">)</span>
 <span class="co">#&gt; Waiting for profiling to be done...</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">fm_pois_adj_vert</span>, <span class="va">fm_pois_adj_none</span>, conf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">90</span>, <span class="fl">95</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"brown"</span>, <span class="st">"darkgreen"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
+  <span class="va">fm_pois_adj_vert</span>,
+  <span class="va">fm_pois_adj_none</span>,
+  conf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">90</span>, <span class="fl">95</span><span class="op">)</span>,
+  col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"brown"</span>, <span class="st">"darkgreen"</span><span class="op">)</span>,
+  lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
+  lwd <span class="op">=</span> <span class="fl">2.5</span>
+<span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-demo-1.png" width="100%"></p>
 <p>More information on the different methods can be found in the <a href="https://chantrics.theobruckbauer.eu/articles/chantrics-vignette.html">Introducing chantrics vignette</a>, and in the corresponding help pages.</p>
 </div>
@@ -221,7 +235,7 @@
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-chanbate07" class="csl-entry">
-<p>Chandler, Richard, and Steven Bate. 2007. “Inference for Clustered Data Using the Independence Loglikelihood.” <em>Biometrika</em> 94 (1): 167–83. <a href="https://doi.org/doi:10.1093/biomet/asm015" class="uri">https://doi.org/doi:10.1093/biomet/asm015</a>.</p>
+<p>Chandler, Richard E., and Steven Bate. 2007. “Inference for Clustered Data Using the Independence Loglikelihood.” <em>Biometrika</em> 94 (1): 167–83. <a href="https://doi.org/doi:10.1093/biomet/asm015" class="uri">https://doi.org/doi:10.1093/biomet/asm015</a>.</p>
 </div>
 <div id="ref-zeileis06" class="csl-entry">
 <p>Zeileis, Achim. 2006. “Object-Oriented Computation of Sandwich Estimators.” <em>Journal of Statistical Software, Articles</em> 16 (9): 1–16. <a href="https://doi.org/10.18637/jss.v016.i09" class="uri">https://doi.org/10.18637/jss.v016.i09</a>.</p>

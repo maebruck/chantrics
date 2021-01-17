@@ -115,7 +115,7 @@
 <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html">rnbinom</a></span><span class="op">(</span><span class="fl">250</span>, mu <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="va">x</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
 
 <span class="co">## Fit the Poisson glm model, which is not correctly specified</span>
-<span class="va">fm_pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span><span class="va">y</span><span class="op">~</span><span class="va">x</span> <span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, family <span class="op">=</span> <span class="va">poisson</span><span class="op">)</span>
+<span class="va">fm_pois</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, family <span class="op">=</span> <span class="va">poisson</span><span class="op">)</span>
 <span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; z test of coefficients:</span>
@@ -126,7 +126,7 @@
 <span class="co">#&gt; I(x^2)      -0.049124   0.023146 -2.1223  0.03381 *  </span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="co"># The I(x^2) term is spuriously significant.</span></code></pre></div>
+<span class="co">## The I(x^2) term is spuriously significant.</span></code></pre></div>
 <p>We can now use the model object <code>fm_pois</code>, and adjust it using <code><a href="../reference/adj_loglik.html">adj_loglik()</a></code>. Use <code><a href="https://rdrr.io/r/stats/coef.html">coef()</a></code> to get a vector of the coefficients, <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> to get an overview over the adjustment, or use <code><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">lmtest::coeftest()</a></code> to see the results of <span class="math inline">\(z\)</span> tests on each of the coefficients.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fm_pois_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span>
@@ -200,8 +200,9 @@
 <span class="co">#&gt; Waiting for profiling to be done...</span>
 <span class="va">fm_pois_adj_none</span> <span class="op">&lt;-</span>
   <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>,
-                         which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span>,
-                         type <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>
+    which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span>,
+    type <span class="op">=</span> <span class="st">"none"</span>
+  <span class="op">)</span>
 <span class="co">#&gt; Waiting for profiling to be done...</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>
   <span class="va">fm_pois_adj_vert</span>,
@@ -243,7 +244,10 @@
 <p>In order to have a wider range of coefficients to do model comparisons on, we will follow a Probit regression example in <span class="citation">Kleiber and Zeileis (2008, 124)</span> using the <code>SwissLabor</code> dataset from the <code>AER</code> package <span class="citation">(Kleiber and Zeileis 2020)</span>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"SwissLabor"</span>, package <span class="op">=</span> <span class="st">"AER"</span><span class="op">)</span>
-<span class="va">swiss_probit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span><span class="va">participation</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">SwissLabor</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"probit"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">swiss_probit</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span><span class="va">participation</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span>,
+      data <span class="op">=</span> <span class="va">SwissLabor</span>,
+      family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"probit"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">swiss_probit_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">swiss_probit</span><span class="op">)</span>
 <span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span><span class="op">)</span>
 <span class="co">#&gt; </span>
@@ -266,9 +270,9 @@
 <p>The <code><a href="https://rdrr.io/r/stats/update.html">update()</a></code> function is also available for <code>chantrics</code> objects, it automatically re-estimates the updated model, and adjusts the loglikelihood.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">swiss_probit_small_adj</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="va">education</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="va">education</span><span class="op">)</span>
 <span class="va">swiss_probit_smaller_adj</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="va">education</span> <span class="op">-</span> <span class="va">youngkids</span> <span class="op">-</span> <span class="va">oldkids</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="va">education</span> <span class="op">-</span> <span class="va">youngkids</span> <span class="op">-</span> <span class="va">oldkids</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="compare-nested-models" class="section level3">
 <h3 class="hasAnchor">
@@ -333,7 +337,7 @@
 <span class="co">#&gt; 3      866  1 8.8500   0.002931 **</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-<span class="fu"><a href="../reference/alrtest.html">alrtest</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">youngkids</span><span class="op">-</span><span class="va">foreign</span>, <span class="va">.</span><span class="op">~</span><span class="va">.</span><span class="op">-</span><span class="va">education</span><span class="op">)</span>
+<span class="fu"><a href="../reference/alrtest.html">alrtest</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">youngkids</span> <span class="op">-</span> <span class="va">foreign</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="va">education</span><span class="op">)</span>
 <span class="co">#&gt; Adjusted likelihood ratio test</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Model 1: participation ~ income + age + education + youngkids + oldkids + </span>
@@ -367,11 +371,16 @@
 <div id="glm-models" class="section level3">
 <h3 class="hasAnchor">
 <a href="#glm-models" class="anchor"></a><code>glm</code> models</h3>
+<p>In a generalised linear model (glm), the user can choose between a range of distributions of a response <span class="math inline">\(y\)</span>, and can allow for non-linear relations between the mean outcome for a certain combination of covariates <span class="math inline">\(x\)</span>, <span class="math inline">\(\operatorname{E}(y_i\mid x_i)=\mu_i\)</span>, and the linear predictor, <span class="math inline">\(\eta_i=x_i^T\beta\)</span>, which is the link function <span class="math inline">\(g(\mu_i)=\eta_i\)</span>. The link function is required to be monotonic. (For a quick introduction, see <span class="citation">Kleiber and Zeileis (2008, Ch. 5.1)</span>, for a more complete coverage of the topic, see, for example, <span class="citation">Davison (2003, Ch. 10.3)</span>)</p>
 <p>Within the array of <code>glm</code> families presented below, any link function should work.</p>
 <div id="poisson-family" class="section level4">
 <h4 class="hasAnchor">
 <a href="#poisson-family" class="anchor"></a><code>poisson</code> family</h4>
-<p>The Poisson family of models are commonly used specifications for count models. For this example, I will reuse the example of the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the <em>sandwich</em> package <span class="citation">(Zeileis 2006)</span>.</p>
+<p>The Poisson family of models are commonly used specifications for count models. The specification of this form of a GLM is (for the canonical log-link of the Poisson specification),</p>
+<p><span class="math display">\[\begin{equation*}
+\operatorname{E}(y_i\mid x_i)=\mu_i=\exp(x_i^T\beta).
+\end{equation*}\]</span></p>
+<p>In this example, I will reuse the example of the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the <em>sandwich</em> package <span class="citation">(Zeileis 2006)</span>. More on the Poisson specification in glms can be found in <span class="citation">Cameron and Trivedi (2013, Ch. 3.2.4)</span> or <span class="citation">Davison (2003, Example 10.10)</span>. More on the implementation in R is located in <span class="citation">Zeileis, Kleiber, and Jackman (2008, Ch. 2.1)</span>, and in <span class="citation">Kleiber and Zeileis (2008, Ch. 5.3)</span>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span> <span class="co"># fm_pois is the fitted poisson model from above.</span>
 <span class="co">#&gt; </span>
@@ -407,16 +416,167 @@
 <div id="binomial-family" class="section level4">
 <h4 class="hasAnchor">
 <a href="#binomial-family" class="anchor"></a><code>binomial</code> family</h4>
-<p>The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties.</p>
+<p>The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties. As <span class="math inline">\(\operatorname{E}(y_i\mid x_i)=1\cdot P(y_i=1\mid x_i)+0\cdot P(y_i=0\mid x_i)=P(y_i=1\mid x_i\)</span>, the point estimation of the model is the probability of <span class="math inline">\(y_i\)</span> being equal to 1. It is specified using the GLM framework described above, with <span class="math display">\[\begin{equation*}
+\operatorname{E}(y_i\mid x_i)=P(y_i=1)=p_i=F(x_i^T\beta),
+\end{equation*}\]</span> where <span class="math inline">\(F\)</span> is a valid cdf of the error terms in the model, or, equally, the link function. Most commonly, these are chosen to be either the standard normal cdf in the Probit case, <code>family = binomial(link = "probit")</code>, or the logistic cdf in the logit case, <code>family = binomial(link = "logit")</code>.</p>
+<p>This example will use the <code>SwissLabor</code> example in <span class="citation">Kleiber and Zeileis (2008, pg. 124)</span></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"SwissLabor"</span>, package <span class="op">=</span> <span class="st">"AER"</span><span class="op">)</span>
+<span class="co">## Fitting a Probit model</span>
+<span class="va">swiss_probit</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span><span class="va">participation</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span>,
+      data <span class="op">=</span> <span class="va">SwissLabor</span>,
+      family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"probit"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">swiss_probit_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">swiss_probit</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span><span class="op">)</span>
+<span class="co">#&gt;                  MLE       SE adj. SE</span>
+<span class="co">#&gt; (Intercept)  3.74900  1.40700   1.327</span>
+<span class="co">#&gt; income      -0.66690  0.13200   0.127</span>
+<span class="co">#&gt; age          2.07500  0.40540   0.399</span>
+<span class="co">#&gt; education    0.01920  0.01793   0.018</span>
+<span class="co">#&gt; youngkids   -0.71450  0.10040   0.106</span>
+<span class="co">#&gt; oldkids     -0.14700  0.05089   0.052</span>
+<span class="co">#&gt; foreignyes   0.71440  0.12130   0.122</span>
+<span class="co">#&gt; I(age^2)    -0.29430  0.04995   0.050</span>
+
+<span class="co">## Fitting a Logit model</span>
+<span class="va">swiss_logit</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html">formula</a></span><span class="op">(</span><span class="va">swiss_probit</span><span class="op">)</span>,
+      data <span class="op">=</span> <span class="va">SwissLabor</span>,
+      family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">swiss_logit_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">swiss_logit</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">swiss_logit_adj</span><span class="op">)</span>
+<span class="co">#&gt;                  MLE       SE adj. SE</span>
+<span class="co">#&gt; (Intercept)  6.19600  2.38300   2.293</span>
+<span class="co">#&gt; income      -1.10400  0.22570   0.221</span>
+<span class="co">#&gt; age          3.43700  0.68790   0.672</span>
+<span class="co">#&gt; education    0.03266  0.02999   0.030</span>
+<span class="co">#&gt; youngkids   -1.18600  0.17200   0.182</span>
+<span class="co">#&gt; oldkids     -0.24090  0.08446   0.086</span>
+<span class="co">#&gt; foreignyes   1.16800  0.20380   0.206</span>
+<span class="co">#&gt; I(age^2)    -0.48760  0.08519   0.084</span></code></pre></div>
+<p>Note that other specifications of the link function are possible, the code is agnostic towards the link function.</p>
 </div>
+<div id="gaussian-family" class="section level4">
+<h4 class="hasAnchor">
+<a href="#gaussian-family" class="anchor"></a><code>gaussian</code> family</h4>
+<p>The GLM framework encompasses the estimation of a standard linear regression using maximum likelihood estimators, therefore we can use the adjustment to account for clustering/misspecifications in the regression. We can use the classic assumption of normally distributed error terms to specify the distribution of <span class="math inline">\(y\)</span>. The link is simply the identity function. <span class="citation">(Kleiber and Zeileis 2008, pg. 123)</span></p>
+<p>To demonstrate the functionality, I will employ the linear regression example in <span class="citation">Kleiber and Zeileis (2008, pg. 66)</span>, using the cross-sectional <code>CPS1988</code> data.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"CPS1988"</span>, package <span class="op">=</span> <span class="st">"AER"</span><span class="op">)</span>
+<span class="va">cps_glm</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="../reference/glm.html">glm</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">wage</span><span class="op">)</span> <span class="op">~</span> <span class="va">experience</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">experience</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">education</span> <span class="op">+</span> <span class="va">ethnicity</span>,
+    data <span class="op">=</span> <span class="va">CPS1988</span>,
+    family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">gaussian</a></span><span class="op">(</span><span class="op">)</span>
+  <span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">cps_glm</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Call:</span>
+<span class="co">#&gt; glm(formula = log(wage) ~ experience + I(experience^2) + education + </span>
+<span class="co">#&gt;     ethnicity, family = gaussian(), data = CPS1988)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Deviance Residuals: </span>
+<span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span>
+<span class="co">#&gt; -2.9428  -0.3162   0.0580   0.3756   4.3830  </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Coefficients:</span>
+<span class="co">#&gt;                   Estimate Std. Error t value Pr(&gt;|t|)    </span>
+<span class="co">#&gt; (Intercept)      4.321e+00  1.917e-02  225.38   &lt;2e-16 ***</span>
+<span class="co">#&gt; experience       7.747e-02  8.800e-04   88.03   &lt;2e-16 ***</span>
+<span class="co">#&gt; I(experience^2) -1.316e-03  1.899e-05  -69.31   &lt;2e-16 ***</span>
+<span class="co">#&gt; education        8.567e-02  1.272e-03   67.34   &lt;2e-16 ***</span>
+<span class="co">#&gt; ethnicityafam   -2.434e-01  1.292e-02  -18.84   &lt;2e-16 ***</span>
+<span class="co">#&gt; ---</span>
+<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; (Dispersion parameter for gaussian family taken to be 0.3409812)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     Null deviance: 14428.3  on 28154  degrees of freedom</span>
+<span class="co">#&gt; Residual deviance:  9598.6  on 28150  degrees of freedom</span>
+<span class="co">#&gt; AIC: 49615</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Number of Fisher Scoring iterations: 2</span>
+<span class="va">cps_glm_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">cps_glm</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">cps_glm_adj</span><span class="op">)</span>
+<span class="co">#&gt;                        MLE         SE adj. SE</span>
+<span class="co">#&gt; (Intercept)      4.321e+00  1.917e-02   0.021</span>
+<span class="co">#&gt; experience       7.747e-02  8.800e-04   0.001</span>
+<span class="co">#&gt; I(experience^2) -1.316e-03  1.899e-05   0.000</span>
+<span class="co">#&gt; education        8.567e-02  1.272e-03   0.001</span>
+<span class="co">#&gt; ethnicityafam   -2.434e-01  1.292e-02   0.013</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; (Dispersion parameter taken to be 0.341)</span></code></pre></div>
+</div>
+<div id="massnegative-binomial-and-massglm-nb" class="section level4">
+<h4 class="hasAnchor">
+<a href="#massnegative-binomial-and-massglm-nb" class="anchor"></a><code>MASS::negative.binomial</code> and <code>MASS::glm.nb()</code>
+</h4>
+<p>Another commonly used model for count data is the negative binomial model. It overcomes two issues of the Poisson model, that the expectation and the variance are assumed to be equal, and that in most datasets, the number of zeros is underestimated by Poisson family models.</p>
+<p>The method of estimation of the negative binomial model depends on whether the dispersion parameter <span class="math inline">\(\theta\)</span> of the pmf, <span class="math display">\[\begin{equation*}
+f(y;\mu,\theta)=\frac{\Gamma(\theta+y)}{\Gamma(\theta)y!}\frac{\mu^y\theta^\theta}{(\mu+\theta)^{y+\theta}}
+\end{equation*}\]</span> is known. In most cases, it is not known, and the specialised function <code><a href="https://rdrr.io/pkg/MASS/man/glm.nb.html">MASS::glm.nb()</a></code> can be used, which estimates the negative binomial model and the <span class="math inline">\(\theta\)</span> parameter seperately. If <span class="math inline">\(\theta\)</span> is known, the <strong>MASS</strong> package <span class="citation">(Venables and Ripley 2002)</span> provides the <code><a href="https://rdrr.io/pkg/MASS/man/negative.binomial.html">MASS::negative.binomial()</a></code> family function for <code><a href="../reference/glm.html">glm()</a></code>.</p>
+<p>A quick introduction can be found in <span class="citation">Kleiber and Zeileis (2008, pg. 135f.)</span> and in <span class="citation">Zeileis, Kleiber, and Jackman (2008, pg. 5)</span>, and a more general treatment with estimation using direct ML estimation in <span class="citation">Cameron and Trivedi (2013, Ch. 3.3)</span>.</p>
+<p>Note that <code><a href="../reference/adj_loglik.html">adj_loglik()</a></code> re-estimates the theta parameter of a <code>glm.nb</code> model.</p>
+<p>To demonstrate the negative binomial model functions, we will use the negative binomial data generated above, which we have falsely fitted to a Poisson model.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fm_negbin_theta</span> <span class="op">&lt;-</span> <span class="fu">MASS</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/glm.nb.html">glm.nb</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fm_negbin_theta</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Call:</span>
+<span class="co">#&gt; MASS::glm.nb(formula = y ~ x, init.theta = 1.07845966, link = log)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Deviance Residuals: </span>
+<span class="co">#&gt;     Min       1Q   Median       3Q      Max  </span>
+<span class="co">#&gt; -2.3259  -1.1607  -0.3757   0.3033   2.6729  </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Coefficients:</span>
+<span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)    </span>
+<span class="co">#&gt; (Intercept)  1.02881    0.07514   13.69   &lt;2e-16 ***</span>
+<span class="co">#&gt; x            0.95909    0.07913   12.12   &lt;2e-16 ***</span>
+<span class="co">#&gt; ---</span>
+<span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; (Dispersion parameter for Negative Binomial(1.0785) family taken to be 1)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     Null deviance: 442.32  on 249  degrees of freedom</span>
+<span class="co">#&gt; Residual deviance: 267.02  on 248  degrees of freedom</span>
+<span class="co">#&gt; AIC: 1118.7</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Number of Fisher Scoring iterations: 1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;               Theta:  1.078 </span>
+<span class="co">#&gt;           Std. Err.:  0.143 </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;  2 x log-likelihood:  -1112.662</span>
+<span class="va">fm_negbin_theta_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">fm_negbin_theta</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fm_negbin_theta_adj</span><span class="op">)</span>
+<span class="co">#&gt;                 MLE      SE adj. SE</span>
+<span class="co">#&gt; (Intercept) 1.02900 0.07514   0.077</span>
+<span class="co">#&gt; x           0.95910 0.07913   0.069</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; (Theta: 1.078, SE: 0.1432)</span></code></pre></div>
+</div>
+</div>
+<div id="hurdle-models" class="section level3">
+<h3 class="hasAnchor">
+<a href="#hurdle-models" class="anchor"></a>hurdle models</h3>
+<p>WIP.</p>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
+<div id="ref-cameron13">
+<p>Cameron, Adrian Colin, and Pravin K. Trivedi. 2013. <em>Regression Analysis of Count Data</em>. Second edition. Econometric Society Monographs (53). Cambridge University Press. <a href="https://doi.org/10.1017/CBO9781139013567">https://doi.org/10.1017/CBO9781139013567</a>.</p>
+</div>
 <div id="ref-chanbate07">
 <p>Chandler, Richard E., and Steven Bate. 2007. “Inference for Clustered Data Using the Independence Loglikelihood.” <em>Biometrika</em> 94 (1): 167–83. <a href="https://doi.org/doi:10.1093/biomet/asm015">https://doi.org/doi:10.1093/biomet/asm015</a>.</p>
+</div>
+<div id="ref-davison03">
+<p>Davison, A. C. 2003. <em>Statistical Models</em>. Cambridge Series on Statistical and Probabilistic Mathematics 11. Cambridge University Press, Cambridge. <a href="www.cambridge.org/9780521773393">www.cambridge.org/9780521773393</a>.</p>
 </div>
 <div id="ref-AER-book">
 <p>Kleiber, Christian, and Achim Zeileis. 2008. <em>Applied Econometrics with R</em>. Edited by Robert Gentleman, Kurt Hornik, and Giovanni Parmigiani. Use R! New York: Springer-Verlag.</p>
@@ -427,8 +587,14 @@
 <div id="ref-chandwich">
 <p>Northrop, Paul J., and Richard E. Chandler. 2020. <em>Chandwich: Chandler-Bate Sandwich Loglikelihood Adjustment</em>. <a href="https://CRAN.R-project.org/package=chandwich">https://CRAN.R-project.org/package=chandwich</a>.</p>
 </div>
+<div id="ref-mass">
+<p>Venables, W. N., and B. D. Ripley. 2002. <em>Modern Applied Statistics with S</em>. Fourth. New York: Springer-Verlag, New York. <a href="http://www.stats.ox.ac.uk/pub/MASS4/">http://www.stats.ox.ac.uk/pub/MASS4/</a>.</p>
+</div>
 <div id="ref-zeileis06">
 <p>Zeileis, Achim. 2006. “Object-Oriented Computation of Sandwich Estimators.” <em>Journal of Statistical Software, Articles</em> 16 (9): 1–16. <a href="https://doi.org/10.18637/jss.v016.i09">https://doi.org/10.18637/jss.v016.i09</a>.</p>
+</div>
+<div id="ref-count-zeil">
+<p>Zeileis, Achim, Christian Kleiber, and Simon Jackman. 2008. “Regression Models for Count Data in R.” <em>Journal of Statistical Software, Articles</em> 27 (8): 1–25. <a href="https://doi.org/10.18637/jss.v027.i08">https://doi.org/10.18637/jss.v027.i08</a>.</p>
 </div>
 </div>
 </div>

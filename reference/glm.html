@@ -40,7 +40,14 @@
 
 
 <meta property="og:title" content="Loglikelihood adjustments for glm fits — glm" />
-<meta property="og:description" content="Describe glm methods here" />
+<meta property="og:description" content="In a generalised linear model (glm), the user can choose between a range of
+distributions of a response \(y\), and can allow for non-linear relations
+between the mean outcome for a certain combination of covariates \(x\),
+\(\operatorname{E}(y_i\mid x_i)=\mu_i\), and the linear predictor,
+\(\eta_i=x_i^T\beta\), which is the link function \(g(\mu_i)=\eta_i\). The
+link function is required to be monotonic. (For a quick introduction, see
+Kleiber and Zeileis (2008, Ch. 5.1), for a more complete coverage of the
+topic, see, for example, Davison (2003, Ch. 10.3))" />
 
 
 
@@ -139,11 +146,23 @@
     </div>
 
     <div class="ref-description">
-    <p>Describe glm methods here</p>
+    <p>In a generalised linear model (glm), the user can choose between a range of
+distributions of a response \(y\), and can allow for non-linear relations
+between the mean outcome for a certain combination of covariates \(x\),
+\(\operatorname{E}(y_i\mid x_i)=\mu_i\), and the linear predictor,
+\(\eta_i=x_i^T\beta\), which is the link function \(g(\mu_i)=\eta_i\). The
+link function is required to be monotonic. (For a quick introduction, see
+Kleiber and Zeileis (2008, Ch. 5.1), for a more complete coverage of the
+topic, see, for example, Davison (2003, Ch. 10.3))</p>
     </div>
 
 
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>For more usage examples and more information on <code>glm</code> models, see the
+<em>Introducing <code>chantrics</code></em> vignette by running
+<code><a href='../articles/chantrics-vignette.html'>vignette("chantrics-vignette", package = "chantrics")</a></code></p>
     <h2 class="hasAnchor" id="supported-families-within-each-family-any-link-function-should-work-"><a class="anchor" href="#supported-families-within-each-family-any-link-function-should-work-"></a>Supported families (within each family, any link function should work)</h2>
 
     
@@ -155,7 +174,16 @@
 <li><p><code><a href='https://rdrr.io/pkg/MASS/man/negative.binomial.html'>MASS::negative.binomial</a></code></p></li>
 </ul>
 
-<p>Also works for <code><a href='https://rdrr.io/pkg/MASS/man/glm.nb.html'>MASS::glm.nb()</a></code>, note that the standard errors of the theta are not adjusted.</p>
+<p>Also works for <code><a href='https://rdrr.io/pkg/MASS/man/glm.nb.html'>MASS::glm.nb()</a></code>, note that the standard errors of the theta
+are not adjusted.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Davison, A. C. 2003. Statistical Models. Cambridge Series on
+Statistical and Probabilistic Mathematics 11. Cambridge University Press,
+Cambridge. www.cambridge.org/9780521773393.</p>
+<p>Kleiber, Christian, and Achim
+Zeileis. 2008. Applied Econometrics with R. Edited by Robert Gentleman,
+Kurt Hornik, and Giovanni Parmigiani. Use r! New York: Springer-Verlag.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># binomial example from Applied Econometrics in R, Kleiber/Zeileis (2008)</span>
@@ -251,7 +279,8 @@
 #&gt; youngkids   -1.18600  0.17200   0.182
 #&gt; oldkids     -0.24090  0.08446   0.086
 #&gt; foreignyes   1.16800  0.20380   0.206
-#&gt; I(age^2)    -0.48760  0.08519   0.084</div></pre>
+#&gt; I(age^2)    -0.48760  0.08519   0.084</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
