@@ -59,12 +59,7 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
     family <- "negbin"
     # get theta if saved
     if (!is.numeric(theta)) {
-      try(
-        {
-          theta <- get("theta", envir = bypasses.env)
-        },
-        silent = TRUE
-      )
+      theta <- rlang::env_get(bypasses.env, "theta", default = NULL)
     }
   } else {
     family <- object$family$family
@@ -111,7 +106,7 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
       theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
     }
     llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
-    assign("last_est_theta", theta, envir = bypasses.env)
+    rlang::env_poke(bypasses.env, "last_est_theta", theta)
   } else {
     rlang::abort(paste0(family, " is not supported."), class = "chantrics_not_supported_glm_family")
   }

@@ -51,8 +51,8 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     rlang::warn("The original model's parameters did not converge.")
   }
   # if none is saved, reestimate
-  theta <- try(get("theta", envir = bypasses.env), silent = TRUE)
-  if (is.error(theta)) {
+  theta <- rlang::env_get(bypasses.env, "theta", default = NULL)
+  if (is.null(theta)) {
     count_theta <- NULL
     zero_theta <- NULL
   } else {
@@ -94,9 +94,9 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   # remove all observations that are 0
   count_llv <- glm_type_llv(family = count_family, x_mat = count_mat, pars = count_pars, response_vec = response_vec, linkinv = count_linkinv, df.resid = count_df.resid, theta = count_theta, hurdle = "count")
   # print(sum(count_llv))
-  count_theta_est <- try(get("last_est_theta", envir = bypasses.env), silent = TRUE)
-  if (exists("last_est_theta", envir = bypasses.env, inherits = FALSE)) {
-    rm("last_est_theta", envir = bypasses.env)
+  count_theta_est <- rlang::env_get(bypasses.env, "last_est_theta", default = NULL)
+  if (rlang::env_has(bypasses.env, "last_est_theta")) {
+    rlang::env_unbind(bypasses.env, "last_est_theta")
   }
 
 
@@ -150,7 +150,7 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     if (is.numeric(zero_theta)) {
       theta_ret[["zero"]] <- zero_theta
     }
-    assign("negbin_theta_est", theta_ret, envir = bypasses.env)
+    rlang::env_poke(bypasses.env, "negbin_theta_est", theta_ret)
   }
 
   # return other attributes from logLik objects

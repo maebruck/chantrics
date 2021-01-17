@@ -224,13 +224,8 @@ adj_loglik <- function(x,
     # # need to do this to two different objects due to different call structures
     # environment(attr(adjusted_x, "loglik"))[["x"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
   } else if (inherits(x, "hurdle")) {
-    try(
-      {
-        attr(adjusted_x, "theta") <- get("negbin_theta_est", envir = bypasses.env)
-        rm("negbin_theta_est", envir = bypasses.env)
-      },
-      silent = TRUE
-    )
+      attr(adjusted_x, "theta") <- rlang::env_get(bypasses.env, "negbin_theta_est", default = NULL)
+      rlang::env_unbind(bypasses.env, "negbin_theta_est")
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
@@ -873,12 +868,12 @@ confint.chantrics <- function(object, ...) {
   if (!is.null(attr(object, "theta"))) {
     # save theta in external env to discourage re-calculation
     # https://stackoverflow.com/a/10904331/
-    assign("theta", attr(object, "theta"), envir = bypasses.env)
+    rlang::env_poke(bypasses.env, "theta", attr(object, "theta"))
   }
   res <- NextMethod()
   # http://adv-r.had.co.nz/Environments.html#env-basics
-  if (exists("theta", envir = bypasses.env, inherits = FALSE)) {
-    rm("theta", envir = bypasses.env)
+  if (rlang::env_has(bypasses.env, "theta")) {
+    rlang::env_unbind(bypasses.env, "theta")
   }
   return(res)
 }
