@@ -59,7 +59,7 @@ x <- rnorm(250)
 y <- rnbinom(250, mu = exp(1 + x), size = 1)
 
 ## Fit the Poisson glm model, which is not correctly specified
-fm_pois <- glm(y ~ x + I(x^2), family = poisson)
+fm_pois <- glm(y ~ x + I(x ^ 2), family = poisson)
 lmtest::coeftest(fm_pois)
 #> 
 #> z test of coefficients:
@@ -140,6 +140,7 @@ anova(fm_pois_adj, fm_pois_small_adj)
 #> 
 #> Model 1: y ~ x + I(x^2)
 #> Model 2: y ~ x
+#> 
 #>   Resid.df df  ALRTS Pr(>ALRTS)
 #> 1      247                     
 #> 2      248  1 1.8202     0.1773
@@ -149,16 +150,29 @@ alrtest(fm_pois_adj, "I(x^2)")
 #> 
 #> Model 1: y ~ x + I(x^2)
 #> Model 2: y ~ x
+#> 
 #>   Resid.df df  ALRTS Pr(>ALRTS)
 #> 1      247                     
 #> 2      248  1 1.8202     0.1773
 
 # Plot confidence regions for the parameter estimates
-fm_pois_adj_vert <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))
+fm_pois_adj_vert <-
+  chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))
 #> Waiting for profiling to be done...
-fm_pois_adj_none <- chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"), type = "none")
+fm_pois_adj_none <-
+  chandwich::conf_region(fm_pois_adj,
+    which_pars = c("x", "I(x^2)"),
+    type = "none"
+  )
 #> Waiting for profiling to be done...
-plot(fm_pois_adj_vert, fm_pois_adj_none, conf = c(60, 80, 90, 95), col = c("brown", "darkgreen"), lty = c(1, 2), lwd = 2.5)
+plot(
+  fm_pois_adj_vert,
+  fm_pois_adj_none,
+  conf = c(60, 80, 90, 95),
+  col = c("brown", "darkgreen"),
+  lty = c(1, 2),
+  lwd = 2.5
+)
 ```
 
 <img src="man/figures/README-demo-1.png" width="100%" />
@@ -174,8 +188,8 @@ and in the corresponding help pages.
 
 <div id="ref-chanbate07" class="csl-entry">
 
-Chandler, Richard, and Steven Bate. 2007. “Inference for Clustered Data
-Using the Independence Loglikelihood.” *Biometrika* 94 (1): 167–83.
+Chandler, Richard E., and Steven Bate. 2007. “Inference for Clustered
+Data Using the Independence Loglikelihood.” *Biometrika* 94 (1): 167–83.
 <https://doi.org/doi:10.1093/biomet/asm015>.
 
 </div>

@@ -1,15 +1,27 @@
 #' Loglikelihood adjustments for glm fits
 #'
-#' Describe glm methods here
+#' In a generalised linear model (glm), the user can choose between a range of
+#' distributions of a response \eqn{y}, and can allow for non-linear relations
+#' between the mean outcome for a certain combination of covariates \eqn{x},
+#' \eqn{\operatorname{E}(y_i\mid x_i)=\mu_i}, and the linear predictor,
+#' \eqn{\eta_i=x_i^T\beta}, which is the link function \eqn{g(\mu_i)=\eta_i}. The
+#' link function is required to be monotonic. (For a quick introduction, see
+#' Kleiber and Zeileis (2008, Ch. 5.1), for a more complete coverage of the
+#' topic, see, for example, Davison (2003, Ch. 10.3))
+#'
+#' For more usage examples and more information on `glm` models, see the
+#' *Introducing `chantrics`* vignette by running
+#' \code{vignette("chantrics-vignette", package = "chantrics")}
 #'
 #' @section Supported families (within each family, any link function should work):
 #'
-#' * `gaussian`
-#' * `poisson`
-#' * `binomial`
-#' * `MASS::negative.binomial`
+#'   * `gaussian`
+#'   * `poisson`
+#'   * `binomial`
+#'   * `MASS::negative.binomial`
 #'
-#' Also works for [MASS::glm.nb()], note that the standard errors of the theta are not adjusted.
+#'   Also works for [MASS::glm.nb()], note that the standard errors of the theta
+#'   are not adjusted.
 #'
 #' @examples
 #' # binomial example from Applied Econometrics in R, Kleiber/Zeileis (2008)
@@ -31,6 +43,14 @@
 #' summary(swiss_logit)
 #' swiss_logit_adj <- adj_loglik(swiss_logit)
 #' summary(swiss_logit_adj)
+#'
+#' @references Davison, A. C. 2003. Statistical Models. Cambridge Series on
+#'   Statistical and Probabilistic Mathematics 11. Cambridge University Press,
+#'   Cambridge. www.cambridge.org/9780521773393.
+#'
+#'   Kleiber, Christian, and Achim
+#'   Zeileis. 2008. Applied Econometrics with R. Edited by Robert Gentleman,
+#'   Kurt Hornik, and Giovanni Parmigiani. Use r! New York: Springer-Verlag.
 #' @name glm
 #' @aliases glm.nb
 NULL

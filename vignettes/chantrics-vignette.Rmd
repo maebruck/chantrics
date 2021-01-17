@@ -39,9 +39,9 @@ x <- rnorm(250)
 y <- rnbinom(250, mu = exp(1 + x), size = 1)
 
 ## Fit the Poisson glm model, which is not correctly specified
-fm_pois <- glm(y~x +I(x^2), family = poisson)
+fm_pois <- glm(y ~ x + I(x^2), family = poisson)
 lmtest::coeftest(fm_pois)
-# The I(x^2) term is spuriously significant.
+## The I(x^2) term is spuriously significant.
 ```
 
 We can now use the model object `fm_pois`, and adjust it using `adj_loglik()`. Use `coef()` to get a vector of the coefficients, `summary()` to get an overview over the adjustment, or use `lmtest::coeftest()` to see the results of \(z\) tests on each of the coefficients.
@@ -70,8 +70,9 @@ fm_pois_adj_vert <-
   chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))
 fm_pois_adj_none <-
   chandwich::conf_region(fm_pois_adj,
-                         which_pars = c("x", "I(x^2)"),
-                         type = "none")
+    which_pars = c("x", "I(x^2)"),
+    type = "none"
+  )
 plot(
   fm_pois_adj_vert,
   fm_pois_adj_none,
@@ -108,7 +109,10 @@ In order to have a wider range of coefficients to do model comparisons on, we wi
 
 ```{r swisslaborimport}
 data("SwissLabor", package = "AER")
-swiss_probit <- glm(participation ~ . + I(age^2), data = SwissLabor, family = binomial(link = "probit"))
+swiss_probit <-
+  glm(participation ~ . + I(age ^ 2),
+      data = SwissLabor,
+      family = binomial(link = "probit"))
 swiss_probit_adj <- adj_loglik(swiss_probit)
 lmtest::coeftest(swiss_probit_adj)
 ```
@@ -119,9 +123,9 @@ The `update()` function is also available for `chantrics` objects, it automatica
 
 ```{r update}
 swiss_probit_small_adj <-
-  update(swiss_probit_adj, . ~ . - I(age ^ 2) - education)
+  update(swiss_probit_adj, . ~ . - I(age^2) - education)
 swiss_probit_smaller_adj <-
-  update(swiss_probit_adj, . ~ . - I(age ^ 2) - education - youngkids - oldkids)
+  update(swiss_probit_adj, . ~ . - I(age^2) - education - youngkids - oldkids)
 ```
 
 ### Compare nested models
@@ -142,7 +146,7 @@ Another way of performing an adjusted likelihood ration test is by using `alrtes
 
 ```{r alrtest}
 alrtest(swiss_probit_adj, 3, "oldkids")
-alrtest(swiss_probit_adj, . ~ . - youngkids-foreign, .~.-education)
+alrtest(swiss_probit_adj, . ~ . - youngkids - foreign, . ~ . - education)
 alrtest(swiss_probit_adj, swiss_probit_small_adj)
 ```
 
@@ -150,11 +154,19 @@ alrtest(swiss_probit_adj, swiss_probit_small_adj)
 
 ### `glm` models
 
+In a generalised linear model (glm), the user can choose between a range of distributions of a response \(y\), and can allow for non-linear relations between the mean outcome for a certain combination of covariates \(x\), \(\operatorname{E}(y_i\mid x_i)=\mu_i\), and the linear predictor, \(\eta_i=x_i^T\beta\), which is the link function \(g(\mu_i)=\eta_i\). The link function is required to be monotonic. (For a quick introduction, see @AER-book [, Ch. 5.1], for a more complete coverage of the topic, see, for example, @davison03 [, Ch. 10.3])
+
 Within the array of `glm` families presented below, any link function should work.
 
 #### `poisson` family
 
-The Poisson family of models are commonly used specifications for count models. For this example, I will reuse the example of the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the *sandwich* package [@zeileis06].
+The Poisson family of models are commonly used specifications for count models. The specification of this form of a GLM is (for the canonical log-link of the Poisson specification), 
+
+\begin{equation*}
+\operatorname{E}(y_i\mid x_i)=\mu_i=\exp(x_i^T\beta).
+\end{equation*}
+
+In this example, I will reuse the example of the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the *sandwich* package [@zeileis06]. More on the Poisson specification in glms can be found in @cameron13 [, Ch. 3.2.4] or @davison03 [, Example 10.10]. More on the implementation in R is located in @count-zeil [, Ch. 2.1], and in @AER-book [, Ch. 5.3].
 
 ```{r poisson}
 summary(fm_pois) # fm_pois is the fitted poisson model from above.
@@ -164,6 +176,77 @@ summary(fm_pois_adj)
 
 #### `binomial` family
 
-The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties.
+The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties. As \(\operatorname{E}(y_i\mid x_i)=1\cdot P(y_i=1\mid x_i)+0\cdot P(y_i=0\mid x_i)=P(y_i=1\mid x_i\), the point estimation of the model is the probability of \(y_i\) being equal to 1. It is specified using the GLM framework described above, with
+\begin{equation*}
+\operatorname{E}(y_i\mid x_i)=P(y_i=1)=p_i=F(x_i^T\beta),
+\end{equation*}
+where \(F\) is a valid cdf of the error terms in the model, or, equally, the link function. Most commonly, these are chosen to be either the standard normal cdf in the Probit case, `family = binomial(link = "probit")`, or the logistic cdf in the logit case, `family = binomial(link = "logit")`.
+
+This example will use the `SwissLabor` example in @AER-book [, pg. 124]
+
+```{r binomial}
+data("SwissLabor", package = "AER")
+## Fitting a Probit model
+swiss_probit <-
+  glm(participation ~ . + I(age ^ 2),
+      data = SwissLabor,
+      family = binomial(link = "probit"))
+swiss_probit_adj <- adj_loglik(swiss_probit)
+summary(swiss_probit_adj)
+
+## Fitting a Logit model
+swiss_logit <-
+  glm(formula(swiss_probit),
+      data = SwissLabor,
+      family = binomial(link = "logit"))
+swiss_logit_adj <- adj_loglik(swiss_logit)
+summary(swiss_logit_adj)
+```
+Note that other specifications of the link function are possible, the code is agnostic towards the link function.
+
+#### `gaussian` family 
+The GLM framework encompasses the estimation of a standard linear regression using maximum likelihood estimators, therefore we can use the adjustment to account for clustering/misspecifications in the regression. We can use the classic assumption of normally distributed error terms to specify the distribution of \(y\). The link is simply the identity function. [@AER-book, pg. 123]
+
+To demonstrate the functionality, I will employ the linear regression example in @AER-book [, pg. 66], using the cross-sectional `CPS1988` data.
+
+```{r}
+data("CPS1988", package = "AER")
+cps_glm <-
+  glm(
+    log(wage) ~ experience + I(experience ^ 2) + education + ethnicity,
+    data = CPS1988,
+    family = gaussian()
+  )
+summary(cps_glm)
+cps_glm_adj <- adj_loglik(cps_glm)
+summary(cps_glm_adj)
+```
+
+#### `MASS::negative.binomial` and `MASS::glm.nb()`
+Another commonly used model for count data is the negative binomial model. It overcomes two issues of the Poisson model, that the expectation and the variance are assumed to be equal, and that in most datasets, the number of zeros is underestimated by Poisson family models.
+
+The method of estimation of the negative binomial model depends on whether the dispersion parameter \(\theta\) of the pmf,
+\begin{equation*}
+f(y;\mu,\theta)=\frac{\Gamma(\theta+y)}{\Gamma(\theta)y!}\frac{\mu^y\theta^\theta}{(\mu+\theta)^{y+\theta}}
+\end{equation*}
+is known. In most cases, it is not known, and the specialised function `MASS::glm.nb()` can be used, which estimates the negative binomial model and the \(\theta\) parameter seperately. If \(\theta\) is known, the **MASS** package [@mass] provides the `MASS::negative.binomial()` family function for `glm()`.
+
+A quick introduction can be found in @AER-book [, pg. 135f.] and in @count-zeil [, pg. 5], and a more general treatment with estimation using direct ML estimation in @cameron13 [, Ch. 3.3].
+
+Note that `adj_loglik()` re-estimates the theta parameter of a `glm.nb` model.
+
+To demonstrate the negative binomial model functions, we will use the negative binomial data generated above, which we have falsely fitted to a Poisson model.
+
+```{r negbin}
+fm_negbin_theta <- MASS::glm.nb(y ~ x)
+summary(fm_negbin_theta)
+fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
+summary(fm_negbin_theta_adj)
+```
+
+### hurdle models
+
+WIP.
 
 ## References
+
