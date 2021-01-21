@@ -13,7 +13,8 @@ vignette: >
 ```{r knitr_init, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.retina = 2
 )
 ```
 
@@ -65,7 +66,7 @@ confint(fm_pois_adj)
 
 We can also plot confidence regions of the estimates for two coefficients using `chandwich::conf_region()`, where we can specify the parameters using `which_pars`, the type of specification of the adjustment from @chanbate07  using `type`, and the confidence levels using `conf`. Other adjustments are available.
 
-```{r conf_region, fig.align='center', fig.width=7, fig.height=7}
+```{r conf_region}
 fm_pois_adj_vert <-
   chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))
 fm_pois_adj_none <-
@@ -73,6 +74,10 @@ fm_pois_adj_none <-
     which_pars = c("x", "I(x^2)"),
     type = "none"
   )
+```
+
+```{r conf_region_plot, fig.align='center', fig.width=7, fig.height=7, cache = TRUE, out.width = "110%"}
+par(mar = c(5.1, 5.1, 2.1, 2.1))
 plot(
   fm_pois_adj_vert,
   fm_pois_adj_none,
@@ -81,6 +86,7 @@ plot(
   lty = c(1, 2),
   lwd = 2.5
 )
+par(mar = c(5.1, 4.1, 4.1, 2.1))
 ```
 
 ### Other diagnostic functions
@@ -110,9 +116,10 @@ In order to have a wider range of coefficients to do model comparisons on, we wi
 ```{r swisslaborimport}
 data("SwissLabor", package = "AER")
 swiss_probit <-
-  glm(participation ~ . + I(age ^ 2),
-      data = SwissLabor,
-      family = binomial(link = "probit"))
+  glm(participation ~ . + I(age^2),
+    data = SwissLabor,
+    family = binomial(link = "probit")
+  )
 swiss_probit_adj <- adj_loglik(swiss_probit)
 lmtest::coeftest(swiss_probit_adj)
 ```
@@ -188,17 +195,19 @@ This example will use the `SwissLabor` example in @AER-book [, pg. 124]
 data("SwissLabor", package = "AER")
 ## Fitting a Probit model
 swiss_probit <-
-  glm(participation ~ . + I(age ^ 2),
-      data = SwissLabor,
-      family = binomial(link = "probit"))
+  glm(participation ~ . + I(age^2),
+    data = SwissLabor,
+    family = binomial(link = "probit")
+  )
 swiss_probit_adj <- adj_loglik(swiss_probit)
 summary(swiss_probit_adj)
 
 ## Fitting a Logit model
 swiss_logit <-
   glm(formula(swiss_probit),
-      data = SwissLabor,
-      family = binomial(link = "logit"))
+    data = SwissLabor,
+    family = binomial(link = "logit")
+  )
 swiss_logit_adj <- adj_loglik(swiss_logit)
 summary(swiss_logit_adj)
 ```
@@ -213,7 +222,7 @@ To demonstrate the functionality, I will employ the linear regression example in
 data("CPS1988", package = "AER")
 cps_glm <-
   glm(
-    log(wage) ~ experience + I(experience ^ 2) + education + ethnicity,
+    log(wage) ~ experience + I(experience^2) + education + ethnicity,
     data = CPS1988,
     family = gaussian()
   )
@@ -249,4 +258,3 @@ summary(fm_negbin_theta_adj)
 WIP.
 
 ## References
-
