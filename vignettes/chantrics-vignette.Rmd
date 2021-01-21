@@ -176,7 +176,7 @@ summary(fm_pois_adj)
 
 #### `binomial` family
 
-The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties. As \(\operatorname{E}(y_i\mid x_i)=1\cdot P(y_i=1\mid x_i)+0\cdot P(y_i=0\mid x_i)=P(y_i=1\mid x_i\), the point estimation of the model is the probability of \(y_i\) being equal to 1. It is specified using the GLM framework described above, with
+The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties. As \(\operatorname{E}(y_i\mid x_i)=1\cdot P(y_i=1\mid x_i)+0\cdot P(y_i=0\mid x_i)=P(y_i=1\mid x_i)\), the point estimation of the model is the probability of \(y_i\) being equal to 1. It is specified using the GLM framework described above, with
 \begin{equation*}
 \operatorname{E}(y_i\mid x_i)=P(y_i=1)=p_i=F(x_i^T\beta),
 \end{equation*}
