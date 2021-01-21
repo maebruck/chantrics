@@ -91,7 +91,7 @@
       <h1 data-toc-skip>An introduction to chantrics</h1>
                         <h4 class="author">Theo Bruckbauer</h4>
             
-            <h4 class="date">2021-01-17</h4>
+            <h4 class="date">2021-01-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tbruckbauer/chantrics/blob/master/vignettes/chantrics-vignette.Rmd"><code>vignettes/chantrics-vignette.Rmd</code></a></small>
       <div class="hidden name"><code>chantrics-vignette.Rmd</code></div>
@@ -416,7 +416,7 @@
 <div id="binomial-family" class="section level4">
 <h4 class="hasAnchor">
 <a href="#binomial-family" class="anchor"></a><code>binomial</code> family</h4>
-<p>The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties. As <span class="math inline">\(\operatorname{E}(y_i\mid x_i)=1\cdot P(y_i=1\mid x_i)+0\cdot P(y_i=0\mid x_i)=P(y_i=1\mid x_i\)</span>, the point estimation of the model is the probability of <span class="math inline">\(y_i\)</span> being equal to 1. It is specified using the GLM framework described above, with <span class="math display">\[\begin{equation*}
+<p>The binomial family of models is widely used for binary choice modelling of probabilities of choosing a certain option given a set of properties. As <span class="math inline">\(\operatorname{E}(y_i\mid x_i)=1\cdot P(y_i=1\mid x_i)+0\cdot P(y_i=0\mid x_i)=P(y_i=1\mid x_i)\)</span>, the point estimation of the model is the probability of <span class="math inline">\(y_i\)</span> being equal to 1. It is specified using the GLM framework described above, with <span class="math display">\[\begin{equation*}
 \operatorname{E}(y_i\mid x_i)=P(y_i=1)=p_i=F(x_i^T\beta),
 \end{equation*}\]</span> where <span class="math inline">\(F\)</span> is a valid cdf of the error terms in the model, or, equally, the link function. Most commonly, these are chosen to be either the standard normal cdf in the Probit case, <code>family = binomial(link = "probit")</code>, or the logistic cdf in the logit case, <code>family = binomial(link = "logit")</code>.</p>
 <p>This example will use the <code>SwissLabor</code> example in <span class="citation">Kleiber and Zeileis (2008, pg. 124)</span></p>
