@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   chantrics-vignette: chantrics-vignette.html
   clustering-vignette: clustering-vignette.html
-last_built: 2021-01-21T20:01Z
+last_built: 2021-02-09T20:58Z
 urls:
   reference: https://chantrics.theobruckbauer.eu/reference
   article: https://chantrics.theobruckbauer.eu/articles
