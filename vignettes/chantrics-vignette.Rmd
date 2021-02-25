@@ -76,7 +76,7 @@ fm_pois_adj_none <-
   )
 ```
 
-```{r conf_region_plot, fig.align='center', fig.width=7, fig.height=7, cache = TRUE, out.width = "110%"}
+```{r conf_region_plot, fig.align='center', fig.width=7, fig.height=7, out.width = "110%"}
 par(mar = c(5.1, 5.1, 2.1, 2.1))
 plot(
   fm_pois_adj_vert,
