@@ -3,12 +3,21 @@
 \docType{package}
 \name{chantrics}
 \alias{chantrics}
-\title{chantrics: Description of package}
+\title{chantrics: Loglikelihood Adjustments for Econometric Models}
 \description{
-More info
+\code{chantrics} adjusts the loglikelihood of common econometric models for
+clustered data based on the estimation process suggested in @chanbate07,
+using the \href{https://cran.r-project.org/package=chandwich}{chandwich} package,
+and provides convenience functions for inference on the adjusted models.
+\code{adj_loglik()} adjusts the parameter covariance matrix of the models to
+incorporate clustered data, and can mitigate model misspecification by
+wrapping \code{chandwich::adjust_loglik} for the supported models.
 }
-\section{chantrics functions}{
+\details{
+The returned model of class \code{chantrics} can be plugged into standard model
+evaluation and model comparison methods, for example \code{summary()}, \code{confint()}
+and \code{anova()}, and a hypothesis test framework provided by \code{alrtest()}.
 
-list functions
+See \code{vignette("chantrics-vignette", package = "chantrics")} for an
+overview of the package.
 }
-

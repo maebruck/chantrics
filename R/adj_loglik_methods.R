@@ -360,7 +360,7 @@ anova.chantrics <- function(object, ...) {
   # check whether the unnamed objects are actually chantrics objects
   pmo_is_chantrics <-
     vapply(potential_model_objects, function(x) {
-      is(x, "chantrics")
+      methods::is(x, "chantrics")
     }, logical(1))
   # warn user that we drop supplied unnamed arguments that are not chantrics
   # objects

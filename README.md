@@ -11,10 +11,11 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/tbruckbauer/chantrics/badge?s=8292aacb6a947f6280b202c4f29e21e4510dce53)](https://www.codefactor.io/repository/github/tbruckbauer/chantrics)
 <!-- badges: end -->
 
-`chantrics` applies the Chandler-Bate loglikelihood adjustment (Chandler
-and Bate 2007) implemented in the
-[chandwich](https://cran.r-project.org/package=chandwich) package to
-different models frequently used in basic Econometrics applications.
+`chantrics` adjusts the loglikelihood of common econometric models for
+clustered data based on the estimation process suggested in Chandler and
+Bate (2007), using the
+[chandwich](https://cran.r-project.org/package=chandwich) package, and
+provides convenience functions for inference on the adjusted models.
 `adj_loglik()` adjusts the parameter covariance matrix of the models to
 incorporate clustered data, and can mitigate model misspecification by
 wrapping `chandwich::adjust_loglik` for the supported models.
