@@ -12,8 +12,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Loglikelihood Adjustments for Econometric Models">
-<meta property="og:description" content="More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.">
+<meta property="og:description" content="Adjusts the loglikelihood of common econometric models for
+    clustered data based on the estimation process suggested in 
+    Chandler and Bate (2007) &lt;doi:10.1093/biomet/asm015&gt;, using the chandwich 
+    package &lt;https://cran.r-project.org/package=chandwich&gt;, and provides 
+    convenience functions for inference on the adjusted models. ">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -93,7 +96,7 @@
 <a href="#chantrics" class="anchor"></a>chantrics</h1></div>
 <!-- badges: start -->
 
-<p><code>chantrics</code> applies the Chandler-Bate loglikelihood adjustment (Chandler and Bate 2007) implemented in the <a href="https://cran.r-project.org/package=chandwich">chandwich</a> package to different models frequently used in basic Econometrics applications. <code><a href="reference/adj_loglik.html">adj_loglik()</a></code> adjusts the parameter covariance matrix of the models to incorporate clustered data, and can mitigate model misspecification by wrapping <code><a href="https://rdrr.io/pkg/chandwich/man/adjust_loglik.html">chandwich::adjust_loglik</a></code> for the supported models.</p>
+<p><code>chantrics</code> adjusts the loglikelihood of common econometric models for clustered data based on the estimation process suggested in Chandler and Bate (2007), using the <a href="https://cran.r-project.org/package=chandwich">chandwich</a> package, and provides convenience functions for inference on the adjusted models. <code><a href="reference/adj_loglik.html">adj_loglik()</a></code> adjusts the parameter covariance matrix of the models to incorporate clustered data, and can mitigate model misspecification by wrapping <code><a href="https://rdrr.io/pkg/chandwich/man/adjust_loglik.html">chandwich::adjust_loglik</a></code> for the supported models.</p>
 <p>The returned model of class <code>chantrics</code> can be plugged into standard model evaluation and model comparison methods, for example <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code>, <code><a href="https://rdrr.io/r/stats/confint.html">confint()</a></code> and <code><a href="https://rdrr.io/r/stats/anova.html">anova()</a></code>, and a hypothesis test framework provided by <code><a href="reference/alrtest.html">alrtest()</a></code>.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
