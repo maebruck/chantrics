@@ -3,6 +3,11 @@ Type: Package
 Title: Loglikelihood Adjustments for Econometric Models
 Version: 0.0.0.9000
 Date: 2021-03-17
+Description: Adjusts the loglikelihood of common econometric models for
+    clustered data based on the estimation process suggested in 
+    Chandler and Bate (2007) <doi:10.1093/biomet/asm015>, using the 'chandwich' 
+    package <https://cran.r-project.org/package=chandwich>, and provides 
+    convenience functions for inference on the adjusted models. 
 Imports: 
     AER,
     chandwich,
@@ -24,11 +29,6 @@ Authors@R: person(given = "Theo",
            comment = c(ORCID = "0000-0002-4764-9953"))
 URL: https://chantrics.theobruckbauer.eu, https://github.com/tbruckbauer/chantrics
 BugReports: https://github.com/tbruckbauer/chantrics/issues
-Description: Adjusts the loglikelihood of common econometric models for
-    clustered data based on the estimation process suggested in 
-    Chandler and Bate (2007) <doi:10.1093/biomet/asm015>, using the 'chandwich' 
-    package <https://cran.r-project.org/package=chandwich>, and provides 
-    convenience functions for inference on the adjusted models. 
 License: EUPL (>=1.2)
 Encoding: UTF-8
 LazyData: true
