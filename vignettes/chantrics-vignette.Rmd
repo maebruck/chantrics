@@ -253,8 +253,8 @@ fm_negbin_theta_adj <- adj_loglik(fm_negbin_theta)
 summary(fm_negbin_theta_adj)
 ```
 
-### hurdle models
+## Clustering
 
-WIP.
+WIP
 
 ## References

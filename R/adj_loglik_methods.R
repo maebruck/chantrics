@@ -989,3 +989,4 @@ predict.chantrics <- function(object, newdata = NULL, type = c("response", "link
     rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
   }
 }
+
