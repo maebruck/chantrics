@@ -41,7 +41,8 @@
 
 <meta property="og:title" content="chantrics: Loglikelihood Adjustments for Econometric Models — chantrics" />
 <meta property="og:description" content="chantrics adjusts the loglikelihood of common econometric models for
-clustered data based on the estimation process suggested in @chanbate07,
+clustered data based on the estimation process suggested in
+Chandler and Bate (2007),
 using the chandwich package,
 and provides convenience functions for inference on the adjusted models.
 adj_loglik() adjusts the parameter covariance matrix of the models to
@@ -113,9 +114,6 @@ wrapping chandwich::adjust_loglik for the supported models." />
     <li>
       <a href="../articles/chantrics-vignette.html">An introduction to chantrics</a>
     </li>
-    <li>
-      <a href="../articles/clustering-vignette.html">An introduction to clustering with chantrics</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -146,7 +144,8 @@ wrapping chandwich::adjust_loglik for the supported models." />
 
     <div class="ref-description">
     <p><code>chantrics</code> adjusts the loglikelihood of common econometric models for
-clustered data based on the estimation process suggested in @chanbate07,
+clustered data based on the estimation process suggested in
+<a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>,
 using the <a href='https://cran.r-project.org/package=chandwich'>chandwich</a> package,
 and provides convenience functions for inference on the adjusted models.
 <code><a href='adj_loglik.html'>adj_loglik()</a></code> adjusts the parameter covariance matrix of the models to
@@ -163,6 +162,11 @@ evaluation and model comparison methods, for example <code><a href='https://rdrr
 and <code><a href='https://rdrr.io/r/stats/anova.html'>anova()</a></code>, and a hypothesis test framework provided by <code><a href='alrtest.html'>alrtest()</a></code>.</p>
 <p>See <code><a href='../articles/chantrics-vignette.html'>vignette("chantrics-vignette", package = "chantrics")</a></code> for an
 overview of the package.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>R. Chandler and S. Bate, Inference for clustered data using the
+independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
+<a href='http://doi.org/10.1093/biomet/asm015'>http://doi.org/10.1093/biomet/asm015</a>.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
