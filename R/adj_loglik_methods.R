@@ -64,6 +64,7 @@
 #'   * [`logLik_vec`][logLik_vec()]
 #'   * [`nobs`][stats::nobs()]
 #'   * [`plot`][chandwich::plot.chandwich()]
+#'   * [`predict`][predict()]
 #'   * [`print`][chandwich::print.chandwich()]
 #'   * [`residuals`][residuals.chantrics()]
 #'   * [`summary`][chandwich::summary.chandwich()]
@@ -881,14 +882,14 @@ confint.chantrics <- function(object, ...) {
 #' @importFrom stats fitted
 #' @export
 
-fitted.chantrics <- function(object, ...) {
+fitted.chantrics <- function(object,...) {
   if (!missing(...)) {
     rlang::warn("extra arguments discarded")
   }
   abort_not_chantrics(object)
   modelname <- unlist(strsplit(attr(object, "name"), "_"))
   if ("glm" %in% modelname) {
-    fittedvals <- fittedhelper.glm(object, modelname)
+    fittedvals <- fittedhelper.glm(object, type = "response")
   } else {
     rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
   }
@@ -956,37 +957,56 @@ residuals.chantrics <- function(object, type = c("response", "working", "pearson
 
 #' Predict Method for chantrics fits
 #'
-#' Obtains predictions from chantrics objects.
+#' Obtains predictions from chantrics objects. The function can currently only
+#' supply predictions of the `link` and the `response` values of the data used
+#' for the fit.
 #'
 #' @param object Object of class `chantrics`, as returned by [adj_loglik()]
-#' @param newdata optionally, a data frame in which to look for variables with which to predict. If omitted, the fitted linear predictors are used.
-#' @param type the type of prediction required. The default `"response"` is on the scale of the response variables. The alternative `"link"` is on the scale of the linear predictors, if applicable, otherwise, an error is returned.
+#' @param newdata optionally, a data frame in which to look for variables with
+#'   which to predict. If omitted, the fitted linear predictors are used.
+#'   Supplying new data is currently not supported.
+#' @param type the type of prediction required. The default `"response"` is on
+#'   the scale of the response variables. The alternative `"link"` is on the
+#'   scale of the linear predictors, if applicable, otherwise, an error is
+#'   returned.
+#' @param ... unused.
 #'
-#' @details If `newdata` is omitted, the predictions are based on the data used for the fit.
-#' Any instances of `NA` will return `NA`.
+#' @details If `newdata` is omitted, the predictions are based on the data used
+#'   for the fit. Any instances of `NA` will return `NA`.
 #'
 #' @return A vector of predictions.
 #'
 #' @importFrom stats predict
+#' @export
 #'
 
-predict.chantrics <- function(object, newdata = NULL, type = c("response", "link")) {
+predict.chantrics <- function(object, newdata = NULL, type = c("response", "link"), ...) {
   type <- match.arg(type)
+  if (!is.null(newdata)) {
+    rlang::abort("Supplying of new data is currently supported. See `?predict.chantrics`.")
+  }
   # get the data frame with all observations
   if (missing(newdata)) {
     newdata <- get_design_matrix_from_model(object)
   }
-  # check that the required parameters are available
+
   modelname <- unlist(strsplit(attr(object, "name"), "_"))
   if ("glm" %in% modelname) {
-    # get list of required coefficients
-    coef_names <- names(stats::coef(object))
-    # match these with newdata and create new matrix with only those columns
-    design_matrix <- newdata[coef_names]
-    eta_vec <- object %*% attr(object, "res_MLE")
-    mu_vec <- object$family$linkinv(eta_vec)
+    # this implementation only works for the dataframe used for fitting:
+    result <- fittedhelper.glm(object, type)
+    ###############
+    # from previous test for user-supplied dataframes:
+
+    # # get list of required coefficients
+    # coef_names <- names(stats::coef(object))
+    # # match these with newdata and create new matrix with only those columns
+    # design_matrix <- newdata[coef_names]
+    # eta_vec <- object %*% attr(object, "res_MLE")
+    # mu_vec <- object$family$linkinv(eta_vec)
+    ###############
   } else {
     rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
   }
+  return(result)
 }
 

@@ -4,22 +4,31 @@
 \alias{predict.chantrics}
 \title{Predict Method for chantrics fits}
 \usage{
-\method{predict}{chantrics}(object, newdata = NULL, type = c("response", "link"))
+\method{predict}{chantrics}(object, newdata = NULL, type = c("response", "link"), ...)
 }
 \arguments{
 \item{object}{Object of class \code{chantrics}, as returned by \code{\link[=adj_loglik]{adj_loglik()}}}
 
-\item{newdata}{optionally, a data frame in which to look for variables with which to predict. If omitted, the fitted linear predictors are used.}
+\item{newdata}{optionally, a data frame in which to look for variables with
+which to predict. If omitted, the fitted linear predictors are used.
+Supplying new data is currently not supported.}
 
-\item{type}{the type of prediction required. The default \code{"response"} is on the scale of the response variables. The alternative \code{"link"} is on the scale of the linear predictors, if applicable, otherwise, an error is returned.}
+\item{type}{the type of prediction required. The default \code{"response"} is on
+the scale of the response variables. The alternative \code{"link"} is on the
+scale of the linear predictors, if applicable, otherwise, an error is
+returned.}
+
+\item{...}{unused.}
 }
 \value{
 A vector of predictions.
 }
 \description{
-Obtains predictions from chantrics objects.
+Obtains predictions from chantrics objects. The function can currently only
+supply predictions of the \code{link} and the \code{response} values of the data used
+for the fit.
 }
 \details{
-If \code{newdata} is omitted, the predictions are based on the data used for the fit.
-Any instances of \code{NA} will return \code{NA}.
+If \code{newdata} is omitted, the predictions are based on the data used
+for the fit. Any instances of \code{NA} will return \code{NA}.
 }

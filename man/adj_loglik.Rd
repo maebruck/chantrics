@@ -90,6 +90,7 @@ regions
 \item \code{\link[=logLik_vec]{logLik_vec}}
 \item \code{\link[stats:nobs]{nobs}}
 \item \code{\link[chandwich:plot.chandwich]{plot}}
+\item \code{\link[=predict]{predict}}
 \item \code{\link[chandwich:print.chandwich]{print}}
 \item \code{\link[=residuals.chantrics]{residuals}}
 \item \code{\link[chandwich:summary.chandwich]{summary}}

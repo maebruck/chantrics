@@ -127,3 +127,12 @@ test_that("residuals.chantrics() generates values close to original ones", {
     expect_equal(stats::residuals(fm_pois_adj, type = type), stats::residuals(fm_pois, type = type))
   }
 })
+
+# ==== predict.chantrics() ====
+
+test_that("predict.chantrics() generates values close to original ones", {
+  expect_equal(stats::predict(fm_pois_adj, type = "link"), stats::predict(fm_pois, type = "link"))
+  expect_equal(stats::predict(fm_pois_adj, type = "response"), stats::predict(fm_pois, type = "response"))
+  expect_equal(stats::predict(fm_negbin_theta_adj, type = "link"), stats::predict(fm_negbin_theta, type = "link"))
+  expect_equal(stats::predict(fm_negbin_theta_adj, type = "response"), stats::predict(fm_negbin_theta, type = "response"))
+})

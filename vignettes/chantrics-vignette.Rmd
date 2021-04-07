@@ -149,7 +149,7 @@ By passing in a singular model, we can also use `anova()` to generate a *sequent
 anova(swiss_probit_adj)
 ```
 
-Another way of performing an adjusted likelihood ration test is by using `alrtest()`, which is inspired and similar in usage to `lmtest::waldtest()` and `lmtest::lrtest()`, where a model, and an indicator of the variables that should be restricted/removed. These indicators can be *character strings* of the names of the covariates, *integers* corresponding to the position of a covariate, *formula* objects, or *nested model objects*, allowing a flexible and easy specification of nested models.
+Another way of performing an adjusted likelihood ratio test is by using `alrtest()`, which is inspired and similar in usage to `lmtest::waldtest()` and `lmtest::lrtest()`, where a model, and an indicator of the variables that should be restricted/removed. These indicators can be *character strings* of the names of the covariates, *integers* corresponding to the position of a covariate, *formula* objects, or *nested model objects*, allowing a flexible and easy specification of nested models.
 
 ```{r alrtest}
 alrtest(swiss_probit_adj, 3, "oldkids")
@@ -231,7 +231,7 @@ cps_glm_adj <- adj_loglik(cps_glm)
 summary(cps_glm_adj)
 ```
 
-#### `MASS::negative.binomial` and `MASS::glm.nb()`
+#### `MASS::negative.binomial` family and `MASS::glm.nb()`
 Another commonly used model for count data is the negative binomial model. It overcomes two issues of the Poisson model, that the expectation and the variance are assumed to be equal, and that in most datasets, the number of zeros is underestimated by Poisson family models.
 
 The method of estimation of the negative binomial model depends on whether the dispersion parameter \(\theta\) of the pmf,
