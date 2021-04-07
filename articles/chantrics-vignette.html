@@ -88,7 +88,7 @@
       <h1 data-toc-skip>An introduction to chantrics</h1>
                         <h4 class="author">Theo Bruckbauer</h4>
             
-            <h4 class="date">2021-04-04</h4>
+            <h4 class="date">2021-04-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tbruckbauer/chantrics/blob/master/vignettes/chantrics-vignette.Rmd"><code>vignettes/chantrics-vignette.Rmd</code></a></small>
       <div class="hidden name"><code>chantrics-vignette.Rmd</code></div>
@@ -322,7 +322,7 @@
 <span class="co">#&gt; income          871  1 27.866  1.300e-07 ***</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></code></pre></div>
-<p>Another way of performing an adjusted likelihood ration test is by using <code><a href="../reference/alrtest.html">alrtest()</a></code>, which is inspired and similar in usage to <code><a href="https://rdrr.io/pkg/lmtest/man/waldtest.html">lmtest::waldtest()</a></code> and <code><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lmtest::lrtest()</a></code>, where a model, and an indicator of the variables that should be restricted/removed. These indicators can be <em>character strings</em> of the names of the covariates, <em>integers</em> corresponding to the position of a covariate, <em>formula</em> objects, or <em>nested model objects</em>, allowing a flexible and easy specification of nested models.</p>
+<p>Another way of performing an adjusted likelihood ratio test is by using <code><a href="../reference/alrtest.html">alrtest()</a></code>, which is inspired and similar in usage to <code><a href="https://rdrr.io/pkg/lmtest/man/waldtest.html">lmtest::waldtest()</a></code> and <code><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lmtest::lrtest()</a></code>, where a model, and an indicator of the variables that should be restricted/removed. These indicators can be <em>character strings</em> of the names of the covariates, <em>integers</em> corresponding to the position of a covariate, <em>formula</em> objects, or <em>nested model objects</em>, allowing a flexible and easy specification of nested models.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/alrtest.html">alrtest</a></span><span class="op">(</span><span class="va">swiss_probit_adj</span>, <span class="fl">3</span>, <span class="st">"oldkids"</span><span class="op">)</span>
 <span class="co">#&gt; Adjusted likelihood ratio test</span>
@@ -512,9 +512,9 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; (Dispersion parameter taken to be 0.341)</span></code></pre></div>
 </div>
-<div id="massnegative-binomial-and-massglm-nb" class="section level4">
+<div id="massnegative-binomial-family-and-massglm-nb" class="section level4">
 <h4 class="hasAnchor">
-<a href="#massnegative-binomial-and-massglm-nb" class="anchor"></a><code>MASS::negative.binomial</code> and <code>MASS::glm.nb()</code>
+<a href="#massnegative-binomial-family-and-massglm-nb" class="anchor"></a><code>MASS::negative.binomial</code> family and <code>MASS::glm.nb()</code>
 </h4>
 <p>Another commonly used model for count data is the negative binomial model. It overcomes two issues of the Poisson model, that the expectation and the variance are assumed to be equal, and that in most datasets, the number of zeros is underestimated by Poisson family models.</p>
 <p>The method of estimation of the negative binomial model depends on whether the dispersion parameter <span class="math inline">\(\theta\)</span> of the pmf, <span class="math display">\[\begin{equation*}

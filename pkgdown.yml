@@ -3,7 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   chantrics-vignette: chantrics-vignette.html
-last_built: 2021-04-04T20:16Z
+last_built: 2021-04-07T21:32Z
 urls:
   reference: https://chantrics.theobruckbauer.eu/reference
   article: https://chantrics.theobruckbauer.eu/articles
