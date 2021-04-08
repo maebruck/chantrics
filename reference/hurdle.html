@@ -40,8 +40,7 @@
 
 
 <meta property="og:title" content="Loglikelihood adjustments for pscl::hurdle fits — hurdle" />
-<meta property="og:description" content="Adjust the loglikelihood and the standard errors of a fitted pscl::hurdle()
-model." />
+<meta property="og:description" content="NOTE: Hurdle models are currently not supported." />
 
 
 
@@ -137,20 +136,21 @@ model." />
     </div>
 
     <div class="ref-description">
-    <p>Adjust the loglikelihood and the standard errors of a fitted <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code>
-model.</p>
+    <p>NOTE: <em>Hurdle models are currently not supported.</em></p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Describe zeroinfl models here</p>
+    <p>Adjust the loglikelihood and the standard errors of a fitted <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code>
+model.</p>
+<p>Describe zeroinfl models here</p>
 <p>Note that the <code><a href='https://rdrr.io/pkg/pscl/man/hurdle.html'>pscl::hurdle()</a></code> model has to be run with the option <code>x = TRUE</code>
 in order for the adjustment to execute properly. Also note that the functions
-<code><a href='residuals.chantrics.html'>residuals.chantrics()</a></code> and <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted.chantrics()</a></code> are currently disabled for
-<code>hurdle</code> models. Additionally, sequential <code><a href='anova.chantrics.html'>anova.chantrics()</a></code> are not
-available</p>
+<code><a href='residuals.chantrics.html'>residuals.chantrics()</a></code> and <code><a href='https://rdrr.io/r/stats/fitted.values.html'>fitted.chantrics()</a></code> are currently
+disabled for <code>hurdle</code> models. Additionally, sequential <code><a href='anova.chantrics.html'>anova.chantrics()</a></code>
+are not available.</p>
     <h2 class="hasAnchor" id="supported-families"><a class="anchor" href="#supported-families"></a>Supported families</h2>
 
     
@@ -209,18 +209,8 @@ available</p>
 #&gt; Number of iterations in BFGS optimization: 18 
 #&gt; Log-likelihood: -765.1 on 12 Df</div><div class='input'>
 <span class='co'># adjust model</span>
-<span class='fu'><a href='adj_loglik.html'>adj_loglik</a></span><span class='op'>(</span><span class='va'>rd_hurdle</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt;  Call: chandwich::adjust_loglik(loglik = logLik_f, fitted_object = x,      p = p, init = init, par_names = par_names, name = paste(name_pieces,          collapse = "_"), mle = mle, H = H, V = V) 
-#&gt;  
-#&gt; Attributes, access using attr(., "name") or attributes(.)$name 
-#&gt;  [1] "adjSE"          "adjVC"          "C_cholesky"     "C_spectral"    
-#&gt;  [5] "call"           "chantrics_args" "class"          "cluster"       
-#&gt;  [9] "formula"        "free_pars"      "full_par_names" "HA"            
-#&gt; [13] "HI"             "loglik"         "loglik_args"    "loglikVecMLE"  
-#&gt; [17] "max_loglik"     "MLE"            "name"           "nobs"          
-#&gt; [21] "p_current"      "p_full"         "par_names"      "res_MLE"       
-#&gt; [25] "SE"             "theta"          "VC"            </div></pre>
+<span class='co'># adj_loglik(rd_hurdle)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
