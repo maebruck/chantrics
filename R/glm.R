@@ -4,8 +4,8 @@
 #' distributions of a response \eqn{y}, and can allow for non-linear relations
 #' between the mean outcome for a certain combination of covariates \eqn{x},
 #' \eqn{\operatorname{E}(y_i\mid x_i)=\mu_i}, and the linear predictor,
-#' \eqn{\eta_i=x_i^T\beta}, which is the link function \eqn{g(\mu_i)=\eta_i}. The
-#' link function is required to be monotonic. (For a quick introduction, see
+#' \eqn{\eta_i=x_i^T\beta}, which is the link function \eqn{g(\mu_i)=\eta_i}.
+#' The link function is required to be monotonic. (For a quick introduction, see
 #' Kleiber and Zeileis (2008, Ch. 5.1), for a more complete coverage of the
 #' topic, see, for example, Davison (2003, Ch. 10.3))
 #'
@@ -84,7 +84,13 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   } else {
     family <- object$family$family
   }
-  llv <- glm_type_llv(family = family, x_mat = x_mat, pars = pars, response_vec = response_vec, linkinv = object$family$linkinv, df.resid = df.resid, theta = theta)
+  llv <- glm_type_llv(family = family,
+                      x_mat = x_mat,
+                      pars = pars,
+                      response_vec = response_vec,
+                      linkinv = object$family$linkinv,
+                      df.resid = df.resid,
+                      theta = theta)
 
   # return other attributes from logLik objects
   if (inherits(object, "negbin")) {
@@ -120,7 +126,8 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
   } else if (substr(family, 1, 18) == "Negative Binomial(") {
     llv <- stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = TRUE)
   } else if (family == "negbin") {
-    # if theta should not be estimated (if through confint, etc.), then this should be set previously.
+    # if theta should not be estimated (if through confint, etc.), then this
+    # should be set previously.
     # If theta is not a number, reestimate
     if (!is.numeric(theta)) {
       theta <- MASS::theta.ml(y = response_vec, mu = mu_vec)
@@ -131,7 +138,8 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
     rlang::abort(paste0(family, " is not supported."), class = "chantrics_not_supported_glm_family")
   }
   if (hurdle == "count") {
-    # subtract the probability of the function being equal to 0, see countregression-cam, Eqn. 4.54
+    # subtract the probability of the function being equal to 0,
+    # see countregression-cam, Eqn. 4.54
     if (any(family == "negbin", family == "Negative Binomial(")) {
       llv <- llv - log(1 - stats::dnbinom(response_vec, size = theta, mu = mu_vec, log = FALSE))
     } else if (family == "poisson") {
@@ -149,9 +157,11 @@ glm_type_llv <- function(family, x_mat, pars, response_vec, linkinv, df.resid = 
 #' @keywords internal
 
 dispersion.gauss <- function(response_vec, mu_vec, df) {
-  # https://statmath.wu.ac.at/courses/heather_turner/glmCourse_001.pdf (last slide in GLM > Estimation section)
+  # https://statmath.wu.ac.at/courses/heather_turner/glmCourse_001.pdf
+  # (last slide in GLM > Estimation section)
 
-  # http://people.stat.sfu.ca/~raltman/stat402/402L25.pdf (p. 4) -> dispersion is the residual variance
+  # http://people.stat.sfu.ca/~raltman/stat402/402L25.pdf (p. 4) -> dispersion
+  # is the residual variance
   # final source: ISL, page 80, eqn. 3.25 (RSE formula)
   # response_vec are the true Y, the mu_vec are the fitted values
 
@@ -161,7 +171,9 @@ dispersion.gauss <- function(response_vec, mu_vec, df) {
 #' @keywords internal
 
 dispersion.stat <- function(response_vec, mu_vec, object) {
-  # modelcount-hilbe, pg. 78 (Eqn. 3.4, pearson chi-sq statistic), pg. 79, "The dispersion statistic of the Poisson model is defined as the Pearson Chi2 statistic divided by the residual degrees of freedom"
+  # modelcount-hilbe, pg. 78 (Eqn. 3.4, pearson chi-sq statistic), pg. 79,
+  # "The dispersion statistic of the Poisson model is defined as the
+  # Pearson Chi2 statistic divided by the residual degrees of freedom"
   return(sum(((response_vec - mu_vec)^2) / object$family$variance(mu_vec)) / (stats::df.residual(object)))
 }
 

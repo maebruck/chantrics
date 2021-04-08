@@ -81,7 +81,8 @@ coefficients
 \item \code{\link[chandwich:confint.chandwich]{confint}}
 and \code{\link[chandwich:plot.confint]{plot.confint}} - confidence intervals for
 all coefficients, and diagnostics plots for \code{confint()}.
-\item \code{\link[chandwich:conf_intervals]{conf_intervals}} - enhanced confidence interval reports
+\item \code{\link[chandwich:conf_intervals]{conf_intervals}} - enhanced confidence
+interval reports
 \item \code{\link[chandwich:conf_region]{conf_region}} - two-dimensional confidence
 regions
 \item \code{\link[stats:df.residual]{df.residual}}
@@ -94,6 +95,7 @@ regions
 \item \code{\link[chandwich:print.chandwich]{print}}
 \item \code{\link[=residuals.chantrics]{residuals}}
 \item \code{\link[chandwich:summary.chandwich]{summary}}
+\item \code{\link[stats:terms]{terms}}
 \item \code{\link[chandwich:vcov.chandwich]{vcov}}
 }
 }

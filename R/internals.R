@@ -123,7 +123,8 @@ get_design_matrix_from_model <- function(object, type = NULL) {
 
 abort_not_chantrics <- function(x) {
   if (!("chantrics" %in% class(x))) {
-    rlang::abort("x is not a chantrics object", class = "chantrics_not_chantrics_object")
+    rlang::abort("x is not a chantrics object",
+                 class = "chantrics_not_chantrics_object")
   }
 }
 

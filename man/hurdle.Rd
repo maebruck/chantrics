@@ -4,17 +4,19 @@
 \alias{hurdle}
 \title{Loglikelihood adjustments for pscl::hurdle fits}
 \description{
-Adjust the loglikelihood and the standard errors of a fitted \code{\link[pscl:hurdle]{pscl::hurdle()}}
-model.
+NOTE: \emph{Hurdle models are currently not supported.}
 }
 \details{
+Adjust the loglikelihood and the standard errors of a fitted \code{\link[pscl:hurdle]{pscl::hurdle()}}
+model.
+
 Describe zeroinfl models here
 
 Note that the \code{\link[pscl:hurdle]{pscl::hurdle()}} model has to be run with the option \code{x = TRUE}
 in order for the adjustment to execute properly. Also note that the functions
-\code{\link[=residuals.chantrics]{residuals.chantrics()}} and \code{\link[=fitted]{fitted.chantrics()}} are currently disabled for
-\code{hurdle} models. Additionally, sequential \code{\link[=anova.chantrics]{anova.chantrics()}} are not
-available
+\code{\link[=residuals.chantrics]{residuals.chantrics()}} and \code{\link[=fitted]{fitted.chantrics()}} are currently
+disabled for \code{hurdle} models. Additionally, sequential \code{\link[=anova.chantrics]{anova.chantrics()}}
+are not available.
 }
 \section{Supported families}{
 
@@ -38,5 +40,5 @@ rd_hurdle <- hurdle(trips ~ . | quality + income,
 summary(rd_hurdle)
 
 # adjust model
-adj_loglik(rd_hurdle)
+# adj_loglik(rd_hurdle)
 }

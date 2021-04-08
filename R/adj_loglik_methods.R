@@ -55,7 +55,8 @@
 #'   * [`confint`][chandwich::confint.chandwich()]
 #'   and [`plot.confint`][chandwich::plot.confint()] - confidence intervals for
 #'   all coefficients, and diagnostics plots for `confint()`.
-#'   * [`conf_intervals`][chandwich::conf_intervals()] - enhanced confidence interval reports
+#'   * [`conf_intervals`][chandwich::conf_intervals()] - enhanced confidence
+#'   interval reports
 #'   * [`conf_region`][chandwich::conf_region()] - two-dimensional confidence
 #'   regions
 #'   * [`df.residual`][stats::df.residual()]
@@ -68,6 +69,7 @@
 #'   * [`print`][chandwich::print.chandwich()]
 #'   * [`residuals`][residuals.chantrics()]
 #'   * [`summary`][chandwich::summary.chandwich()]
+#'   * [`terms`][stats::terms()]
 #'   * [`vcov`][chandwich::vcov.chandwich()]
 #'
 #' @section Examples: See the model-specific pages in the *supported models*
@@ -219,7 +221,8 @@ adj_loglik <- function(x,
     eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
     mu_vec <- x$family$linkinv(eta_vec)
     attr(adjusted_x, "theta") <- MASS::theta.ml(y = response_vec, mu = mu_vec)
-    # hijack x to pass adjusted theta to original model object to circumvent reestimation for confint and anova
+    # hijack x to pass adjusted theta to original model object to circumvent
+    # reestimation for confint and anova
     # does not currently work...
     # attr(adjusted_x, "loglik_args")[["fitted_object"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
     # # need to do this to two different objects due to different call structures
@@ -308,7 +311,7 @@ print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L
 #'   If more than one model is specified, the function sorts the models by their
 #'   number of variables as returned by [adj_loglik()] in
 #'   `attr(x, "p_current")`.
-
+#'
 #'
 #' Details of the ALRT can be found in [chandwich::compare_models()] and in
 #' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015).
@@ -381,8 +384,10 @@ anova.chantrics <- function(object, ...) {
   # check if there is at least one chantrics objects after dropping
   if (length(model_objects) == 1) {
     if (inherits(object, "hurdle")) {
-      # unclear how the sequence should run - better if the user specifies this manually.
-      rlang::abort(paste0("Hurdle models are not available for sequential anova\n", "Specify two or more nested models."))
+      # unclear how the sequence should run - better if the user
+      # specifies this manually.
+      rlang::abort(paste0("Hurdle models are not available for sequential anova\n",
+                          "Specify two or more nested models."))
     }
     # ==== Sequential ANOVA ====
     # create sequential model objects
@@ -396,7 +401,9 @@ anova.chantrics <- function(object, ...) {
     for (rm_this_var in variable_vec) {
       pb$tick()
       prev_adjusted_object <-
-        stats::update(prev_adjusted_object, formula = stats::as.formula(paste0(". ~ . - ", rm_this_var)))
+        stats::update(prev_adjusted_object,
+                      formula = stats::as.formula(paste0(". ~ . - ",
+                                                         rm_this_var)))
       model_objects <- c(model_objects, prev_adjusted_object)
     }
   } else if (length(model_objects) < 1) {
@@ -700,11 +707,13 @@ alrtest <- function(object, ...) {
   }
   object_list <- c(object, unnamed_args)
 
-  # functions that handle the conversion of the unnamed args into chantrics objects.
-  # note that alrtest will not check if what's done to the models actually makes sense
-  # this is left to anova.chantrics.
+  # functions that handle the conversion of the unnamed args into chantrics
+  # objects.
+  # note that alrtest will not check if what's done to the models actually makes
+  # sense this is left to anova.chantrics.
   chantrics_handler <- function(object_list) {
-    # check if all objects are of type chantrics, since anova only warns if model objects don't fit
+    # check if all objects are of type chantrics, since anova only warns
+    # if model objects don't fit
     checks_logi <- vapply(object_list, function(x) {
       class(x)[[1]] != "chantrics"
     }, logical(1))
@@ -803,7 +812,8 @@ alrtest <- function(object, ...) {
   }
   formula_handler <- function(object_list) {
     ready_objects <- list(object_list[[1]])
-    # pass the formula objects consecutively into update. Leave all error handling to formula.
+    # pass the formula objects consecutively into update.
+    # Leave all error handling to formula.
     for (curr_formula in object_list[-1]) {
       # check if formula
       if (!rlang::is_formula(curr_formula)) {
@@ -812,7 +822,8 @@ alrtest <- function(object, ...) {
         ready_objects <-
           c(
             ready_objects,
-            stats::update(ready_objects[[length(ready_objects)]], formula = curr_formula)
+            stats::update(ready_objects[[length(ready_objects)]],
+                          formula = curr_formula)
           )
       }
     }
@@ -830,7 +841,8 @@ alrtest <- function(object, ...) {
     ready_objects <- formula_handler(object_list)
   } else {
     # if it is none of the types, abort
-    rlang::abort(paste0("The second object is of unexpected class", class(checkobj)),
+    rlang::abort(paste0("The second object is of unexpected class",
+                        class(checkobj)),
       class = "chantrics_alrtest_unexpected_second_obj"
     )
   }
@@ -891,18 +903,21 @@ fitted.chantrics <- function(object,...) {
   if ("glm" %in% modelname) {
     fittedvals <- fittedhelper.glm(object, type = "response")
   } else {
-    rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
+    rlang::abort(paste0("'", attr(object, "name"),
+                        "' is currently not supported."))
   }
   return(fittedvals)
 }
 
 #' Residuals of chantrics model fits
 #'
-#' `residuals()` returns the residuals specified in `type` from a `"chantrics"` object.
+#' `residuals()` returns the residuals specified in `type` from a `"chantrics"`
+#' object.
 #'
 #' @param object an object of class `"chantrics"`, returned by [adj_loglik()].
 #'
-#' @param type the type of residuals which should be returned. The alternatives are: `"response"` (default), `"working"`, and `"pearson"` (for glm fits).
+#' @param type the type of residuals which should be returned. The alternatives
+#'   are: `"response"` (default), `"working"`, and `"pearson"` (for glm fits).
 #'
 #' @param ... further arguments passed to or from other methods
 #'
@@ -910,11 +925,17 @@ fitted.chantrics <- function(object,...) {
 #'
 #' @return A vector of residuals.
 #'
-#' @references A. C. Davison and E. J. Snell, Residuals and diagnostics. In: Statistical Theory and Modelling. In Honour of Sir David Cox, FRS ,1991. Eds. Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
+#' @references A. C. Davison and E. J. Snell, Residuals and diagnostics. In:
+#'   Statistical Theory and Modelling. In Honour of Sir David Cox, FRS ,1991.
+#'   Eds. Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
 #'
-#' M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog, 2018. <https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/>
+#'   M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog,
+#'   2018.
+#'   <https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/>
 #'
-#' @seealso [adj_loglik()] for model fitting, [stats::residuals.glm()] and [stats::residuals()], [stats::df.residual()].
+#'
+#' @seealso [adj_loglik()] for model fitting, [stats::residuals.glm()] and
+#'   [stats::residuals()], [stats::df.residual()].
 #'
 #' @importFrom stats residuals
 #' @export
@@ -946,10 +967,12 @@ residuals.chantrics <- function(object, type = c("response", "working", "pearson
       # response residuals normalised by sqrt of the estimate
       result <- resids_responselev / sqrt(fitted_responselev)
     } else {
-      rlang::abort(paste0("Residuals of type '", type, "' are not implemented."))
+      rlang::abort(paste0("Residuals of type '", type,
+                          "' are not implemented."))
     }
   } else {
-    rlang::abort(paste0("'", attr(object, "name"), "' is currently not supported."))
+    rlang::abort(paste0("'", attr(object, "name"),
+                        "' is currently not supported."))
   }
   return(result)
 }
