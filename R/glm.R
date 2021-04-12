@@ -43,7 +43,6 @@
 #' summary(swiss_logit)
 #' swiss_logit_adj <- adj_loglik(swiss_logit)
 #' summary(swiss_logit_adj)
-#'
 #' @references Davison, A. C. 2003. Statistical Models. Cambridge Series on
 #'   Statistical and Probabilistic Mathematics 11. Cambridge University Press,
 #'   Cambridge. www.cambridge.org/9780521773393.
@@ -87,13 +86,15 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
   } else {
     family <- object$family$family
   }
-  llv <- glm_type_llv(family = family,
-                      x_mat = x_mat,
-                      pars = pars,
-                      response_vec = response_vec,
-                      linkinv = object$family$linkinv,
-                      df.resid = df.resid,
-                      theta = theta)
+  llv <- glm_type_llv(
+    family = family,
+    x_mat = x_mat,
+    pars = pars,
+    response_vec = response_vec,
+    linkinv = object$family$linkinv,
+    df.resid = df.resid,
+    theta = theta
+  )
 
   # return other attributes from logLik objects
   if (inherits(object, "negbin")) {

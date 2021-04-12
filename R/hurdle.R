@@ -76,18 +76,22 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   # try getting the design matrix from object
   count_mat <- get_design_matrix_from_model(object, "count")
   # add "count_" to the colnames in order for pars to match
-  colnames(count_mat) <- vapply(colnames(count_mat),
-                                function(x) paste0("count_", x),
-                                character(1L))
+  colnames(count_mat) <- vapply(
+    colnames(count_mat),
+    function(x) paste0("count_", x),
+    character(1L)
+  )
   # split the parameters into the two models
   count_pars <- try(pars[startsWith(names(pars), "count")], silent = TRUE)
   if (is.error(count_pars)) {
     # if pars has no names, reconstruct from object$coefficients
     count_mle_names <- names(object[["coefficients"]][["count"]])
     count_pars <- pars[seq_along(count_mle_names)]
-    names(count_pars) <- vapply(count_mle_names,
-                                function(x) paste0("count_", x),
-                                character(1L))
+    names(count_pars) <- vapply(
+      count_mle_names,
+      function(x) paste0("count_", x),
+      character(1L)
+    )
   }
   count_family <- object$dist$count
   count_linkinv <- function(eta) {
@@ -98,17 +102,20 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
     count_df.resid <- count_df.resid + 1
   }
   # remove all observations that are 0
-  count_llv <- glm_type_llv(family = count_family,
-                            x_mat = count_mat,
-                            pars = count_pars,
-                            response_vec = response_vec,
-                            linkinv = count_linkinv,
-                            df.resid = count_df.resid,
-                            theta = count_theta,
-                            hurdle = "count")
+  count_llv <- glm_type_llv(
+    family = count_family,
+    x_mat = count_mat,
+    pars = count_pars,
+    response_vec = response_vec,
+    linkinv = count_linkinv,
+    df.resid = count_df.resid,
+    theta = count_theta,
+    hurdle = "count"
+  )
   # print(sum(count_llv))
   count_theta_est <- rlang::env_get(bypasses.env, "last_est_theta",
-                                    default = NULL)
+    default = NULL
+  )
   if (rlang::env_has(bypasses.env, "last_est_theta")) {
     rlang::env_unbind(bypasses.env, "last_est_theta")
   }
@@ -116,18 +123,22 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
 
   zero_mat <- get_design_matrix_from_model(object, "zero")
   # add "count_" to the colnames in order for pars to match
-  colnames(zero_mat) <- vapply(colnames(zero_mat),
-                               function(x) paste0("zero_", x),
-                               character(1L))
+  colnames(zero_mat) <- vapply(
+    colnames(zero_mat),
+    function(x) paste0("zero_", x),
+    character(1L)
+  )
   # split the parameters into the two models
   zero_pars <- try(pars[startsWith(names(pars), "zero")])
   if (is.error(zero_pars)) {
     # if pars has no names, reconstruct from object$coefficients
     zero_mle_names <- names(object[["coefficients"]][["zero"]])
     zero_pars <- pars[(length(pars) - length(zero_mle_names)):length(pars)]
-    names(zero_pars) <- vapply(zero_mle_names,
-                               function(x) paste0("zero_", x),
-                               character(1L))
+    names(zero_pars) <- vapply(
+      zero_mle_names,
+      function(x) paste0("zero_", x),
+      character(1L)
+    )
   }
   zero_family <- object$dist$zero
   zero_linkinv <- object$linkinv
@@ -142,14 +153,16 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
   zero_response[zero_response != 0] <- 1
   zero_theta <- NULL
   if (zero_family == "binomial") {
-    zero_llv <- glm_type_llv(family = zero_family,
-                             x_mat = zero_mat,
-                             pars = zero_pars,
-                             response_vec = zero_response,
-                             linkinv = zero_linkinv,
-                             df.resid = zero_df.resid,
-                             theta = zero_theta,
-                             hurdle = "zero")
+    zero_llv <- glm_type_llv(
+      family = zero_family,
+      x_mat = zero_mat,
+      pars = zero_pars,
+      response_vec = zero_response,
+      linkinv = zero_linkinv,
+      df.resid = zero_df.resid,
+      theta = zero_theta,
+      hurdle = "zero"
+    )
   } else {
     if (zero_family == "geometric") {
       zero_theta <- 1
@@ -162,9 +175,10 @@ logLik_vec.hurdle <- function(object, pars = NULL, ...) {
       zero_theta <- MASS::theta.ml(y = zero_response, mu = null_mu_vec)
     }
     lv_at_zero <- stats::dnbinom(rep(0, length(zero_response)),
-                                 size = zero_theta,
-                                 mu = null_mu_vec,
-                                 log = FALSE)
+      size = zero_theta,
+      mu = null_mu_vec,
+      log = FALSE
+    )
     zero_llv <- (1 - zero_response) * log(lv_at_zero) + zero_response * log(1 - lv_at_zero)
   }
   # print(sum(zero_llv))

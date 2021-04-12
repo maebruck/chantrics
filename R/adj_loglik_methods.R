@@ -228,8 +228,8 @@ adj_loglik <- function(x,
     # # need to do this to two different objects due to different call structures
     # environment(attr(adjusted_x, "loglik"))[["x"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
   } else if (inherits(x, "hurdle")) {
-      attr(adjusted_x, "theta") <- rlang::env_get(bypasses.env, "negbin_theta_est", default = NULL)
-      rlang::env_unbind(bypasses.env, "negbin_theta_est")
+    attr(adjusted_x, "theta") <- rlang::env_get(bypasses.env, "negbin_theta_est", default = NULL)
+    rlang::env_unbind(bypasses.env, "negbin_theta_est")
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
   try(attr(adjusted_x, "formula") <-
@@ -386,8 +386,10 @@ anova.chantrics <- function(object, ...) {
     if (inherits(object, "hurdle")) {
       # unclear how the sequence should run - better if the user
       # specifies this manually.
-      rlang::abort(paste0("Hurdle models are not available for sequential anova\n",
-                          "Specify two or more nested models."))
+      rlang::abort(paste0(
+        "Hurdle models are not available for sequential anova\n",
+        "Specify two or more nested models."
+      ))
     }
     # ==== Sequential ANOVA ====
     # create sequential model objects
@@ -402,8 +404,11 @@ anova.chantrics <- function(object, ...) {
       pb$tick()
       prev_adjusted_object <-
         stats::update(prev_adjusted_object,
-                      formula = stats::as.formula(paste0(". ~ . - ",
-                                                         rm_this_var)))
+          formula = stats::as.formula(paste0(
+            ". ~ . - ",
+            rm_this_var
+          ))
+        )
       model_objects <- c(model_objects, prev_adjusted_object)
     }
   } else if (length(model_objects) < 1) {
@@ -844,7 +849,8 @@ alrtest <- function(object, ...) {
           c(
             ready_objects,
             stats::update(ready_objects[[length(ready_objects)]],
-                          formula = curr_formula)
+              formula = curr_formula
+            )
           )
       }
     }
@@ -862,9 +868,11 @@ alrtest <- function(object, ...) {
     ready_objects <- formula_handler(object_list)
   } else {
     # if it is none of the types, abort
-    rlang::abort(paste0("The second object is of unexpected class",
-                        class(checkobj)),
-      class = "chantrics_alrtest_unexpected_second_obj"
+    rlang::abort(paste0(
+      "The second object is of unexpected class",
+      class(checkobj)
+    ),
+    class = "chantrics_alrtest_unexpected_second_obj"
     )
   }
   # pass ready_objects together with named_args into anova.chantrics
@@ -915,7 +923,7 @@ confint.chantrics <- function(object, ...) {
 #' @importFrom stats fitted
 #' @export
 
-fitted.chantrics <- function(object,...) {
+fitted.chantrics <- function(object, ...) {
   if (!missing(...)) {
     rlang::warn("extra arguments discarded")
   }
@@ -924,8 +932,10 @@ fitted.chantrics <- function(object,...) {
   if ("glm" %in% modelname) {
     fittedvals <- fittedhelper.glm(object, type = "response")
   } else {
-    rlang::abort(paste0("'", attr(object, "name"),
-                        "' is currently not supported."))
+    rlang::abort(paste0(
+      "'", attr(object, "name"),
+      "' is currently not supported."
+    ))
   }
   return(fittedvals)
 }
@@ -988,12 +998,16 @@ residuals.chantrics <- function(object, type = c("response", "working", "pearson
       # response residuals normalised by sqrt of the estimate
       result <- resids_responselev / sqrt(fitted_responselev)
     } else {
-      rlang::abort(paste0("Residuals of type '", type,
-                          "' are not implemented."))
+      rlang::abort(paste0(
+        "Residuals of type '", type,
+        "' are not implemented."
+      ))
     }
   } else {
-    rlang::abort(paste0("'", attr(object, "name"),
-                        "' is currently not supported."))
+    rlang::abort(paste0(
+      "'", attr(object, "name"),
+      "' is currently not supported."
+    ))
   }
   return(result)
 }

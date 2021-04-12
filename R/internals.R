@@ -98,7 +98,10 @@ get_design_matrix_from_model <- function(object, type = NULL) {
       )
     }
     if (!is.null(type)) {
-      x_mat <- switch(type, count = count_mat, zero = zero_mat)
+      x_mat <- switch(type,
+        count = count_mat,
+        zero = zero_mat
+      )
     } else {
       x_mat <- list(count = count_mat, zero = zero_mat)
     }
@@ -124,7 +127,8 @@ get_design_matrix_from_model <- function(object, type = NULL) {
 abort_not_chantrics <- function(x) {
   if (!("chantrics" %in% class(x))) {
     rlang::abort("x is not a chantrics object",
-                 class = "chantrics_not_chantrics_object")
+      class = "chantrics_not_chantrics_object"
+    )
   }
 }
 
