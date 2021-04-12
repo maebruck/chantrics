@@ -524,10 +524,31 @@ anova.chantrics <- function(object, ...) {
     attr(larger_m, "fixed_at") <- NULL
     attr(smaller_m, "fixed_pars") <- fixed_pars
     attr(smaller_m, "fixed_at") <- fixed_at
+
+    # Save theta parameters to global variable
+    if (!is.null(attr(larger_m, "theta"))) {
+      if (!is.null(attr(smaller_m, "theta"))) {
+        # save theta in external env to discourage re-calculation
+        # https://stackoverflow.com/a/10904331/
+        rlang::env_poke(bypasses.env, paste0("theta", length(stats::coef(larger_m))), attr(larger_m, "theta"))
+        rlang::env_poke(bypasses.env, paste0("theta", length(stats::coef(smaller_m))), attr(smaller_m, "theta"))
+      }
+      else {
+        rlang::abort("larger_m has a `theta` attribute, but `smaller_m` does not.")
+      }
+    }
+
     result <-
       do.call(chandwich::compare_models, c(list(
         larger = larger_m, smaller = smaller_m
       ), named_dotargs))
+
+    # remove thetas from global variable
+    # http://adv-r.had.co.nz/Environments.html#env-basics
+    if (rlang::env_has(bypasses.env, paste0("theta", length(stats::coef(larger_m))))) {
+      rlang::env_unbind(bypasses.env, c(paste0("theta", length(stats::coef(smaller_m))), paste0("theta", length(stats::coef(larger_m)))))
+    }
+
     # append to results data.frame
     result_df.formula[[i + 1]] <- result_df_nr_formula
     result_df.resid_df[[i + 1]] <- df.residual.chantrics(smaller_m)
@@ -1032,4 +1053,3 @@ predict.chantrics <- function(object, newdata = NULL, type = c("response", "link
   }
   return(result)
 }
-

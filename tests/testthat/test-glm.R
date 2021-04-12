@@ -35,7 +35,7 @@ test_that("Are generics accessible for adjusted glm models?", {
   expect_error(model_generics_caller(bm_probit_adj), regexp = NA)
   expect_error(model_generics_caller(glm_gauss_adj), regexp = NA)
   expect_error(model_generics_caller(fm_negbin_adj), regexp = NA)
-  expect_error(model_generics_caller(fm_negbin_theta_adj, run.anova = FALSE), regexp = NA)
+  expect_error(model_generics_caller(fm_negbin_theta_adj, run.anova = TRUE), regexp = NA)
 })
 
 test_that("logLik_vec.glm() aborts/warns if pars does not conform to the design matrix", {

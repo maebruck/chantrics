@@ -80,6 +80,9 @@ logLik_vec.glm <- function(object, pars = NULL, ...) {
     # get theta if saved
     if (!is.numeric(theta)) {
       theta <- rlang::env_get(bypasses.env, "theta", default = NULL)
+      if (!is.numeric(theta)) {
+        theta <- rlang::env_get(bypasses.env, paste0("theta", length(stats::coef(object))), default = NULL)
+      }
     }
   } else {
     family <- object$family$family
