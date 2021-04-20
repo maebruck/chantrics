@@ -22,8 +22,7 @@ knitr::opts_chunk$set(
 library(chantrics)
 ```
 
-`chantrics` applies the Chandler-Bate loglikelihood adjustment [@chanbate07] implemented in the [chandwich](https://cran.r-project.org/package=chandwich) package [@chandwich] to different models frequently used in basic Econometrics applications. `adj_loglik()` is the central function of `chantrics`, it is a generic function adjusting the parameter covariance matrix of the models to incorporate clustered data, and can mitigate for model misspecification. The returned object can then be plugged into a range of model analysis functions, which will be described below. [For an introduction on modelling with clustered data using `chantrics`, visit this vignette](https://chantrics.theobruckbauer.eu/articles/clustering-vignette.html).
-
+`chantrics` applies the Chandler-Bate loglikelihood adjustment [@chanbate07] implemented in the [chandwich](https://cran.r-project.org/package=chandwich) package [@chandwich] to different models frequently used in basic Econometrics applications. `adj_loglik()` is the central function of `chantrics`, it is a generic function adjusting the parameter covariance matrix of the models to incorporate clustered data, and can mitigate for model misspecification. The returned object can then be plugged into a range of model analysis functions, which will be described below.
 
 
 ## Functionality for singular model objects
@@ -255,6 +254,6 @@ summary(fm_negbin_theta_adj)
 
 ## Clustering
 
-WIP
+To specify clusters, use the `cluster` argument in `adj_loglik()` to specify a vector or factor which indicates the cluster that the corresponding observation belongs to. Without specifying a cluster, `adj_loglik()` assumes that each observation forms its own cluster.
 
 ## References
