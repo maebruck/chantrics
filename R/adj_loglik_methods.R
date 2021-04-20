@@ -1,17 +1,17 @@
-#' Log-likelihood adjustments for fitted models
+#' Loglikelihood adjustments for fitted models
 #'
-#' This function adjusts the log-likelihood of fitted model objects based on
+#' This function adjusts the loglikelihood of fitted model objects based on
 #' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015). It is a
 #' generic function for different types of models, which are listed in
 #' **Supported models**. This section also contains links to function-specific
 #' help pages.
 #'
-#' @param x A fitted model object that is supported, see **Supported models**
+#' @param x A supported fitted model object, see **Supported models**
 #'
-#' @param cluster A vector or factor indicating from which cluster the
-#'   respective log-likelihood contributions originate. Must have the same
+#' @param cluster A vector or factor indicating the cluster the corresponding
+#'   loglikelihood contribution belongs to. It is required to have the same
 #'   length as the vector returned by [logLik_vec()]. If `cluster` is not
-#'   supplied or `NULL` then it is assumed that each observation forms its own
+#'   supplied or `NULL`, then it is assumed that each observation forms its own
 #'   cluster.
 #'
 #' @param use_vcov A logical scalar. By default, the [vcov()] method for `x` is
@@ -20,10 +20,10 @@
 #'   using [stats::optimHess()] inside [chandwich::adjust_loglik()].
 #'
 #' @param use_mle A logical scalar. By default, the MLE from `x` is taken as
-#'   given, and not reestimated. By setting `use_mle` to `FALSE`, the parameters
-#'   are reestimated in [chandwich::adjust_loglik()] using [stats::optim()].
-#'   This feature is currently for development purposes only, may return
-#'   misleading/false results and may be removed without notice.
+#'   given, and is not reestimated. By setting `use_mle` to `FALSE`, the parameters
+#'   are reestimated in the function [chandwich::adjust_loglik()] using
+#'   [stats::optim()].This feature is currently for development purposes only,
+#'    may return misleading/false results and may be removed without notice.
 #'
 #' @param ... Further arguments to be passed to [sandwich::meatCL()] if
 #'   `cluster` is defined, if `cluster = NULL`, they are passed into
@@ -40,8 +40,8 @@
 #' * [glm.nb]
 #'
 #' @return An object of class `"chantrics"` inheriting from class `"chandwich"`.
-#'   See [chandwich::adjust_loglik()]. The remaining elements of the returned
-#'   class are `class(x)`.
+#'   See the documentation provided with [chandwich::adjust_loglik()].
+#'
 #'
 #' @section Available methods:
 #'
@@ -75,7 +75,7 @@
 #' @section Examples: See the model-specific pages in the *supported models*
 #'   section.
 #'
-#' @references R. Chandler and S. Bate, Inference for clustered data using the
+#' @references R. E. Chandler and S. Bate, Inference for clustered data using the
 #'   independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
 #'   <http://doi.org/10.1093/biomet/asm015>.
 #'
@@ -118,22 +118,20 @@ adj_loglik <- function(x,
     class = "chantrics_missing_model_matrices"
     )
   }
-  # create function for log-likelihood of x
+  # create function for loglikelihood of x
   logLik_f <- function(pars, fitted_object, ...) {
     return(c(logLik_vec(fitted_object, pars = pars)))
   }
   name_pieces <- c(class(x))
   # add glm family to name
   if (class(x)[1] == "glm") {
-    try(
-      {
+    try({
         name_pieces <- c(x$family$family, name_pieces)
       },
       silent = TRUE
     )
   } else if (inherits(x, "hurdle")) {
-    try(
-      {
+    try({
         name_pieces <- c(
           paste0("count:", x$dist$count),
           paste0("zero:", x$dist$zero)
@@ -159,7 +157,10 @@ adj_loglik <- function(x,
   }
   if (is.null(cluster)) {
     V <-
-      sandwich::meat(x, fitted_object = x, loglik_fn = logLik_f, ...) * stats::nobs(x)
+      sandwich::meat(x,
+                     fitted_object = x,
+                     loglik_fn = logLik_f,
+                     ...) * stats::nobs(x)
   } else {
     V <-
       sandwich::meatCL(
@@ -207,7 +208,9 @@ adj_loglik <- function(x,
       response_vec <- get_response_from_model(x)
       eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
       mu_vec <- x$family$linkinv(eta_vec)
-      attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec, mu_vec, stats::df.residual(x) - 1)
+      attr(adjusted_x, "dispersion") <- dispersion.gauss(response_vec,
+                                          mu_vec,
+                                          stats::df.residual(x) - 1)
     } else if (substr(x$family$family, 1, 18) == "Negative Binomial(") {
       # estimate dispersion
       response_vec <- get_response_from_model(x)
@@ -221,14 +224,11 @@ adj_loglik <- function(x,
     eta_vec <- get_design_matrix_from_model(x) %*% attr(adjusted_x, "res_MLE")
     mu_vec <- x$family$linkinv(eta_vec)
     attr(adjusted_x, "theta") <- MASS::theta.ml(y = response_vec, mu = mu_vec)
-    # hijack x to pass adjusted theta to original model object to circumvent
-    # reestimation for confint and anova
-    # does not currently work...
-    # attr(adjusted_x, "loglik_args")[["fitted_object"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
-    # # need to do this to two different objects due to different call structures
-    # environment(attr(adjusted_x, "loglik"))[["x"]][["theta_chantrics"]] <- attr(adjusted_x, "theta")
+
   } else if (inherits(x, "hurdle")) {
-    attr(adjusted_x, "theta") <- rlang::env_get(bypasses.env, "negbin_theta_est", default = NULL)
+    attr(adjusted_x, "theta") <- rlang::env_get(bypasses.env,
+                                                "negbin_theta_est",
+                                                default = NULL)
     rlang::env_unbind(bypasses.env, "negbin_theta_est")
   }
   class(adjusted_x) <- c("chantrics", "chandwich", class(x))
@@ -258,10 +258,12 @@ summary.chantrics <- function(object, ...) {
 
 #' @export
 
-print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L),
-                                    # symbolic.cor = x$symbolic.cor,
-                                    signif.stars = getOption("show.signif.stars"), ...) {
-  stats::printCoefmat(x, digits = digits)
+print.summary.chantrics <- function(x,
+                                    digits = max(3L, getOption("digits") - 3L),
+                                    signif.stars = getOption("show.signif.stars"),
+                                    ...) {
+  class(x) <- "matrix"
+  print(x, ...)
   if (!is.null(attr(x, "theta"))) {
     theta <- attr(x, "theta")
     if (inherits(attr(x, "theta"), "list")) {
@@ -292,14 +294,14 @@ print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L
 #' @param object Object of class `chantrics`, as returned by
 #'   [adj_loglik()].
 #' @param ... Further objects of class `chantrics`, as returned by
-#'   [adj_loglik()], and/or parameters that will be passed to
+#'   [adj_loglik()], and named parameters that should be passed to
 #'   [chandwich::compare_models()]. The type of adjustment, out of
 #'   `"vertical"`, `"cholesky"`, `"spectral"`, `"none"`, as
 #'   specified in the parameter `type`, can also be specified here.
 #'
 #' @details Each line represents the model as given above the table, with each
 #'   line (except for the first line) showing the residual degrees of freedom of
-#'   that model, and the change in degrees of freedom, the ALRTS and the
+#'   that model, the change in degrees of freedom, the ALRTS and the
 #'   associated p-value in comparison to the model in the line above.
 #'
 #'   When a single model is specified, the function returns a sequential
@@ -324,15 +326,12 @@ print.summary.chantrics <- function(x, digits = max(3L, getOption("digits") - 3L
 #'   test that the model above is a "significantly better" model as the one in
 #'   the current row.}
 #'
-#' @references R. Chandler and S. Bate, Inference for clustered data using the
+#' @references R. E. Chandler and S. Bate, Inference for clustered data using the
 #'   independence loglikelihood, Biometrika, 94 (2007), pp.
 #'   167–183. <http://doi.org/10.1093/biomet/asm015>.
 #'
 #' @seealso [chandwich::compare_models]: implementation of the comparison
 #'   mechanism
-#'
-#' @seealso [chandwich::anova.chandwich]: `anova` method of the `chandwich`
-#'   package, which also uses `compare.models()`
 #'
 #' @examples
 #'
@@ -482,7 +481,6 @@ anova.chantrics <- function(object, ...) {
     # check if the response differs. This is only possible if original models
     # have a formula(x) function, otherwise continue
     if ("formula" %in% names(attributes(smaller_m))) {
-      smaller_formula <- attr(smaller_m, "formula")
       # save for result_df
       result_df_nr_formula <-
         get_formula_str_from_chantrics(smaller_m)
@@ -607,8 +605,8 @@ nobs.chantrics <- function(object, ...) {
 #' [adj_loglik()]. It passes all arguments to the standard [stats::update()]
 #' function.
 #'
-#' The function will not update any arguments passed to the `adj_loglik()`
-#' function, re-run `adj_loglik()` with the changed arguments.
+#' The function cannot change any arguments passed to the `adj_loglik()`
+#' function. To change any of these arguments, re-run `adj_loglik()`.
 #'
 #' @param object A `"chantrics"` returned by [adj_loglik()].
 #' @param ... Additional arguments to the call, passed to [stats::update()] to
@@ -666,10 +664,10 @@ terms.chantrics <- function(x, ...) {
 #' employed to compare nested models (see details).
 #'
 #' @param object a `chantrics` object as returned from [adj_loglik()].
-#' @param ... further object specifications and/or parameters that will be
-#'   passed to [chandwich::compare_models()]. The type of adjustment, out of
-#'   `"vertical"`, `"cholesky"`, `"spectral"`, `"none"`, as specified in the
-#'   parameter `type`, can also be specified here.
+#' @param ... further object specifications (see details), as well as named
+#'   parameters that will be passed to [chandwich::compare_models()]. The type
+#'   of adjustment, out of `"vertical"`, `"cholesky"`, `"spectral"`, `"none"`,
+#'   as specified in the parameter `type`, can also be specified here.
 #'
 #' @details This function is a helper function that creates an interface to
 #'   [anova.chantrics()] that is similar to [lmtest::waldtest()] and
@@ -677,33 +675,37 @@ terms.chantrics <- function(x, ...) {
 #'
 #'   The standard method is to compare the fitted model object `object` with the
 #'   models in `...`. Instead of passing the fitted models into `...`, other
-#'   specifications are possible. Note that the types of specifications can't be
+#'   specifications are possible. Note that the types of specifications cannot be
 #'   mixed, except between numerics/characters. The type of the second object
 #'   supplied determines the algorithm used.
+#'
 #'   * **`"chantrics"` objects**: When
 #'   supplying two or more `"chantrics"` objects, they will be sorted as in
 #'   [anova.chantrics()]. Then, the ALRTS will be computed consecutively between
 #'   the two neighbouring models. Note that all models must be nested. For
 #'   details refer to [anova.chantrics()].
+#'
 #'   * **`"numeric"`**: If the second
 #'   object is `"numeric"` or `"character"`, then `"numeric"` objects
 #'   corresponding element in `attr(terms(object1), "term.labels")` will be
 #'   turned into their corresponding `"character"` element and will be handled
 #'   as in `"character"` below.
+#'
 #'   * **`"character"`**: If the second object is
 #'   `"numeric"` or `"character"`, then the `"character"` objects are
 #'   consecutively included in an update formula like `update(object1, . ~ . -
 #'   object2)`
+#'
 #'   * **`"formula"`**: If the second object is a `"formula"`, then
-#'   the model will be computed as `update(object1, object2)`.
+#'   the second model will be computed as `update(object1, object2)`.
 #'
 #'   Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
 #'   Section 3.5 of [Chandler and Bate
 #'   (2007)](http://doi.org/10.1093/biomet/asm015), is computed by
 #'   [anova.chantrics()].
 #'
-#'   If a single unnamed object is passed in `...`, sequential ANOVA is perfomed
-#'   on `object`.
+#'   If a single unnamed object is passed in `...`, sequential ANOVA is
+#'   performed on `object`.
 #'
 #' @return An object of class `"anova"` inheriting from class `"data.frame"`.
 #'   The columns are as follows: \item{Resid.df}{The residual number of degrees
@@ -957,7 +959,7 @@ fitted.chantrics <- function(object, ...) {
 #' @return A vector of residuals.
 #'
 #' @references A. C. Davison and E. J. Snell, Residuals and diagnostics. In:
-#'   Statistical Theory and Modelling. In Honour of Sir David Cox, FRS ,1991.
+#'   Statistical Theory and Modelling. In Honour of Sir David Cox, FRS, 1991.
 #'   Eds. Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
 #'
 #'   M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog,
@@ -965,8 +967,8 @@ fitted.chantrics <- function(object, ...) {
 #'   <https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/>
 #'
 #'
-#' @seealso [adj_loglik()] for model fitting, [stats::residuals.glm()] and
-#'   [stats::residuals()], [stats::df.residual()].
+#' @seealso [adj_loglik()] for model fitting, [stats::residuals.glm()], and
+#'   [stats::residuals()].
 #'
 #' @importFrom stats residuals
 #' @export
@@ -1025,7 +1027,7 @@ residuals.chantrics <- function(object, type = c("response", "working", "pearson
 #'   Supplying new data is currently not supported.
 #' @param type the type of prediction required. The default `"response"` is on
 #'   the scale of the response variables. The alternative `"link"` is on the
-#'   scale of the linear predictors, if applicable, otherwise, an error is
+#'   scale of the linear predictors, if applicable. Otherwise, an error is
 #'   returned.
 #' @param ... unused.
 #'

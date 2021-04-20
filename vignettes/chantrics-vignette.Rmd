@@ -238,7 +238,7 @@ The method of estimation of the negative binomial model depends on whether the d
 \begin{equation*}
 f(y;\mu,\theta)=\frac{\Gamma(\theta+y)}{\Gamma(\theta)y!}\frac{\mu^y\theta^\theta}{(\mu+\theta)^{y+\theta}}
 \end{equation*}
-is known. In most cases, it is not known, and the specialised function `MASS::glm.nb()` can be used, which estimates the negative binomial model and the \(\theta\) parameter seperately. If \(\theta\) is known, the **MASS** package [@mass] provides the `MASS::negative.binomial()` family function for `glm()`.
+is known. In most cases, it is not known, and the specialised function `MASS::glm.nb()` can be used, which estimates the negative binomial model and the \(\theta\) parameter separately. If \(\theta\) is known, the **MASS** package [@mass] provides the `MASS::negative.binomial()` family function for `glm()`.
 
 A quick introduction can be found in @AER-book [, pg. 135f.] and in @count-zeil [, pg. 5], and a more general treatment with estimation using direct ML estimation in @cameron13 [, Ch. 3.3].
 

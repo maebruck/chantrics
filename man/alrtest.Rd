@@ -9,10 +9,10 @@ alrtest(object, ...)
 \arguments{
 \item{object}{a \code{chantrics} object as returned from \code{\link[=adj_loglik]{adj_loglik()}}.}
 
-\item{...}{further object specifications and/or parameters that will be
-passed to \code{\link[chandwich:compare_models]{chandwich::compare_models()}}. The type of adjustment, out of
-\code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as specified in the
-parameter \code{type}, can also be specified here.}
+\item{...}{further object specifications (see details), as well as named
+parameters that will be passed to \code{\link[chandwich:compare_models]{chandwich::compare_models()}}. The type
+of adjustment, out of \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"},
+as specified in the parameter \code{type}, can also be specified here.}
 }
 \value{
 An object of class \code{"anova"} inheriting from class \code{"data.frame"}.
@@ -35,7 +35,7 @@ This function is a helper function that creates an interface to
 
 The standard method is to compare the fitted model object \code{object} with the
 models in \code{...}. Instead of passing the fitted models into \code{...}, other
-specifications are possible. Note that the types of specifications can't be
+specifications are possible. Note that the types of specifications cannot be
 mixed, except between numerics/characters. The type of the second object
 supplied determines the algorithm used.
 \itemize{
@@ -53,15 +53,15 @@ as in \code{"character"} below.
 \code{"numeric"} or \code{"character"}, then the \code{"character"} objects are
 consecutively included in an update formula like \code{update(object1, . ~ . -   object2)}
 \item \strong{\code{"formula"}}: If the second object is a \code{"formula"}, then
-the model will be computed as \code{update(object1, object2)}.
+the second model will be computed as \code{update(object1, object2)}.
 }
 
 Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
 Section 3.5 of \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}, is computed by
 \code{\link[=anova.chantrics]{anova.chantrics()}}.
 
-If a single unnamed object is passed in \code{...}, sequential ANOVA is perfomed
-on \code{object}.
+If a single unnamed object is passed in \code{...}, sequential ANOVA is
+performed on \code{object}.
 }
 \seealso{
 \code{\link[=anova.chantrics]{anova.chantrics()}} for the implementation of the computations of

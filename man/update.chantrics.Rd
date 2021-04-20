@@ -21,8 +21,8 @@ The fitted, adjusted \code{"chantrics"} object.
 function.
 }
 \details{
-The function will not update any arguments passed to the \code{adj_loglik()}
-function, re-run \code{adj_loglik()} with the changed arguments.
+The function cannot change any arguments passed to the \code{adj_loglik()}
+function. To change any of these arguments, re-run \code{adj_loglik()}.
 
 Passing \code{evaluate = FALSE} is not supported, if this is required,
 run \code{\link[stats:update]{stats::update()}} on the unadjusted object.

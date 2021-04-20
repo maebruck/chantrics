@@ -9,7 +9,7 @@ test_that("adj_loglik() aborts if the model matrices are not accessible", {
 #   #expect_equal(c(reference_negbin_theta_logLik), unname(c(chantrics_negbin_theta_logLik)))
 # })
 
-# test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
+# test_that("logLik(logLik_vec.glm()) sums the loglikelihood correctly", {
 #   #expect_equal(logLik(fm_pois), logLik(chantrics_pois_logLik))
 # })
 

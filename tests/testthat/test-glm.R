@@ -13,7 +13,7 @@ test_that("logLik_vec.glm() returns correct loglik-vector if passed the correct 
   expect_equal(c(reference_negbin_theta_logLik), unname(c(chantrics_negbin_theta_logLik)))
 })
 
-test_that("logLik(logLik_vec.glm()) sums the log-likelihood correctly", {
+test_that("logLik(logLik_vec.glm()) sums the loglikelihood correctly", {
   expect_equal(logLik(fm_pois), logLik(chantrics_pois_logLik))
   expect_equal(logLik(bm_logit), logLik(chantrics_logit_logLik))
   expect_equal(logLik(bm_probit), logLik(chantrics_probit_logLik))

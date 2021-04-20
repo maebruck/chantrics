@@ -26,7 +26,7 @@ The different types of residuals are as in \code{\link[stats:glm.summaries]{stat
 }
 \references{
 A. C. Davison and E. J. Snell, Residuals and diagnostics. In:
-Statistical Theory and Modelling. In Honour of Sir David Cox, FRS ,1991.
+Statistical Theory and Modelling. In Honour of Sir David Cox, FRS, 1991.
 Eds. Hinkley, D. V., Reid, N. and Snell, E. J., Chapman & Hall.
 
 M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog,
@@ -34,6 +34,6 @@ M. Döring, Interpreting Generalised Linear Models. In: Data Science Blog,
 \url{https://www.datascienceblog.net/post/machine-learning/interpreting_generalized_linear_models/}
 }
 \seealso{
-\code{\link[=adj_loglik]{adj_loglik()}} for model fitting, \code{\link[stats:glm.summaries]{stats::residuals.glm()}} and
-\code{\link[stats:residuals]{stats::residuals()}}, \code{\link[stats:df.residual]{stats::df.residual()}}.
+\code{\link[=adj_loglik]{adj_loglik()}} for model fitting, \code{\link[stats:glm.summaries]{stats::residuals.glm()}}, and
+\code{\link[stats:residuals]{stats::residuals()}}.
 }

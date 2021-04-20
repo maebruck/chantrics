@@ -5,10 +5,8 @@
 #' Adjust the loglikelihood and the standard errors of a fitted [pscl::hurdle()]
 #' model.
 #'
-#' Describe zeroinfl models here
-#'
 #' Note that the [pscl::hurdle()] model has to be run with the option `x = TRUE`
-#' in order for the adjustment to execute properly. Also note that the functions
+#' in order for the adjustment to execute properly. The functions
 #' [residuals.chantrics()] and [`fitted.chantrics()`][fitted()] are currently
 #' disabled for `hurdle` models. Additionally, sequential [anova.chantrics()]
 #' are not available.
@@ -35,6 +33,7 @@
 #' # adjust model
 #' # adj_loglik(rd_hurdle)
 #' @name hurdle
+#' @keywords internal
 NULL
 
 #' @export

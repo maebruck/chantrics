@@ -11,7 +11,7 @@
 \code{\link[=adj_loglik]{adj_loglik()}}.}
 
 \item{...}{Further objects of class \code{chantrics}, as returned by
-\code{\link[=adj_loglik]{adj_loglik()}}, and/or parameters that will be passed to
+\code{\link[=adj_loglik]{adj_loglik()}}, and named parameters that should be passed to
 \code{\link[chandwich:compare_models]{chandwich::compare_models()}}. The type of adjustment, out of
 \code{"vertical"}, \code{"cholesky"}, \code{"spectral"}, \code{"none"}, as
 specified in the parameter \code{type}, can also be specified here.}
@@ -37,7 +37,7 @@ statistic (ALRTS), as described in Section 3.5 of
 
 Each line represents the model as given above the table, with each
 line (except for the first line) showing the residual degrees of freedom of
-that model, and the change in degrees of freedom, the ALRTS and the
+that model, the change in degrees of freedom, the ALRTS and the
 associated p-value in comparison to the model in the line above.
 
 When a single model is specified, the function returns a sequential
@@ -72,14 +72,11 @@ anova(fm_pois_adj, fm_pois_small_adj, fm_pois_smallest_adj, type = "cholesky")
 anova(fm_pois_adj)
 }
 \references{
-R. Chandler and S. Bate, Inference for clustered data using the
+R. E. Chandler and S. Bate, Inference for clustered data using the
 independence loglikelihood, Biometrika, 94 (2007), pp.
 167–183. \url{http://doi.org/10.1093/biomet/asm015}.
 }
 \seealso{
 \link[chandwich:compare_models]{chandwich::compare_models}: implementation of the comparison
 mechanism
-
-\link[chandwich:anova.chandwich]{chandwich::anova.chandwich}: \code{anova} method of the \code{chandwich}
-package, which also uses \code{compare.models()}
 }

@@ -10,10 +10,8 @@ NOTE: \emph{Hurdle models are currently not supported.}
 Adjust the loglikelihood and the standard errors of a fitted \code{\link[pscl:hurdle]{pscl::hurdle()}}
 model.
 
-Describe zeroinfl models here
-
 Note that the \code{\link[pscl:hurdle]{pscl::hurdle()}} model has to be run with the option \code{x = TRUE}
-in order for the adjustment to execute properly. Also note that the functions
+in order for the adjustment to execute properly. The functions
 \code{\link[=residuals.chantrics]{residuals.chantrics()}} and \code{\link[=fitted]{fitted.chantrics()}} are currently
 disabled for \code{hurdle} models. Additionally, sequential \code{\link[=anova.chantrics]{anova.chantrics()}}
 are not available.
@@ -42,3 +40,4 @@ summary(rd_hurdle)
 # adjust model
 # adj_loglik(rd_hurdle)
 }
+\keyword{internal}

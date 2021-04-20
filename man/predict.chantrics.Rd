@@ -15,7 +15,7 @@ Supplying new data is currently not supported.}
 
 \item{type}{the type of prediction required. The default \code{"response"} is on
 the scale of the response variables. The alternative \code{"link"} is on the
-scale of the linear predictors, if applicable, otherwise, an error is
+scale of the linear predictors, if applicable. Otherwise, an error is
 returned.}
 
 \item{...}{unused.}

@@ -12,17 +12,17 @@
 \alias{print.chantrics}
 \alias{summary.chantrics}
 \alias{vcov.chantrics}
-\title{Log-likelihood adjustments for fitted models}
+\title{Loglikelihood adjustments for fitted models}
 \usage{
 adj_loglik(x, cluster = NULL, use_vcov = TRUE, use_mle = TRUE, ...)
 }
 \arguments{
-\item{x}{A fitted model object that is supported, see \strong{Supported models}}
+\item{x}{A supported fitted model object, see \strong{Supported models}}
 
-\item{cluster}{A vector or factor indicating from which cluster the
-respective log-likelihood contributions originate. Must have the same
+\item{cluster}{A vector or factor indicating the cluster the corresponding
+loglikelihood contribution belongs to. It is required to have the same
 length as the vector returned by \code{\link[=logLik_vec]{logLik_vec()}}. If \code{cluster} is not
-supplied or \code{NULL} then it is assumed that each observation forms its own
+supplied or \code{NULL}, then it is assumed that each observation forms its own
 cluster.}
 
 \item{use_vcov}{A logical scalar. By default, the \code{\link[=vcov]{vcov()}} method for \code{x} is
@@ -31,10 +31,10 @@ function exists. Otherwise, or if \code{use_vcov = FALSE}, \code{H} is estimated
 using \code{\link[stats:optim]{stats::optimHess()}} inside \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}.}
 
 \item{use_mle}{A logical scalar. By default, the MLE from \code{x} is taken as
-given, and not reestimated. By setting \code{use_mle} to \code{FALSE}, the parameters
-are reestimated in \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}} using \code{\link[stats:optim]{stats::optim()}}.
-This feature is currently for development purposes only, may return
-misleading/false results and may be removed without notice.}
+given, and is not reestimated. By setting \code{use_mle} to \code{FALSE}, the parameters
+are reestimated in the function \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}} using
+\code{\link[stats:optim]{stats::optim()}}.This feature is currently for development purposes only,
+may return misleading/false results and may be removed without notice.}
 
 \item{...}{Further arguments to be passed to \code{\link[sandwich:vcovCL]{sandwich::meatCL()}} if
 \code{cluster} is defined, if \code{cluster = NULL}, they are passed into
@@ -42,11 +42,10 @@ misleading/false results and may be removed without notice.}
 }
 \value{
 An object of class \code{"chantrics"} inheriting from class \code{"chandwich"}.
-See \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}. The remaining elements of the returned
-class are \code{class(x)}.
+See the documentation provided with \code{\link[chandwich:adjust_loglik]{chandwich::adjust_loglik()}}.
 }
 \description{
-This function adjusts the log-likelihood of fitted model objects based on
+This function adjusts the loglikelihood of fitted model objects based on
 \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}. It is a
 generic function for different types of models, which are listed in
 \strong{Supported models}. This section also contains links to function-specific
@@ -106,7 +105,7 @@ section.
 }
 
 \references{
-R. Chandler and S. Bate, Inference for clustered data using the
+R. E. Chandler and S. Bate, Inference for clustered data using the
 independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
 \url{http://doi.org/10.1093/biomet/asm015}.
 }

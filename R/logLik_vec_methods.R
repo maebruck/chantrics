@@ -1,14 +1,14 @@
 #' Evaluate loglikelihood contributions from specific observations
 #'
-#' Generic function for calculating the log-likelihood contributions from
+#' Generic function for calculating the loglikelihood contributions from
 #' individual observations for a fitted model.
 #'
 #' @param object A fitted model object.
 #' @param ... Further arguments.
 #'
-#' @return An object of class `"logLik_vec"` which is a numeric vector of length
+#' @return An object of class `"logLik_vec"`, which is a numeric vector of length
 #'   `nobs(object)` (i.e. the number of observations in `object`) of the
-#'   log-likelihood of each observation. Additionally, it contains the
+#'   loglikelihood of each observation. Additionally, it contains the
 #'   attributes `df` (model degrees of freedom) and `nobs` (number of
 #'   observations).
 #'
