@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chantrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -153,7 +153,7 @@
     <tr>
       <th>...</th>
       <td><p>Further objects of class <code>chantrics</code>, as returned by
-<code><a href='adj_loglik.html'>adj_loglik()</a></code>, and/or parameters that will be passed to
+<code><a href='adj_loglik.html'>adj_loglik()</a></code>, and named parameters that should be passed to
 <code><a href='https://rdrr.io/pkg/chandwich/man/compare_models.html'>chandwich::compare_models()</a></code>. The type of adjustment, out of
 <code>"vertical"</code>, <code>"cholesky"</code>, <code>"spectral"</code>, <code>"none"</code>, as
 specified in the parameter <code>type</code>, can also be specified here.</p></td>
@@ -180,7 +180,7 @@ statistic (ALRTS), as described in Section 3.5 of
 <a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>.</p>
 <p>Each line represents the model as given above the table, with each
 line (except for the first line) showing the residual degrees of freedom of
-that model, and the change in degrees of freedom, the ALRTS and the
+that model, the change in degrees of freedom, the ALRTS and the
 associated p-value in comparison to the model in the line above.</p>
 <p>When a single model is specified, the function returns a sequential
 analysis of deviance table, where, iteratively, one term is being removed
@@ -194,15 +194,13 @@ number of variables as returned by <code><a href='adj_loglik.html'>adj_loglik()<
 <a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>R. Chandler and S. Bate, Inference for clustered data using the
+    <p>R. E. Chandler and S. Bate, Inference for clustered data using the
 independence loglikelihood, Biometrika, 94 (2007), pp.
 167–183. <a href='http://doi.org/10.1093/biomet/asm015'>http://doi.org/10.1093/biomet/asm015</a>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><a href='https://rdrr.io/pkg/chandwich/man/compare_models.html'>chandwich::compare_models</a>: implementation of the comparison
-mechanism</p>
-<p><a href='https://rdrr.io/pkg/chandwich/man/anova.chandwich.html'>chandwich::anova.chandwich</a>: <code>anova</code> method of the <code>chandwich</code>
-package, which also uses <code>compare.models()</code></p></div>
+mechanism</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>

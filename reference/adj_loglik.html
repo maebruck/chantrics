@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Log-likelihood adjustments for fitted models — adj_loglik • chantrics</title>
+<title>Loglikelihood adjustments for fitted models — adj_loglik • chantrics</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Log-likelihood adjustments for fitted models — adj_loglik" />
-<meta property="og:description" content="This function adjusts the log-likelihood of fitted model objects based on
+<meta property="og:title" content="Loglikelihood adjustments for fitted models — adj_loglik" />
+<meta property="og:description" content="This function adjusts the loglikelihood of fitted model objects based on
 Chandler and Bate (2007). It is a
 generic function for different types of models, which are listed in
 Supported models. This section also contains links to function-specific
@@ -86,7 +86,7 @@ help pages." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chantrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -134,13 +134,13 @@ help pages." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Log-likelihood adjustments for fitted models</h1>
+    <h1>Loglikelihood adjustments for fitted models</h1>
     <small class="dont-index">Source: <a href='https://github.com/tbruckbauer/chantrics/blob/master/R/adj_loglik_methods.R'><code>R/adj_loglik_methods.R</code></a></small>
     <div class="hidden name"><code>adj_loglik.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function adjusts the log-likelihood of fitted model objects based on
+    <p>This function adjusts the loglikelihood of fitted model objects based on
 <a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>. It is a
 generic function for different types of models, which are listed in
 <strong>Supported models</strong>. This section also contains links to function-specific
@@ -154,14 +154,14 @@ help pages.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A fitted model object that is supported, see <strong>Supported models</strong></p></td>
+      <td><p>A supported fitted model object, see <strong>Supported models</strong></p></td>
     </tr>
     <tr>
       <th>cluster</th>
-      <td><p>A vector or factor indicating from which cluster the
-respective log-likelihood contributions originate. Must have the same
+      <td><p>A vector or factor indicating the cluster the corresponding
+loglikelihood contribution belongs to. It is required to have the same
 length as the vector returned by <code><a href='logLik_vec.html'>logLik_vec()</a></code>. If <code>cluster</code> is not
-supplied or <code>NULL</code> then it is assumed that each observation forms its own
+supplied or <code>NULL</code>, then it is assumed that each observation forms its own
 cluster.</p></td>
     </tr>
     <tr>
@@ -174,10 +174,10 @@ using <code><a href='https://rdrr.io/r/stats/optim.html'>stats::optimHess()</a><
     <tr>
       <th>use_mle</th>
       <td><p>A logical scalar. By default, the MLE from <code>x</code> is taken as
-given, and not reestimated. By setting <code>use_mle</code> to <code>FALSE</code>, the parameters
-are reestimated in <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik()</a></code> using <code><a href='https://rdrr.io/r/stats/optim.html'>stats::optim()</a></code>.
-This feature is currently for development purposes only, may return
-misleading/false results and may be removed without notice.</p></td>
+given, and is not reestimated. By setting <code>use_mle</code> to <code>FALSE</code>, the parameters
+are reestimated in the function <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik()</a></code> using
+<code><a href='https://rdrr.io/r/stats/optim.html'>stats::optim()</a></code>.This feature is currently for development purposes only,
+may return misleading/false results and may be removed without notice.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -190,8 +190,7 @@ misleading/false results and may be removed without notice.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An object of class <code>"chantrics"</code> inheriting from class <code>"chandwich"</code>.
-See <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik()</a></code>. The remaining elements of the returned
-class are <code><a href='https://rdrr.io/r/base/class.html'>class(x)</a></code>.</p>
+See the documentation provided with <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik()</a></code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>If <code>use_vcov = TRUE</code>, the current default, the function will test
@@ -247,7 +246,7 @@ regions</p></li>
 section.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>R. Chandler and S. Bate, Inference for clustered data using the
+    <p>R. E. Chandler and S. Bate, Inference for clustered data using the
 independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
 <a href='http://doi.org/10.1093/biomet/asm015'>http://doi.org/10.1093/biomet/asm015</a>.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>

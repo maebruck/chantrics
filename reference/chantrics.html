@@ -45,7 +45,7 @@ clustered data based on the estimation process suggested in
 Chandler and Bate (2007),
 using the chandwich package,
 and provides convenience functions for inference on the adjusted models.
-adj_loglik() adjusts the parameter covariance matrix of the models to
+adj_loglik() adjusts the model's parameter covariance matrix to
 incorporate clustered data, and can mitigate model misspecification by
 wrapping chandwich::adjust_loglik for the supported models." />
 
@@ -89,7 +89,7 @@ wrapping chandwich::adjust_loglik for the supported models." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chantrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -148,7 +148,7 @@ clustered data based on the estimation process suggested in
 <a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>,
 using the <a href='https://cran.r-project.org/package=chandwich'>chandwich</a> package,
 and provides convenience functions for inference on the adjusted models.
-<code><a href='adj_loglik.html'>adj_loglik()</a></code> adjusts the parameter covariance matrix of the models to
+<code><a href='adj_loglik.html'>adj_loglik()</a></code> adjusts the model's parameter covariance matrix to
 incorporate clustered data, and can mitigate model misspecification by
 wrapping <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>chandwich::adjust_loglik</a></code> for the supported models.</p>
     </div>
@@ -158,13 +158,13 @@ wrapping <code><a href='https://rdrr.io/pkg/chandwich/man/adjust_loglik.html'>ch
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The returned model of class <code>chantrics</code> can be plugged into standard model
-evaluation and model comparison methods, for example <code><a href='https://rdrr.io/r/base/summary.html'>summary()</a></code>, <code><a href='https://rdrr.io/r/stats/confint.html'>confint()</a></code>
+evaluation and model comparison methods, for example, <code><a href='https://rdrr.io/r/base/summary.html'>summary()</a></code>, <code><a href='https://rdrr.io/r/stats/confint.html'>confint()</a></code>
 and <code><a href='https://rdrr.io/r/stats/anova.html'>anova()</a></code>, and a hypothesis test framework provided by <code><a href='alrtest.html'>alrtest()</a></code>.</p>
 <p>See <code><a href='../articles/chantrics-vignette.html'>vignette("chantrics-vignette", package = "chantrics")</a></code> for an
 overview of the package.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>R. Chandler and S. Bate, Inference for clustered data using the
+    <p>R. E. Chandler and S. Bate, Inference for clustered data using the
 independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
 <a href='http://doi.org/10.1093/biomet/asm015'>http://doi.org/10.1093/biomet/asm015</a>.</p>
 
