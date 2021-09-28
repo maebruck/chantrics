@@ -1,8 +1,8 @@
 Package: chantrics
 Type: Package
 Title: Loglikelihood Adjustments for Econometric Models
-Version: 0.1.0
-Date: 2021-04-20
+Version: 1.0.0.rc1
+Date: 2021-09-28
 Description: Adjusts the loglikelihood of common econometric models for
     clustered data based on the estimation process suggested in 
     Chandler and Bate (2007) <doi:10.1093/biomet/asm015>, using the 'chandwich' 
@@ -32,7 +32,7 @@ BugReports: https://github.com/tbruckbauer/chantrics/issues
 License: EUPL (>=1.2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Language: en-GB
 Suggests: 
     knitr,
