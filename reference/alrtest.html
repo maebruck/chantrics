@@ -84,7 +84,7 @@ employed to compare nested models (see details)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chantrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0.9990</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -110,6 +110,9 @@ employed to compare nested models (see details)." />
       <a href="../articles/chantrics-vignette.html">An introduction to chantrics</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -200,10 +203,17 @@ the second model will be computed as <code><a href='https://rdrr.io/r/stats/upda
 </ul>
 
 <p>Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
-Section 3.5 of <a href='http://doi.org/10.1093/biomet/asm015'>Chandler and Bate (2007)</a>, is computed by
+Section 3.5 of Chandler and Bate
+(2007), is computed by
 <code><a href='anova.chantrics.html'>anova.chantrics()</a></code>.</p>
 <p>If a single unnamed object is passed in <code>...</code>, sequential ANOVA is
 performed on <code>object</code>.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>R. E. Chandler and S. Bate, Inference for clustered data using the
+independence loglikelihood, Biometrika, 94 (2007), pp.
+167–183. doi: <a href='https://doi.org/10.1093/biomet/asm015'>10.1093/biomet/asm015</a>
+.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='anova.chantrics.html'>anova.chantrics()</a></code> for the implementation of the computations of

@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">chantrics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0.9990</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
       </span>
     </div>
 
@@ -67,6 +67,9 @@
       <a href="articles/chantrics-vignette.html">An introduction to chantrics</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -98,15 +101,11 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<!--You can install the released version of chantrics from [CRAN](https://CRAN.R-project.org) with:
-
-
-```r
-# install.packages("chantrics")
-```
--->
-<p>You can install the development version from <a href="https://github.com/">GitHub</a> with:</p>
+<p>You can install the released version of chantrics from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"chantrics"</span><span class="op">)</span></code></pre></div>
+<p>The development version is available from <a href="https://github.com/">GitHub</a> with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Remove the # if "devtools" is not installed yet.</span>
 <span class="co"># install.packages("devtools")</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tbruckbauer/chantrics"</span><span class="op">)</span></code></pre></div>
@@ -115,7 +114,7 @@
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <p>This example is using the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the <em>sandwich</em> package (Zeileis 2006). First, data from a negative binomial model is generated, and then a Poisson model is fit, which is clearly misspecified.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://chantrics.theobruckbauer.eu">chantrics</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span>
@@ -136,15 +135,14 @@
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
 <span class="co"># The I(x^2) term is spuriously significant.</span></code></pre></div>
 <p>In order to mitigate the misspecification, the loglikelihood adjustment is applied to the model object using <code><a href="reference/adj_loglik.html">adj_loglik(model_object)</a></code>. If clustered data is available, a vector or factor indicating from which cluster the observation originates can be passed into the function using <code>cluster</code>. If it is not supplied, it is assumed that each observation originates from its own cluster and is independent. More information on this can be found in the <a href="https://chantrics.theobruckbauer.eu/articles/clustering-vignette.html">clustering vignette</a>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Apply the loglikelihood adjustment to the model</span>
 <span class="va">fm_pois_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/adj_loglik.html">adj_loglik</a></span><span class="op">(</span><span class="va">fm_pois</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span>
-<span class="co">#&gt;                  MLE       SE adj. SE</span>
-<span class="co">#&gt; (Intercept)  1.06300  0.04136   0.084</span>
-<span class="co">#&gt; x            0.99610  0.05353   0.105</span>
-<span class="co">#&gt; I(x^2)      -0.04912  0.02315   0.036</span>
-
+<span class="co">#&gt;                  MLE      SE adj. SE</span>
+<span class="co">#&gt; (Intercept)  1.06300 0.04136 0.08378</span>
+<span class="co">#&gt; x            0.99610 0.05353 0.10520</span>
+<span class="co">#&gt; I(x^2)      -0.04912 0.02315 0.03628</span>
 <span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">fm_pois_adj</span><span class="op">)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; z test of coefficients:</span>
@@ -175,7 +173,6 @@
 <span class="co">#&gt; (Intercept)   0.8954   1.2232</span>
 <span class="co">#&gt; x             0.7877   1.1991</span>
 <span class="co">#&gt; I(x^2)       -0.1198   0.0222</span>
-
 <span class="co"># Generate a nested model from fm_pois_adj</span>
 <span class="va">fm_pois_small_adj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/coeftest.html">coeftest</a></span><span class="op">(</span><span class="va">fm_pois_small_adj</span><span class="op">)</span>
@@ -187,7 +184,6 @@
 <span class="co">#&gt; x            0.90172    0.06939  12.995 &lt; 2.2e-16 ***</span>
 <span class="co">#&gt; ---</span>
 <span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span>
-
 <span class="co"># Perform an adjusted likelihood ratio test on the two models</span>
 <span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, <span class="va">fm_pois_small_adj</span><span class="op">)</span>
 <span class="co">#&gt; Analysis of Adjusted Deviance Table</span>
@@ -208,7 +204,6 @@
 <span class="co">#&gt;   Resid.df df  ALRTS Pr(&gt;ALRTS)</span>
 <span class="co">#&gt; 1      247                     </span>
 <span class="co">#&gt; 2      248  1 1.8202     0.1773</span>
-
 <span class="co"># Plot confidence regions for the parameter estimates</span>
 <span class="va">fm_pois_adj_vert</span> <span class="op">&lt;-</span>
   <span class="fu">chandwich</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/chandwich/man/conf_region.html">conf_region</a></span><span class="op">(</span><span class="va">fm_pois_adj</span>, which_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"I(x^2)"</span><span class="op">)</span><span class="op">)</span>
