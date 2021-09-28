@@ -1,3 +1,11 @@
+## Resubmission
+
+This is a resubmission, with the following changes:
+
+* Removed the redirected link.
+
+Thanks.
+
 ## Test environments
 * Local macOS install, R 4.1.1
 * ubuntu 20.04 (via GitHub Actions), R 4.1.1
