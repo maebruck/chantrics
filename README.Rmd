@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# chantrics
+# chantrics 
 
 <!-- badges: start -->
 ![R-CMD-check](https://github.com/tbruckbauer/chantrics/workflows/R-CMD-check/badge.svg?branch=master)
@@ -29,20 +29,20 @@ The returned model of class `chantrics` can be plugged into standard model evalu
 
 ## Installation
 
-<!--You can install the released version of chantrics from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of chantrics from [CRAN](https://CRAN.R-project.org) with:
 
-```{r}
-# install.packages("chantrics")
+```{r eval=FALSE}
+install.packages("chantrics")
 ```
--->
 
-You can install the development version from [GitHub](https://github.com/) with:
+The development version is available from [GitHub](https://github.com/) with:
 
 ```{r eval=FALSE}
 ## Remove the # if "devtools" is not installed yet.
 # install.packages("devtools")
 devtools::install_github("tbruckbauer/chantrics")
 ```
+
 ## Usage
 
 This example is using the misspecified count data regression from Chapter 5.1 in the Object-Oriented Computation of Sandwich Estimators vignette from the *sandwich* package [@zeileis06]. First, data from a negative binomial model is generated, and then a Poisson model is fit, which is clearly misspecified.

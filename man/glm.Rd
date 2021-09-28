@@ -56,7 +56,7 @@ summary(swiss_logit_adj)
 \references{
 Davison, A. C. 2003. Statistical Models. Cambridge Series on
 Statistical and Probabilistic Mathematics 11. Cambridge University Press,
-Cambridge. www.cambridge.org/9780521773393.
+Cambridge.
 
 Kleiber, Christian, and Achim
 Zeileis. 2008. Applied Econometrics with R. Edited by Robert Gentleman,

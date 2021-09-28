@@ -1,7 +1,7 @@
 #' Loglikelihood adjustments for fitted models
 #'
 #' This function adjusts the loglikelihood of fitted model objects based on
-#' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015). It is a
+#' Chandler and Bate (2007). It is a
 #' generic function for different types of models, which are listed in
 #' **Supported models**. This section also contains links to function-specific
 #' help pages.
@@ -77,7 +77,7 @@
 #'
 #' @references R. E. Chandler and S. Bate, Inference for clustered data using the
 #'   independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
-#'   <http://doi.org/10.1093/biomet/asm015>.
+#'   \doi{10.1093/biomet/asm015}.
 #'
 #' @seealso [lax::alogLik()] supports adjustment for user-supplied objects.
 #'
@@ -289,7 +289,7 @@ print.summary.chantrics <- function(x,
 #' two or more nested models that have been adjusted using the
 #' [adj_loglik()] method. It uses the adjusted likelihood ratio test
 #' statistic (ALRTS), as described in Section 3.5 of
-#' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015).
+#' Chandler and Bate (2007).
 #'
 #' @param object Object of class `chantrics`, as returned by
 #'   [adj_loglik()].
@@ -316,7 +316,7 @@ print.summary.chantrics <- function(x,
 #'
 #'
 #' Details of the ALRT can be found in [chandwich::compare_models()] and in
-#' [Chandler and Bate (2007)](http://doi.org/10.1093/biomet/asm015).
+#' Chandler and Bate (2007).
 #'
 #' @return An object of class `"anova"` inheriting from class `"data.frame"`.
 #'   The columns are as follows: \item{Resid.df}{The residual number of degrees
@@ -328,7 +328,7 @@ print.summary.chantrics <- function(x,
 #'
 #' @references R. E. Chandler and S. Bate, Inference for clustered data using the
 #'   independence loglikelihood, Biometrika, 94 (2007), pp.
-#'   167–183. <http://doi.org/10.1093/biomet/asm015>.
+#'   167–183. \doi{10.1093/biomet/asm015}.
 #'
 #' @seealso [chandwich::compare_models]: implementation of the comparison
 #'   mechanism
@@ -700,8 +700,8 @@ terms.chantrics <- function(x, ...) {
 #'   the second model will be computed as `update(object1, object2)`.
 #'
 #'   Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
-#'   Section 3.5 of [Chandler and Bate
-#'   (2007)](http://doi.org/10.1093/biomet/asm015), is computed by
+#'   Section 3.5 of Chandler and Bate
+#'   (2007), is computed by
 #'   [anova.chantrics()].
 #'
 #'   If a single unnamed object is passed in `...`, sequential ANOVA is
@@ -718,6 +718,10 @@ terms.chantrics <- function(x, ...) {
 #' @seealso [anova.chantrics()] for the implementation of the computations of
 #'   the test statistics.
 #' @seealso [lmtest::waldtest()] and [lmtest::lrtest()] for syntax.
+#'
+#' @references R. E. Chandler and S. Bate, Inference for clustered data using the
+#'   independence loglikelihood, Biometrika, 94 (2007), pp.
+#'   167–183. \doi{10.1093/biomet/asm015}.
 #'
 #' @export
 

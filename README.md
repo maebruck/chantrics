@@ -27,16 +27,15 @@ model evaluation and model comparison methods, for example `summary()`,
 
 ## Installation
 
-<!--You can install the released version of chantrics from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of chantrics from
+[CRAN](https://CRAN.R-project.org) with:
 
-
-```r
-# install.packages("chantrics")
+``` r
+install.packages("chantrics")
 ```
--->
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+The development version is available from [GitHub](https://github.com/)
+with:
 
 ``` r
 ## Remove the # if "devtools" is not installed yet.
@@ -87,11 +86,10 @@ vignette](https://chantrics.theobruckbauer.eu/articles/clustering-vignette.html)
 ## Apply the loglikelihood adjustment to the model
 fm_pois_adj <- adj_loglik(fm_pois)
 summary(fm_pois_adj)
-#>                  MLE       SE adj. SE
-#> (Intercept)  1.06300  0.04136   0.084
-#> x            0.99610  0.05353   0.105
-#> I(x^2)      -0.04912  0.02315   0.036
-
+#>                  MLE      SE adj. SE
+#> (Intercept)  1.06300 0.04136 0.08378
+#> x            0.99610 0.05353 0.10520
+#> I(x^2)      -0.04912 0.02315 0.03628
 lmtest::coeftest(fm_pois_adj)
 #> 
 #> z test of coefficients:
@@ -122,7 +120,6 @@ chandwich::conf_intervals(fm_pois_adj)
 #> (Intercept)   0.8954   1.2232
 #> x             0.7877   1.1991
 #> I(x^2)       -0.1198   0.0222
-
 # Generate a nested model from fm_pois_adj
 fm_pois_small_adj <- update(fm_pois_adj, . ~ . - I(x^2))
 lmtest::coeftest(fm_pois_small_adj)
@@ -134,7 +131,6 @@ lmtest::coeftest(fm_pois_small_adj)
 #> x            0.90172    0.06939  12.995 < 2.2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
 # Perform an adjusted likelihood ratio test on the two models
 anova(fm_pois_adj, fm_pois_small_adj)
 #> Analysis of Adjusted Deviance Table
@@ -155,7 +151,6 @@ alrtest(fm_pois_adj, "I(x^2)")
 #>   Resid.df df  ALRTS Pr(>ALRTS)
 #> 1      247                     
 #> 2      248  1 1.8202     0.1773
-
 # Plot confidence regions for the parameter estimates
 fm_pois_adj_vert <-
   chandwich::conf_region(fm_pois_adj, which_pars = c("x", "I(x^2)"))

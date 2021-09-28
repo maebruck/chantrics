@@ -7,7 +7,7 @@
 \description{
 \code{chantrics} adjusts the loglikelihood of common econometric models for
 clustered data based on the estimation process suggested in
-\href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)},
+Chandler and Bate (2007),
 using the \href{https://cran.r-project.org/package=chandwich}{chandwich} package,
 and provides convenience functions for inference on the adjusted models.
 \code{adj_loglik()} adjusts the model's parameter covariance matrix to
@@ -24,6 +24,6 @@ overview of the package.
 }
 \references{
 R. E. Chandler and S. Bate, Inference for clustered data using the
-independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
-\url{http://doi.org/10.1093/biomet/asm015}.
+independence loglikelihood, Biometrika, 94 (2007), pp.
+167–183. \doi{10.1093/biomet/asm015}.
 }

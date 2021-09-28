@@ -46,7 +46,7 @@ See the documentation provided with \code{\link[chandwich:adjust_loglik]{chandwi
 }
 \description{
 This function adjusts the loglikelihood of fitted model objects based on
-\href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}. It is a
+Chandler and Bate (2007). It is a
 generic function for different types of models, which are listed in
 \strong{Supported models}. This section also contains links to function-specific
 help pages.
@@ -107,7 +107,7 @@ section.
 \references{
 R. E. Chandler and S. Bate, Inference for clustered data using the
 independence loglikelihood, Biometrika, 94 (2007), pp. 167–183.
-\url{http://doi.org/10.1093/biomet/asm015}.
+\doi{10.1093/biomet/asm015}.
 }
 \seealso{
 \code{\link[lax:alogLik]{lax::alogLik()}} supports adjustment for user-supplied objects.

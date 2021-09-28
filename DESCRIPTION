@@ -1,7 +1,7 @@
 Package: chantrics
 Type: Package
 Title: Loglikelihood Adjustments for Econometric Models
-Version: 1.0.0.9990
+Version: 1.0.0
 Date: 2021-09-28
 Description: Adjusts the loglikelihood of common econometric models for
     clustered data based on the estimation process suggested in 
@@ -22,7 +22,8 @@ Imports:
     purrr
 Depends: 
     R (>= 4.0.0)
-Authors@R: person(given = "Theo", 
+Authors@R: 
+    person(given = "Theo", 
            family = "Bruckbauer", 
            email = "chantrics@theobruckbauer.eu",
            role = c("aut", "cre"),

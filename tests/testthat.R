@@ -181,3 +181,4 @@ rd_hurdle_geom_geom_adj <- adj_loglik(rd_hurdle_geom_geom)
 
 
 test_check("chantrics")
+

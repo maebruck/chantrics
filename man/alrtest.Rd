@@ -57,11 +57,17 @@ the second model will be computed as \code{update(object1, object2)}.
 }
 
 Then, the adjusted likelihood ratio test statistic (ALRTS), as described in
-Section 3.5 of \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}, is computed by
+Section 3.5 of Chandler and Bate
+(2007), is computed by
 \code{\link[=anova.chantrics]{anova.chantrics()}}.
 
 If a single unnamed object is passed in \code{...}, sequential ANOVA is
 performed on \code{object}.
+}
+\references{
+R. E. Chandler and S. Bate, Inference for clustered data using the
+independence loglikelihood, Biometrika, 94 (2007), pp.
+167–183. \doi{10.1093/biomet/asm015}.
 }
 \seealso{
 \code{\link[=anova.chantrics]{anova.chantrics()}} for the implementation of the computations of

@@ -33,7 +33,7 @@ Create an analysis of adjusted deviance table for one object (sequential), or
 two or more nested models that have been adjusted using the
 \code{\link[=adj_loglik]{adj_loglik()}} method. It uses the adjusted likelihood ratio test
 statistic (ALRTS), as described in Section 3.5 of
-\href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+Chandler and Bate (2007).
 
 Each line represents the model as given above the table, with each
 line (except for the first line) showing the residual degrees of freedom of
@@ -51,7 +51,7 @@ number of variables as returned by \code{\link[=adj_loglik]{adj_loglik()}} in
 \code{attr(x, "p_current")}.
 
 Details of the ALRT can be found in \code{\link[chandwich:compare_models]{chandwich::compare_models()}} and in
-\href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+Chandler and Bate (2007).
 }
 \examples{
 
@@ -74,7 +74,7 @@ anova(fm_pois_adj)
 \references{
 R. E. Chandler and S. Bate, Inference for clustered data using the
 independence loglikelihood, Biometrika, 94 (2007), pp.
-167–183. \url{http://doi.org/10.1093/biomet/asm015}.
+167–183. \doi{10.1093/biomet/asm015}.
 }
 \seealso{
 \link[chandwich:compare_models]{chandwich::compare_models}: implementation of the comparison
